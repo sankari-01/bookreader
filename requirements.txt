@@ -1,0 +1,16 @@
+flask
+pytesseract
+pdf2image
+transformers
+torch
+gtts
+PyPDF2
+python-docx
+python-pptx
+mammoth
+deep-translator
+mysql-connector-python
+edge-tts
+Pillow
+comtypes
+pymupdf

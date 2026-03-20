@@ -1,0 +1,10 @@
+This is a test book.
+--- Page 1 ---
+Chapter 1: The Beginning.
+This is the first page of our magic book.
+--- Page 2 ---
+Chapter 2: The Middle.
+The story continues on the second page.
+--- Page 3 ---
+Chapter 3: The End.
+And they lived happily ever after.
