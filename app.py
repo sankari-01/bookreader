@@ -699,8 +699,6 @@ def ask():
     <br>
     <a href="/read/{filename}">Back</a>
     """
-
-
 @app.route("/api/speak", methods=["POST"])
 def speak():
     text = request.form.get("text", "").strip()
@@ -726,6 +724,7 @@ def speak():
         })
 
 
+
 @app.route("/api/meaning", methods=["POST"])
 def meaning():
     word = request.form.get("word", "").strip()
@@ -739,9 +738,7 @@ def meaning():
     else:
         try:
             log_error(f"Calling get_meaning for '{word}'...")
-            result = get_meaning(word, context=context)
-            if lang != 'en' and result:
-                result = GoogleTranslator(source='auto', target=lang).translate(result)
+            result = get_meaning(word, context=context, target_lang=lang)
             log_error(f"get_meaning returned successfully for '{word}'")
         except Exception as e:
             log_error(f"CRITICAL Error in meaning route: {e}")
