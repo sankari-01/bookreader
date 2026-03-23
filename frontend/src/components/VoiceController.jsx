@@ -1,18 +1,18 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { Mic, MicOff, Keyboard, Type, Send } from 'lucide-react';
 
-const VoiceController = ({ 
-  onCommand, 
-  isActive, 
+const VoiceController = ({
+  onCommand,
+  isActive,
   setIsActive,
-  languages = [] 
+  languages = []
 }) => {
   const [isListening, setIsListening] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [typedCommand, setTypedCommand] = useState('');
   const [transcript, setTranscript] = useState('');
   const [feedback, setFeedback] = useState('');
-  
+
   // Use a ref to track the latest isActive status because recognition 
   // event handlers are closures that might capture old state
   const isActiveRef = useRef(isActive);
@@ -23,7 +23,7 @@ const VoiceController = ({
   const processCommand = useCallback((text) => {
     const lowerText = text.toLowerCase().trim();
     console.log("Processing command:", lowerText);
-    
+
     // Navigation Commands - More flexible matching
     if (lowerText.includes('next') || lowerText.includes('forward') || lowerText.includes('ahead')) {
       onCommand('next');
@@ -32,7 +32,7 @@ const VoiceController = ({
       onCommand('prev');
       setFeedback('Going to previous page...');
     }
-    
+
     // Tool Commands
     else if (lowerText.includes('meaning') || lowerText.includes('dictionary') || lowerText.includes('define') || lowerText.includes('word')) {
       onCommand('meaning');
@@ -44,7 +44,7 @@ const VoiceController = ({
       onCommand('ask');
       setFeedback('Opening Ask AI...');
     }
-    
+
     // Reading Commands
     else if (lowerText.includes('read') || lowerText.includes('play') || lowerText.includes('narrate') || lowerText.includes('speak')) {
       onCommand('read');
@@ -53,13 +53,14 @@ const VoiceController = ({
       onCommand('pause');
       setFeedback('Paused.');
     }
-    
+
+
     // Highlighting Commands
     else if (lowerText.includes('highlight') || lowerText.includes('mark') || lowerText.includes('stain')) {
       onCommand('highlight');
       setFeedback('Highlighting selection...');
     }
-    
+
     // UI Toggles
     else if (lowerText.includes('text') || lowerText.includes('extract') || lowerText.includes('words')) {
       onCommand('text');
@@ -71,16 +72,16 @@ const VoiceController = ({
       onCommand('focus');
       setFeedback('Toggling focus mode...');
     }
-    
+
     // Translation Commands
     else if (lowerText.includes('translate to')) {
       const parts = lowerText.split('translate to');
       if (parts.length > 1) {
         const langPart = parts[1].trim();
-        const matchedLang = languages.find(l => 
+        const matchedLang = languages.find(l =>
           langPart.includes(l.name.toLowerCase()) || l.name.toLowerCase().includes(langPart)
         );
-        
+
         if (matchedLang) {
           onCommand('translate', matchedLang.code);
           setFeedback(`Translating to ${matchedLang.name}...`);
@@ -92,7 +93,7 @@ const VoiceController = ({
         setFeedback('Opening translation menu...');
       }
     }
-    
+
     // Fallback for translation if only "translate" is said
     else if (lowerText === 'translate') {
       onCommand('translate');
@@ -101,27 +102,27 @@ const VoiceController = ({
 
     // Disable voice control command
     else if (lowerText.includes('disable voice') || lowerText.includes('turn off') || lowerText.includes('exit voice')) {
-        setFeedback('Disabling voice control...');
-        setTimeout(() => setIsActive(false), 1000);
+      setFeedback('Disabling voice control...');
+      setTimeout(() => setIsActive(false), 1000);
     }
 
     // Default feedback for recognized text that doesn't match a command
     else if (text.length > 0) {
-        setFeedback(`Command "${text}" not recognized.`);
+      setFeedback(`Command "${text}" not recognized.`);
     }
 
     // Clear feedback and transcript preview after 3 seconds
     setTimeout(() => {
-        setFeedback('');
-        setTranscript('');
+      setFeedback('');
+      setTranscript('');
     }, 3000);
   }, [onCommand, languages, setIsActive]);
 
   const handleTypeSubmit = (e) => {
     e.preventDefault();
     if (typedCommand.trim()) {
-        processCommand(typedCommand);
-        setTypedCommand('');
+      processCommand(typedCommand);
+      setTypedCommand('');
     }
   };
 
@@ -190,10 +191,10 @@ const VoiceController = ({
     };
 
     try {
-        recognition.start();
+      recognition.start();
     } catch (e) {
-        console.error("Initial start failed:", e);
-        // Don't disable immediately, maybe user can still type
+      console.error("Initial start failed:", e);
+      // Don't disable immediately, maybe user can still type
     }
 
     return () => {
@@ -209,14 +210,14 @@ const VoiceController = ({
         {isTyping ? <Keyboard size={20} color="#e07a5f" /> : <Mic size={20} color="#e07a5f" />}
         {!isTyping && <div className="mic-pulse"></div>}
       </div>
-      
+
       <div className="voice-text-container">
         {isTyping ? (
           <form onSubmit={handleTypeSubmit} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <input 
-              type="text" 
-              className="voice-command-input" 
-              placeholder="Type icon name (e.g. 'Listen', 'Focus', 'Search', 'Text')..." 
+            <input
+              type="text"
+              className="voice-command-input"
+              placeholder="Type icon name (e.g. 'Read', 'Listen', 'Focus', 'Search', 'Text')..."
               value={typedCommand}
               onChange={(e) => setTypedCommand(e.target.value)}
               autoFocus

@@ -28,7 +28,7 @@ const FilesPage = () => {
     try {
       const response = await fetch(`/api/delete/${filename}`, { method: 'POST' });
       const data = await response.json();
-      
+
       if (data.success) {
         // Immediately remove from UI state
         setFiles(prevFiles => prevFiles.filter(f => f.filename !== filename));
@@ -43,9 +43,27 @@ const FilesPage = () => {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+    <div style={{ 
+      display: 'flex', 
+      flexDirection: 'column', 
+      height: '100vh',
+      backgroundImage: 'url("/static/user_parchment.jpg")',
+      backgroundSize: 'cover',
+      backgroundAttachment: 'fixed',
+      backgroundColor: '#f5efe1'
+    }}>
       <Header showBack />
-      <main className="container" style={{ justifyContent: 'flex-start', padding: '20px' }}>
+      <main className="container" style={{ 
+        justifyContent: 'flex-start', 
+        padding: '30px', 
+        background: 'rgba(255, 255, 255, 0.4)', 
+        backdropFilter: 'blur(10px)',
+        borderRadius: '24px', 
+        margin: '40px auto', 
+        maxWidth: '1200px',
+        boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
+        border: '1px solid rgba(255, 255, 255, 0.3)'
+      }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
           <h2>Your Library</h2>
           <Link to="/upload">
@@ -85,7 +103,7 @@ const FilesPage = () => {
                           <BookOpen size={16} />
                         </button>
                       </Link>
-                      <button 
+                      <button
                         onClick={() => handleDelete(file.filename)}
                         style={{ padding: '6px 12px', background: '#e74c3c', margin: 0 }}
                       >

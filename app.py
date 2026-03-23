@@ -209,7 +209,50 @@ def generate_html_preview(path, filename, lang='en'):
                 content = f.read()
                 if lang != 'en':
                     content = translate_if_needed(content)
-                html = f'<pre class="txt-preview">{content}</pre>'
+                html = f'<pre class="txt-preview" style="white-space: pre-wrap; font-family: inherit;">{content}</pre>'
+
+        elif lower_name.endswith(".epub"):
+            book = epub.read_epub(path)
+            html = '<div class="epub-preview">'
+            for item in book.get_items_of_type(ebooklib.ITEM_DOCUMENT):
+                content = item.get_content().decode("utf-8")
+                soup = BeautifulSoup(content, 'html.parser')
+                # Remove scripts and styles
+                for s in soup(['script', 'style']): s.decompose()
+                html += f'<div class="epub-section">{translate_html_preserving_tags(str(soup.body if soup.body else soup))}</div>'
+            html += '</div>'
+
+        elif lower_name.endswith(".mobi"):
+            try:
+                temp_dir = os.path.join(os.getcwd(), 'tmp', f"mobi_{int(time.time())}")
+                os.makedirs(temp_dir, exist_ok=True)
+                mobi.extract(path, temp_dir)
+                # Find the HTML file in extracted folder
+                for root, dirs, files in os.walk(temp_dir):
+                    for f in files:
+                        if f.endswith(('.html', '.htm')):
+                            with open(os.path.join(root, f), 'r', encoding='utf-8', errors='ignore') as mf:
+                                m_html = mf.read()
+                                html = f'<div class="mobi-preview">{translate_html_preserving_tags(m_html)}</div>'
+                                break
+            except Exception as me:
+                html = f'<div class="error-preview">Mobi error: {str(me)}</div>'
+
+        elif lower_name.endswith(".html"):
+            with open(path, "r", encoding="utf-8", errors="ignore") as f:
+                html = f'<div class="html-preview">{translate_html_preserving_tags(f.read())}</div>'
+        
+        else:
+            # Universal Fallback: Try reading as text
+            try:
+                with open(path, "r", encoding="utf-8", errors="ignore") as f:
+                    content = f.read()
+                    if content and len(content) > 10: # Only if it looks like text
+                        html = f'<pre class="fallback-text-preview" style="white-space: pre-wrap;">{translate_if_needed(content)}</pre>'
+                    else:
+                        html = f'<div class="error-preview">Unsupported file type: {filename}</div>'
+            except:
+                html = f'<div class="error-preview">Unsupported file type: {filename}</div>'
                 
     except Exception as e:
         html = f'<div class="error-preview">Preview error: {str(e)}</div>'
@@ -261,22 +304,6 @@ def extract_text_from_file(path, filename):
                     text = ocr.extract_text(pdf_path)
                 else:
                     text = "Failed to convert DOC to PDF for text extraction."
-            else:
-                doc = Document(path)
-                for i, para in enumerate(doc.paragraphs, start=1):
-                    if i % 20 == 0: # Rough approximation for pages in docx
-                        text += f"\n--- Page { (i // 20) + 1 } ---\n"
-                    if para.text.strip():
-                        text += para.text + "\n"
-
-        elif lower_name.endswith(".txt"):
-            with open(path, "r", encoding="utf-8", errors="ignore") as f:
-                text = f.read()
-
-        elif lower_name.endswith((".epub", ".mobi")):
-            if lower_name.endswith(".epub"):
-                book = epub.read_epub(path)
-                item_no = 1
                 for item in book.get_items():
                     if item.get_type() == ebooklib.ITEM_DOCUMENT:
                         soup = BeautifulSoup(item.get_content(), 'html.parser')
@@ -682,11 +709,23 @@ def ask():
         answer = "Please enter a question."
     else:
         try:
-            answer = answer_question(question, context)
+            # 1. Try Gemini Assistant IF API key looks valid
+            from utils.gemini_assistant import GeminiAssistant
+            api_key = os.getenv("GEMINI_API_KEY")
+            
+            answer = None
+            if api_key and "YOUR_GEMINI_API_KEY" not in api_key and api_key.strip():
+                answer = GeminiAssistant.ask(question, context)
+            
+            # 2. If Gemini is not configured or failed, fallback to local models
+            if not answer:
+                log_error(f"Gemini not available. Falling back to local model for: {question}")
+                answer = answer_question(question, context)
+            
             if lang != 'en' and answer:
                 answer = GoogleTranslator(source='auto', target=lang).translate(answer)
         except Exception as e:
-            log_error(f"Error in answer_question: {e}")
+            log_error(f"Error in overall ask logic: {e}")
             answer = f"Error processing question: {str(e)}"
 
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
@@ -705,14 +744,17 @@ def speak():
     filename = request.form.get("filename", "").strip()
     lang = request.form.get("lang", "en").strip()
 
+    rate = request.form.get("rate", "+0%").strip()
+    gender = request.form.get("gender", "f").strip()
+
     if not text:
         return jsonify({"error": "No text available to convert into audio."})
     else:
-        # Limit text length to avoid excessively long audio conversion times
-        if len(text) > 5000:
-            text = text[:5000] + "... "
+        # Enable expressive (theatrical) mode if it's more than a few words
+        # (usually indicating a story/incident rather than a single word meaning)
+        is_expressive = len(text.split()) > 3
         
-        audio_file, vtt_file = text_to_speech(text, lang)
+        audio_file, vtt_file = text_to_speech(text, lang, rate=rate, gender=gender, expressive=is_expressive)
         
         if not audio_file:
              return jsonify({"error": vtt_file or "Speech generation failed"})

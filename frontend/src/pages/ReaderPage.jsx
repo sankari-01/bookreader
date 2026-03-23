@@ -6,7 +6,7 @@ import VoiceController from '../components/VoiceController';
 import {
   ChevronLeft, ChevronRight, Book, Highlighter, Search,
   X as CloseIcon, User, Volume2, Globe, Command, Keyboard, Play, Languages,
-  FileText, Info, MessageSquare, BookOpen, Mic, MicOff
+  FileText, Info, MessageSquare, BookOpen, Mic, MicOff, Download, Trash2
 } from 'lucide-react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
@@ -65,8 +65,19 @@ const ReaderPage = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [showLangMenu, setShowLangMenu] = useState(false);
   const [analyzingPage, setAnalyzingPage] = useState(0);
+  const [showHighlights, setShowHighlights] = useState(false);
   const [voiceActive, setVoiceActive] = useState(false);
   const [isReadMode, setIsReadMode] = useState(false);
+  const [userHighlights, setUserHighlights] = useState(() => {
+    try {
+      const saved = localStorage.getItem(`highlights_${filename}`);
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) { return []; }
+  });
+
+  useEffect(() => {
+    localStorage.setItem(`highlights_${filename}`, JSON.stringify(userHighlights));
+  }, [userHighlights, filename]);
 
   // Narration States
   const [isPlaying, setIsPlaying] = useState(false);
@@ -443,6 +454,7 @@ const ReaderPage = () => {
   const [selection, setSelection] = useState(null); 
   const [word, setWord] = useState('');
   const [activeHighlight, setActiveHighlight] = useState(null);
+  const [selectionRects, setSelectionRects] = useState([]);
 
   const handleMouseUp = (e) => {
     const highlightEl = e.target.closest('.user-highlight');
@@ -459,24 +471,40 @@ const ReaderPage = () => {
     }
     setTimeout(() => {
       const selected = window.getSelection().toString().trim();
-      if (selected && selected.length >= 1) {
-        const sel = window.getSelection();
-        if (sel.rangeCount > 0) {
-          const range = sel.getRangeAt(0);
-          const rect = range.getBoundingClientRect();
+      const sel = window.getSelection();
+      if (selected && sel.rangeCount > 0) {
+        const range = sel.getRangeAt(0);
+        if (Math.abs(range.getBoundingClientRect().height) > 2) {
+          const isUserHighlighted = userHighlights.some(h => h.includes(selected) || selected.includes(h));
           setSelection({
             text: selected,
-            x: rect.left + rect.width / 2,
-            y: rect.top < 100 ? rect.bottom + 10 : rect.top,
-            range: range.cloneRange()
+            x: e.clientX,
+            y: e.clientY - 20,
+            range: range.cloneRange(),
+            isHighlight: e.target.classList.contains('user-highlight') || e.target.closest('.user-highlight') || isUserHighlighted
           });
+          setActiveHighlight(e.target.closest('.user-highlight'));
           setWord(selected);
+          
+          // Capture rects for persistent selection UI
+          const rects = Array.from(range.getClientRects()).map(r => ({
+            left: r.left,
+            top: r.top,
+            width: r.width,
+            height: r.height
+          }));
+          setSelectionRects(rects);
+        } else {
+          setSelection(null);
+          setActiveHighlight(null);
+          setSelectionRects([]);
         }
       } else {
         if (!e.target.closest('.floating-context-menu') && !e.target.closest('.header-icon-container')) {
           setSelection(null);
           setWord('');
           setActiveHighlight(null);
+          setSelectionRects([]);
         }
       }
     }, 10);
@@ -514,61 +542,44 @@ const ReaderPage = () => {
   };
 
   const handleHighlight = () => {
-    if (selection && selection.range) {
-      try {
-        const range = selection.range;
-        const highlightId = 'hl-' + Date.now();
-        const nodes = [];
-        if (range.startContainer === range.endContainer && range.startContainer.nodeType === Node.TEXT_NODE) {
-          nodes.push(range.startContainer);
-        } else {
-          const walker = document.createTreeWalker(range.commonAncestorContainer, NodeFilter.SHOW_TEXT, null, false);
-          let currentNode = walker.nextNode();
-          while (currentNode) {
-            if (range.intersectsNode(currentNode)) nodes.push(currentNode);
-            currentNode = walker.nextNode();
-          }
+    if (selection && selection.text) {
+      const textToHighlight = selection.text.trim();
+      if (textToHighlight && textToHighlight.length > 1) {
+        // Add to highlights if not already exactly there
+        if (!userHighlights.includes(textToHighlight)) {
+          setUserHighlights(prev => [...prev, textToHighlight]);
         }
-        nodes.forEach((node) => {
-          try {
-            const nodeRange = document.createRange();
-            nodeRange.selectNodeContents(node);
-            if (node === range.startContainer) nodeRange.setStart(node, range.startOffset);
-            if (node === range.endContainer) nodeRange.setEnd(node, range.endOffset);
-            if (nodeRange.toString().length > 0) {
-              const span = document.createElement('span');
-              span.className = 'user-highlight';
-              span.setAttribute('data-highlight-id', highlightId);
-              const content = nodeRange.extractContents();
-              span.appendChild(content);
-              nodeRange.insertNode(span);
-            }
-          } catch (err) { console.warn("Highlight node error:", err); }
-        });
-        window.getSelection().removeAllRanges();
-        setSelection(null);
-      } catch (e) { console.error("Highlighting failed:", e); setSelection(null); }
+      }
+      setSelection(null);
+      setWord('');
+      setSelectionRects([]);
     }
   };
 
+  const handleDownloadHighlights = () => {
+    if (userHighlights.length === 0) return;
+    const content = `Highlights from ${filename}\n\n` + userHighlights.map((h, i) => `${i+1}. ${h}`).join('\n\n');
+    const blob = new Blob([content], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${filename.split('.')[0]}_highlights.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   const handleUnhighlight = () => {
-    if (activeHighlight) {
-      const highlightId = activeHighlight.getAttribute('data-highlight-id');
-      if (highlightId) {
-        const allParts = document.querySelectorAll(`.user-highlight[data-highlight-id="${highlightId}"]`);
-        allParts.forEach(part => {
-          const parent = part.parentNode;
-          while (part.firstChild) parent.insertBefore(part.firstChild, part);
-          parent.removeChild(part);
-        });
-      } else {
-        const parent = activeHighlight.parentNode;
-        while (activeHighlight.firstChild) parent.insertBefore(activeHighlight.firstChild, activeHighlight);
-        parent.removeChild(activeHighlight);
-      }
-      setSelection(null);
-      setActiveHighlight(null);
+    if (selection && selection.text) {
+      const textToRemove = selection.text.trim();
+      setUserHighlights(prev => prev.filter(h => h !== textToRemove));
+    } else if (activeHighlight) {
+      const textToRemove = activeHighlight.innerText.trim();
+      setUserHighlights(prev => prev.filter(h => h !== textToRemove));
     }
+    setSelection(null);
+    setActiveHighlight(null);
   };
 
   const fetchData = async () => {
@@ -649,6 +660,68 @@ const ReaderPage = () => {
     };
   }, [filename, currentLang]);
 
+  const applyHighlightsToElement = (element) => {
+    if (!element) return;
+    const terms = [];
+    if (searchTerm && searchTerm.trim()) terms.push({ text: searchTerm.trim(), type: 'search' });
+    userHighlights.forEach(uh => { if (uh && uh.trim()) terms.push({ text: uh.trim(), type: 'user' }); });
+    if (terms.length === 0) return;
+
+    // Use a TreeWalker to find all text nodes
+    const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, null, false);
+    const nodes = [];
+    let node;
+    while (node = walker.nextNode()) nodes.push(node);
+
+    nodes.forEach(textNode => {
+      const content = textNode.nodeValue;
+      if (!content || content.trim().length === 0) return;
+      
+      let newHtml = content;
+      let hasMatch = false;
+
+      // Sort terms by length descending to match longest first
+      const sortedTerms = [...terms].sort((a, b) => b.text.length - a.text.length);
+
+      sortedTerms.forEach(term => {
+        const escaped = term.text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        // Match only if not already inside a tag
+        const regex = new RegExp(`(${escaped})(?![^<]*>)`, 'gi');
+        if (regex.test(newHtml)) {
+          hasMatch = true;
+          const className = term.type === 'search' ? 'search-highlight' : 'user-highlight';
+          newHtml = newHtml.replace(regex, (match) => `<mark class="${className}" style="color: transparent !important; background-color: ${term.type === 'search' ? 'rgba(255, 218, 106, 0.4)' : 'rgba(255, 224, 102, 0.6)'} !important;">${match}</mark>`);
+        }
+      });
+
+      if (hasMatch) {
+        const span = document.createElement('span');
+        span.className = 'highlight-container';
+        span.innerHTML = newHtml;
+        if (textNode.parentNode) textNode.parentNode.replaceChild(span, textNode);
+      }
+    });
+  };
+
+  // Handle Highlighting in PDF Text Layer
+  useEffect(() => {
+    if (!data?.is_pdf) return;
+    // When search/highlights change, re-apply to all rendered pages
+    const textLayers = document.querySelectorAll('.react-pdf__Page__textContent');
+    textLayers.forEach(layer => {
+      // Clear marks first
+      const marks = layer.querySelectorAll('mark.search-highlight, mark.user-highlight');
+      marks.forEach(m => {
+        const parent = m.parentNode;
+        if (parent) {
+          while (m.firstChild) parent.insertBefore(m.firstChild, m);
+          parent.removeChild(m);
+        }
+      });
+      applyHighlightsToElement(layer);
+    });
+  }, [searchTerm, userHighlights, data?.is_pdf]);
+
   if (loading) return (
     <div className="loading-overlay active">
       <div className="magic-book-container"><div className="magic-book"></div></div>
@@ -661,25 +734,85 @@ const ReaderPage = () => {
   const handleToolClick = (tabId) => { setActiveTab(tabId); setShowPanel(true); };
 
   const highlightText = (text, highlight) => {
-    if (!highlight || !highlight.trim() || !text) return text;
-    const escaped = highlight.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    try {
-      const regex = new RegExp(`(${escaped})`, 'giu');
-      const parts = text.split(regex);
-      return (
-        <span>
-          {parts.map((part, i) =>
-            part && part.toLowerCase() === highlight.toLowerCase() ?
-              <mark key={i} className="search-highlight">{part}</mark> :
-              part
-          )}
-        </span>
-      );
-    } catch (e) { return text; }
+    if (!text) return text;
+    let result = [{ content: text, isHighlight: false, type: null }];
+    
+    const splitParts = (searchTerm, type) => {
+      if (!searchTerm || !searchTerm.trim()) return;
+      const term = searchTerm.trim();
+      const escaped = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const regex = new RegExp(`(${escaped})`, 'gi');
+      
+      let newResult = [];
+      result.forEach(part => {
+        if (part.isHighlight) {
+          newResult.push(part);
+        } else {
+          const snippets = part.content.split(regex);
+          snippets.forEach(snip => {
+            if (snip && snip.toLowerCase() === term.toLowerCase()) {
+              newResult.push({ content: snip, isHighlight: true, type });
+            } else if (snip) {
+              newResult.push({ content: snip, isHighlight: false, type: null });
+            }
+          });
+        }
+      });
+      result = newResult;
+    };
+
+    // Apply search term
+    splitParts(highlight, 'search');
+    // Apply user highlights
+    userHighlights.forEach(uh => splitParts(uh, 'user'));
+
+    return (
+      <>
+        {result.map((part, i) => 
+          part.isHighlight ? (
+            <mark key={i} className={part.type === 'search' ? 'search-highlight' : 'user-highlight'}>
+              {part.content}
+            </mark>
+          ) : (
+            part.content
+          )
+        )}
+      </>
+    );
+  };
+
+  const highlightHtml = (html, search) => {
+    if (!html) return html;
+    let result = html;
+    
+    const apply = (term, className) => {
+      if (!term || !term.trim()) return;
+      const escaped = term.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const regex = new RegExp(`(${escaped})(?![^<]*>)`, 'gi');
+      result = result.replace(regex, (match) => `<mark class="${className}">${match}</mark>`);
+    };
+
+    apply(search, 'search-highlight');
+    userHighlights.forEach(uh => apply(uh, 'user-highlight'));
+    return result;
   };
 
   return (
     <div className={`reader-root ${isReadMode ? 'read-mode-active' : ''}`} onMouseUp={handleMouseUp}>
+      {/* Persistent Selection Overlay */}
+      {selection && selectionRects.map((rect, i) => (
+        <div key={i} style={{
+          position: 'fixed',
+          left: rect.left,
+          top: rect.top,
+          width: rect.width,
+          height: rect.height,
+          backgroundColor: 'rgba(0, 120, 215, 0.3)',
+          pointerEvents: 'none',
+          zIndex: 10000,
+          borderRadius: '2px'
+        }} />
+      ))}
       <Header showBack={true} hideNav={true}>
         <div className="header-icon-container" title="Extracted Text (X)" onClick={() => setShowText(!showText)}>
           <div className="header-icon"><FileText size={18} color="#faedcd" /></div>
@@ -696,7 +829,7 @@ const ReaderPage = () => {
           <kbd className="shortcut-key-label">A</kbd>
           <span className="header-icon-label">Ask AI</span>
         </div>
-        <div className="header-icon-container" title="Read Aloud (R)" onClick={() => { handleToolClick('speak'); startNarration(); }}>
+        <div className="header-icon-container" title="Read Aloud (R)" onClick={() => { handleToolClick('speak'); if (!isNarrating) startNarration(); }}>
           <div className="header-icon"><BookOpen size={18} color="#faedcd" /></div>
           <kbd className="shortcut-key-label">R</kbd>
           <span className="header-icon-label">Read</span>
@@ -732,6 +865,13 @@ const ReaderPage = () => {
           <div className="header-icon"><Highlighter size={18} color={isReadMode ? "#ffffff" : "#faedcd"} style={{ transform: 'rotate(45deg)' }} /></div>
           <kbd className="shortcut-key-label">F</kbd>
           <span className="header-icon-label">Focus</span>
+        </div>
+        <div className="header-icon-container" title="See Highlights" onClick={() => setShowHighlights(true)}>
+          <div className="header-icon" style={{ position: 'relative' }}>
+            <Highlighter size={18} color="#faedcd" />
+            {userHighlights.length > 0 && <span className="highlight-badge">{userHighlights.length}</span>}
+          </div>
+          <span className="header-icon-label">My Marks</span>
         </div>
       </Header>
 
@@ -830,7 +970,17 @@ const ReaderPage = () => {
                           <div key={`page_${pageNum}`} data-page-number={pageNum} style={{ position: 'relative', minHeight: isVisible ? 'auto' : '820px', width: '100%', display: 'flex', justifyContent: 'center', padding: '20px 0', background: 'transparent' }}>
                             {isVisible ? (
                               <>
-                                <Page pageNumber={pageNum} width={Math.min(window.innerWidth * 0.8, 800)} renderAnnotationLayer={true} renderTextLayer={true} loading={<div style={{ height: '800px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.1)' }}>Loading...</div>} />
+                                <Page 
+                                  pageNumber={pageNum} 
+                                  width={Math.min(window.innerWidth * 0.8, 800)} 
+                                  renderAnnotationLayer={true} 
+                                  renderTextLayer={true} 
+                                  onRenderTextLayerSuccess={(e) => {
+                                    const layer = document.querySelector(`[data-page-number="${pageNum}"] .react-pdf__Page__textContent`);
+                                    applyHighlightsToElement(layer);
+                                  }}
+                                  loading={<div style={{ height: '800px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.1)' }}>Loading...</div>} 
+                                />
                                 {showOverlay && pages[index] && (
                                   <div className="page-translation-overlay">
                                     <div className="page-translation-card">{highlightText(pages[index], searchTerm)}</div>
@@ -864,7 +1014,7 @@ const ReaderPage = () => {
                 </div>
               ) : data.is_office ? (
                 <div style={{ position: 'relative' }}>
-                  <div dangerouslySetInnerHTML={{ __html: data.office_html }} className="office-viewer" />
+                  <div dangerouslySetInnerHTML={{ __html: highlightHtml(data.office_html, searchTerm) }} className="office-viewer" />
                   {showOverlay && data.text && (
                     <div className="page-translation-overlay" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}><div className="page-translation-card">{highlightText(data.text, searchTerm)}</div></div>
                   )}
@@ -872,8 +1022,12 @@ const ReaderPage = () => {
               ) : data.is_image ? (
                 <div style={{ position: 'relative', display: 'inline-block' }}>
                   <img src={`/uploads/${data.filename}`} alt="Book Page" style={{ objectFit: 'contain' }} />
-                  {showOverlay && data.text && (
-                    <div className="page-translation-overlay"><div className="page-translation-card">{highlightText(data.text, searchTerm)}</div></div>
+                  {(showOverlay || searchTerm) && data.text && (
+                    <div className="page-translation-overlay" style={{ background: searchTerm && !showOverlay ? 'transparent' : 'rgba(255, 255, 255, 0.7)' }}>
+                      <div className="page-translation-card" style={{ boxShadow: searchTerm && !showOverlay ? 'none' : '' }}>
+                        {highlightText(data.text, searchTerm)}
+                      </div>
+                    </div>
                   )}
                 </div>
               ) : data.is_video ? ( <video src={`/uploads/${data.filename}`} controls /> ) : null}
@@ -881,35 +1035,18 @@ const ReaderPage = () => {
           </div>
 
           <div className="side-decoration-right">
-            <div className="shortcuts-guide-premium">
-              <div className="shortcuts-header"><Keyboard size={18} color="#e07a5f" /><span>Magic Keys</span></div>
-              <div className="shortcuts-list">
-                <div className="shortcut-item"><kbd>S</kbd> <span>Summary</span></div>
-                <div className="shortcut-item"><kbd>A</kbd> <span>Ask AI</span></div>
-                <div className="shortcut-item"><kbd>R</kbd> <span>Read Aloud</span></div>
-                <div className="shortcut-item"><kbd>T</kbd> <span>Translate</span></div>
-                <div className="shortcut-item"><kbd>M</kbd> <span>Meaning</span></div>
-                <div className="shortcut-item"><kbd>F</kbd> <span>Focus Mode</span></div>
-                <div className="shortcut-item"><kbd>V</kbd> <span>Voice Ctrl</span></div>
-                <div className="shortcut-item"><kbd>X</kbd> <span>Full Text</span></div>
-                <div className="shortcut-item"><kbd>/</kbd> <span>Search</span></div>
-                <div className="shortcut-divider"></div>
-                <div className="shortcut-item"><kbd>Space</kbd> <span>Play/Pause</span></div>
-                <div className="shortcut-item"><kbd>←</kbd> <kbd>→</kbd> <span>Navigate</span></div>
-              </div>
-            </div>
           </div>
         </div>
       </main>
 
       {selection && (
-        <div className="floating-context-menu" style={{ left: selection.x, top: selection.y, transform: 'translateX(-50%) translateY(-100%)', marginTop: '-10px', position: 'fixed', display: 'flex', gap: '8px', background: '#4a342e', padding: '8px 12px', borderRadius: '8px', boxShadow: '0 4px 15px rgba(0,0,0,0.3)', zIndex: 10001, border: '1px solid #d4a373' }} onMouseDown={(e) => e.stopPropagation()} onMouseUp={(e) => e.stopPropagation()}>
-          <div onClick={(e) => { e.stopPropagation(); handleToolClick('meaning'); setSelection(null); }} className="context-menu-btn" title="Find Meaning"><Book size={18} /><span>Meaning</span></div>
-          <div onClick={(e) => { e.stopPropagation(); handleReadSelection(); }} className="context-menu-btn" title="Read Selection"><Play size={18} /><span>Read</span></div>
+        <div className="floating-context-menu" style={{ left: selection.x, top: selection.y, transform: 'translateX(-50%) translateY(-100%)', marginTop: '-10px', position: 'fixed', display: 'flex', gap: '8px', background: '#4a342e', padding: '6px 10px', borderRadius: '12px', boxShadow: '0 8px 30px rgba(0,0,0,0.4)', zIndex: 10001, border: '1px solid #d4a373' }} onMouseDown={(e) => e.stopPropagation()} onMouseUp={(e) => e.stopPropagation()}>
+          <div onClick={(e) => { e.stopPropagation(); handleToolClick('meaning'); setSelection(null); }} className="context-menu-btn" title="Meaning"><Book size={18} /></div>
+          <div onClick={(e) => { e.stopPropagation(); handleReadSelection(); }} className="context-menu-btn" title="Read Selection"><Play size={18} /></div>
           {selection.isHighlight ? (
-            <div onClick={(e) => { e.stopPropagation(); handleUnhighlight(); }} className="context-menu-btn" title="Remove Highlight" style={{ color: '#e74c3c' }}><Highlighter size={18} /><span>Unhighlight</span></div>
+            <div onClick={(e) => { e.stopPropagation(); handleUnhighlight(); }} className="context-menu-btn" title="Remove Highlight" style={{ color: '#e74c3c' }}><Highlighter size={18} /></div>
           ) : selection.range && (
-            <div onClick={(e) => { e.stopPropagation(); handleHighlight(); }} className="context-menu-btn" title="Highlight Text"><Highlighter size={18} /><span>Highlight</span></div>
+            <div onClick={(e) => { e.stopPropagation(); handleHighlight(); }} className="context-menu-btn" title="Highlight"><Highlighter size={18} /></div>
           )}
         </div>
       )}
@@ -928,6 +1065,49 @@ const ReaderPage = () => {
                   {highlightText(p, searchTerm)}
                 </div>
               ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showHighlights && (
+        <div className="text-modal-overlay" onClick={() => setShowHighlights(false)}>
+          <div className="text-modal-content" onClick={(e) => e.stopPropagation()} style={{ border: '2px solid #d4a373' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', padding: '10px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <Highlighter size={24} color="#b5651d" />
+                <h3 style={{ margin: 0, color: '#4a342e', fontFamily: "'Alice', serif" }}>Your Stored Highlights ({userHighlights.length})</h3>
+              </div>
+              <div style={{ display: 'flex', gap: '10px' }}>
+                <button className="download-btn-premium" onClick={handleDownloadHighlights} style={{ margin: 0, background: '#27ae60', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Download size={16} /> Download (.txt)
+                </button>
+                <button onClick={() => setShowHighlights(false)} style={{ margin: 0, background: '#e74c3c' }}>Close</button>
+              </div>
+            </div>
+            <div className="text-modal-body" style={{ background: 'rgba(255, 248, 235, 0.9)' }}>
+              {userHighlights.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '50px', color: '#8b7355' }}>
+                  <Highlighter size={48} style={{ opacity: 0.2, marginBottom: '15px' }} />
+                  <p>You haven't highlighted any text yet. Select text in the book to mark it!</p>
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                  {userHighlights.map((h, i) => (
+                    <div key={i} className="highlight-item-card">
+                      <div className="highlight-item-number">{i + 1}</div>
+                      <div className="highlight-item-text">{h}</div>
+                      <button 
+                        className="remove-highlight-btn" 
+                        onClick={(e) => { e.stopPropagation(); setUserHighlights(prev => prev.filter(item => item !== h)); }}
+                        title="Remove highlight"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -962,6 +1142,7 @@ const ReaderPage = () => {
               <div className="shortcut-full-item"><kbd>V</kbd> <span>Toggle Voice Control</span></div>
               <div className="shortcut-full-item"><kbd>X</kbd> <span>Toggle Extracted Text</span></div>
               <div className="shortcut-full-item"><kbd>/</kbd> <span>Open Search</span></div>
+              <div className="shortcut-full-item"><kbd>H</kbd> <span>See My Highlights</span></div>
               <div className="shortcut-divider-full"></div>
               <div className="shortcut-full-item"><kbd>Space</kbd> <span>Play / Pause</span></div>
               <div className="shortcut-full-item"><kbd>←</kbd> <kbd>→</kbd> <span>Previous / Next Page</span></div>

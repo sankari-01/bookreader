@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, MessageSquare, Info, Volume2, Languages, Book, Play, Pause } from 'lucide-react';
+import { X, MessageSquare, Info, Languages, Book, BookOpen, Play, Pause, RefreshCcw } from 'lucide-react';
 
 const ToolPanel = ({
   active, onClose, filename, text, lang, detectedLang, detectedLangName, externalTab, onLanguageChange, initialWord, initialSummary, isFetchingSummary,
-  audioUrl, setAudioUrl, isPlaying, setIsPlaying, audioRef, togglePlayback,
-  isNarrating, narratingPage, onStartNarration, onStopNarration, currentViewPage
+  isNarrating, isPlaying, narratingPage, togglePlayback, onStopNarration, onStartNarration, onRestartNarration,
+  currentViewPage,
+  narrationSpeed, onSpeedChange,
+  narrationGender, onGenderChange
 }) => {
   const [activeTab, setActiveTab] = useState('summary');
   const [loading, setLoading] = useState(false);
@@ -30,10 +32,6 @@ const ToolPanel = ({
     if (lang !== currentLang) {
       setCurrentLang(lang);
       setResult('');
-      // If audio was playing in the old language, stop it
-      if (audioRef && audioRef.current) {
-        audioRef.current.pause();
-      }
     }
   }, [lang]);
 
@@ -100,6 +98,7 @@ const ToolPanel = ({
   // Sync with external tab clicks from Header or Voice Commands
   useEffect(() => {
     if (externalTab) {
+      if (externalTab !== activeTab) setResult('');
       setActiveTab(externalTab);
 
       // Auto-trigger actions for specific tabs when opened via external trigger
@@ -109,17 +108,14 @@ const ToolPanel = ({
           else handleAction('summarize_file', { filename, lang, text });
         } else if (externalTab === 'meaning' && initialWord && !result && !loading) {
           handleAction('meaning', { word: initialWord, filename, context: text, lang });
+        } else if (externalTab === 'speak' && !isNarrating) {
+          onStartNarration();
         }
       }
     }
-  }, [externalTab, active, filename, lang, text, initialSummary, isFetchingSummary, initialWord, audioUrl, result, loading]);
+  }, [externalTab, active, filename, lang, text, initialSummary, isFetchingSummary, initialWord, result, loading]);
 
   const handleAction = async (endpoint, body) => {
-    if (endpoint === 'speak' && audioRef.current) {
-      audioRef.current.pause();
-      setIsPlaying(false);
-    }
-
     setLoading(true);
     try {
       const resp = await fetch(`/api/${endpoint}`, {
@@ -133,37 +129,9 @@ const ToolPanel = ({
       }
 
       const data = await resp.json();
-
       if (endpoint === 'summarize_file') setResult(data.summary);
       if (endpoint === 'ask') setResult(data.answer);
       if (endpoint === 'meaning') setResult(data.meaning);
-      if (endpoint === 'speak') {
-        if (data.error) alert(data.error);
-        else {
-          let audio = audioRef.current;
-          if (!audio) {
-            audio = new Audio();
-            audioRef.current = audio;
-          } else {
-            audio.pause();
-            audio.src = '';
-          }
-          audio.src = data.audio_url;
-          audio.volume = 1.0;
-          audio.muted = false;
-          setAudioUrl(data.audio_url);
-          audio.onended = () => setIsPlaying(false);
-          try {
-            await audio.play();
-            setIsPlaying(true);
-            setResult('narrator_active');
-          } catch (pErr) {
-            console.error("ToolPanel play error:", pErr);
-            // Removed alert per user request
-            setIsPlaying(false);
-          }
-        }
-      }
     } catch (err) {
       console.error("AI Action Error:", err);
       alert(`AI Action failed: ${err.message}`);
@@ -175,7 +143,7 @@ const ToolPanel = ({
   const tabs = [
     { id: 'summary', icon: <Info size={18} />, label: 'Summarize' },
     { id: 'ask', icon: <MessageSquare size={18} />, label: 'Ask AI' },
-    { id: 'speak', icon: <Volume2 size={18} />, label: 'Speak' },
+    { id: 'speak', icon: <BookOpen size={18} />, label: 'Read' },
     { id: 'translate', icon: <Languages size={18} />, label: 'Translate' },
     { id: 'meaning', icon: <Book size={18} />, label: 'Meaning' },
   ];
@@ -209,12 +177,17 @@ const ToolPanel = ({
 
         <div className="tool-panel-body">
           {activeTab === 'summary' && (
-            <div className="drawer-tool-section active">
+            <div className="drawer-tool-section active" style={{ display: 'flex', flexDirection: 'column', height: 'auto', maxHeight: '100%' }}>
               <h4>Book Summary</h4>
-              <p style={{ fontSize: '0.9rem', marginBottom: '15px' }}>Get a concise 50-word summary of the entire content using AI.</p>
+              <p style={{ fontSize: '0.85rem', marginBottom: '12px', color: '#6d4c41' }}>A concise 50-word synthesis of the entire book.</p>
 
-              {!result && isFetchingSummary ? (
-                <div className="fetching-loader">
+              {(loading && activeTab === 'summary') ? (
+                <div className="fetching-loader" style={{ margin: '20px 0' }}>
+                  <div className="spinner"></div>
+                  <span>Generating summary...</span>
+                </div>
+              ) : (!result && isFetchingSummary) ? (
+                <div className="fetching-loader" style={{ margin: '20px 0' }}>
                   <div className="spinner"></div>
                   <span>Pre-fetching summary...</span>
                 </div>
@@ -223,11 +196,29 @@ const ToolPanel = ({
                   className="home-cta-btn"
                   onClick={() => handleAction('summarize_file', { filename, lang })}
                   disabled={loading}
+                  style={{ width: '100%' }}
                 >
-                  {loading ? "Summarizing..." : "Generate Summary"}
+                  Generate Summary
                 </button>
               ) : (
-                <div className="status-badge success">Summary Available</div>
+                <div className="summary-result-container" style={{
+                  background: 'white',
+                  padding: '15px',
+                  borderRadius: '12px',
+                  border: '1px solid #d4a373',
+                  boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.05)',
+                  marginTop: '10px',
+                  overflowY: 'auto',
+                  maxHeight: '350px'
+                }}>
+                  <div
+                    style={{ fontSize: '0.95rem', lineHeight: '1.6', color: '#4a342e', fontFamily: "'Alice', serif" }}
+                    dangerouslySetInnerHTML={{ __html: result }}
+                  />
+                  <div style={{ marginTop: '15px', borderTop: '1px solid #eee', paddingTop: '10px', display: 'flex', justifyContent: 'flex-end' }}>
+                    <div className="status-badge success" style={{ fontSize: '0.7rem' }}>AI Generated</div>
+                  </div>
+                </div>
               )}
             </div>
           )}
@@ -244,7 +235,14 @@ const ToolPanel = ({
               />
               <button
                 className="home-cta-btn"
-                onClick={() => handleAction('ask', { filename, question, context: text, lang })}
+                onClick={() => {
+                  const cmd = question.toLowerCase().trim();
+                  if (cmd === 'read' || cmd === 'listen' || cmd === 'start reading') { onStartNarration(); setActiveTab('speak'); return; }
+                  if (cmd === 'summary' || cmd === 'summarize') { setActiveTab('summary'); return; }
+                  if (cmd === 'meaning' || cmd === 'dictionary') { setActiveTab('meaning'); return; }
+                  if (cmd === 'translate' || cmd === 'translation') { setActiveTab('translate'); return; }
+                  handleAction('ask', { filename, question, context: text, lang });
+                }}
                 disabled={loading || !question}
               >
                 {loading ? "Asking..." : "Ask AI"}
@@ -252,52 +250,6 @@ const ToolPanel = ({
             </div>
           )}
 
-          {activeTab === 'speak' && (
-            <div className="drawer-tool-section active">
-              <h4>Read Aloud</h4>
-              <p style={{ fontSize: '0.9rem', marginBottom: '15px' }}
-              >Narrates the book page by page with an expressive AI voice. Auto-advances to the next page when each page finishes.</p>
-              {isNarrating ? (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                  {/* Narrating status bar */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', background: 'rgba(224,122,95,0.1)', borderRadius: '10px', padding: '10px 14px', border: '1px solid rgba(224,122,95,0.3)' }}>
-                    <span className="reading-bar" style={{ height: '18px' }}></span>
-                    <span className="reading-bar" style={{ height: '26px' }}></span>
-                    <span className="reading-bar" style={{ height: '20px' }}></span>
-                    <span className="reading-bar" style={{ height: '14px' }}></span>
-                    <span className="reading-bar" style={{ height: '22px' }}></span>
-                    <span style={{ fontSize: '0.9rem', color: '#e07a5f', fontWeight: '600', marginLeft: '8px' }}>
-                      Reading page {narratingPage}…
-                    </span>
-                  </div>
-                  {/* Pause / Resume */}
-                  <button
-                    className="home-cta-btn"
-                    onClick={togglePlayback}
-                    style={{ background: isPlaying ? '#c9664d' : '#4a342e' }}
-                  >
-                    {isPlaying ? '⏸ Pause' : '▶ Resume'}
-                  </button>
-                  {/* Stop narration */}
-                  <button
-                    className="home-cta-btn"
-                    onClick={onStopNarration}
-                    style={{ background: '#8b4513' }}
-                  >
-                    ⏹ Stop Narration
-                  </button>
-                </div>
-              ) : (
-                <button
-                  className="home-cta-btn"
-                  onClick={onStartNarration}
-                  disabled={loading}
-                >
-                  {loading ? 'Preparing…' : '▶ Start Reading'}
-                </button>
-              )}
-            </div>
-          )}
 
           {activeTab === 'translate' && (
             <div className="drawer-tool-section active">
@@ -318,68 +270,166 @@ const ToolPanel = ({
           )}
 
           {activeTab === 'meaning' && (
-            <div className="drawer-tool-section active">
+            <div className="drawer-tool-section active" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
               <h4>Smart Dictionary</h4>
-              <input
-                type="text"
-                placeholder="Enter a word to find meaning"
-                value={word}
-                onChange={(e) => setWord(e.target.value)}
-                ref={meaningInputRef}
-              />
-              <button
-                className="home-cta-btn"
-                onClick={() => handleAction('meaning', { word, filename, context: text, lang })}
-                disabled={loading || !word}
-              >
-                {loading ? "Looking up..." : "Find Meaning"}
-              </button>
-            </div>
-          )}
+              <p style={{ fontSize: '0.85rem', marginBottom: '12px', color: '#6d4c41' }}>Find definitions and context-aware explanations.</p>
+              
+              <div style={{ display: 'flex', gap: '8px', marginBottom: '15px' }}>
+                <input
+                  type="text"
+                  placeholder="Enter a word..."
+                  value={word}
+                  onChange={(e) => setWord(e.target.value)}
+                  ref={meaningInputRef}
+                  style={{ flex: 1, marginBottom: 0 }}
+                  onKeyDown={(e) => e.key === 'Enter' && word && handleAction('meaning', { word, filename, context: text, lang })}
+                />
+                <button
+                  className="home-cta-btn"
+                  onClick={() => handleAction('meaning', { word, filename, context: text, lang })}
+                  disabled={loading || !word}
+                  style={{ width: 'auto', padding: '0 15px', height: '42px', marginTop: 0 }}
+                >
+                  {loading ? <RefreshCcw size={16} className="spin" /> : <Book size={18} />}
+                </button>
+              </div>
 
-          {result && (
-            <div style={{ marginTop: '25px', padding: '15px', background: 'white', borderRadius: '10px', border: '1px solid #d4a373' }}>
-              <h5 style={{ margin: '0 0 10px 0', color: '#b5651d' }}>AI Result:</h5>
-              {result === 'narrator_active' ? (
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '15px', padding: '10px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-                    <button
-                      onClick={togglePlayback}
-                      style={{
-                        background: '#4a342e', color: 'white', borderRadius: '50%', width: '50px', height: '50px',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', cursor: 'pointer'
-                      }}
-                    >
-                      {isPlaying ? <Pause size={24} /> : <Play size={24} style={{ marginLeft: '4px' }} />}
-                    </button>
-                    <span style={{ fontSize: '0.9rem', color: '#4a342e', fontWeight: 'bold' }}>
-                      {isPlaying ? "Narrating..." : "Paused"}
-                    </span>
+              {loading && activeTab === 'meaning' ? (
+                <div className="fetching-loader" style={{ margin: '20px 0' }}>
+                  <div className="spinner"></div>
+                  <span>Searching dictionary...</span>
+                </div>
+              ) : result && activeTab === 'meaning' ? (
+                <div className="dictionary-result-card" style={{
+                  background: 'white',
+                  padding: '15px',
+                  borderRadius: '12px',
+                  border: '1px solid #d4a373',
+                  boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.05)',
+                  overflowY: 'auto',
+                  maxHeight: '400px'
+                }}>
+                  <div
+                    style={{ fontSize: '0.95rem', lineHeight: '1.6', color: '#4a342e' }}
+                    dangerouslySetInnerHTML={{ __html: result }}
+                  />
+                  <div style={{ marginTop: '15px', borderTop: '1px solid #eee', paddingTop: '10px', display: 'flex', justifyContent: 'flex-end' }}>
+                    <div className="status-badge success" style={{ fontSize: '0.7rem' }}>Multi-Language Support</div>
                   </div>
-                  <button
-                    onClick={() => {
-                      if (audioRef.current) {
-                        audioRef.current.currentTime = 0;
-                        audioRef.current.play();
-                        setIsPlaying(true);
-                      }
-                    }}
-                    style={{
-                      background: '#e07a5f', color: 'white', padding: '8px 15px', borderRadius: '8px',
-                      border: 'none', cursor: 'pointer', fontSize: '0.85rem', width: '100%'
-                    }}
-                  >
-                    Play from Start
-                  </button>
                 </div>
               ) : (
-                <div
-                  style={{ fontSize: '0.95rem', lineHeight: '1.5', color: '#4a342e' }}
-                  dangerouslySetInnerHTML={{ __html: result }}
-                />
+                <div style={{ textAlign: 'center', padding: '40px 20px', opacity: 0.5 }}>
+                  <Book size={48} color="#d4a373" style={{ marginBottom: '10px' }} />
+                  <p style={{ fontSize: '0.9rem' }}>Type a word or select one from the book to see its meaning.</p>
+                </div>
               )}
             </div>
           )}
+
+          {activeTab === 'speak' && (
+            <div className="drawer-tool-section active" style={{ display: 'flex', flexDirection: 'column' }}>
+              <h4>Read Aloud</h4>
+              <p style={{ fontSize: '0.9rem', marginBottom: '20px' }}>Narrates the book page by page with an expressive AI voice. Starts from Page 1.</p>
+
+              <div style={{ padding: '0 20px 20px 20px' }}>
+                {isNarrating ? (
+                  <div style={{ textAlign: 'center' }}>
+                    <div className="narration-visualizer">
+                      <div className="bar"></div><div className="bar"></div><div className="bar"></div><div className="bar"></div><div className="bar"></div>
+                    </div>
+
+                    <div style={{ marginBottom: '15px' }}>
+                      <h4 style={{ margin: '0 0 10px 0', fontSize: '0.9rem', color: '#45322e' }}>
+                        Reading Page {narratingPage}
+                      </h4>
+                    </div>
+
+                    <div style={{ background: 'rgba(255,255,255,0.4)', borderRadius: '12px', padding: '15px', marginBottom: '20px', border: '1px solid rgba(139, 115, 85, 0.2)' }}>
+                      <div style={{ marginBottom: '12px' }}>
+                        <p style={{ margin: '0 0 5px 0', fontSize: '0.75rem', fontWeight: '600', color: '#8b7355', textAlign: 'left' }}>Tone</p>
+                        <div style={{ display: 'flex', gap: '8px' }}>
+                          <button onClick={() => onGenderChange('f')}
+                            style={{ flex: 1, padding: '5px', borderRadius: '6px', border: 'none', background: narrationGender === 'f' ? '#e07a5f' : '#f4f1de', color: narrationGender === 'f' ? 'white' : 'inherit', fontSize: '0.75rem' }}>Female</button>
+                          <button onClick={() => onGenderChange('m')}
+                            style={{ flex: 1, padding: '5px', borderRadius: '6px', border: 'none', background: narrationGender === 'm' ? '#e07a5f' : '#f4f1de', color: narrationGender === 'm' ? 'white' : 'inherit', fontSize: '0.75rem' }}>Male</button>
+                        </div>
+                      </div>
+                      <div>
+                        <p style={{ margin: '0 0 5px 0', fontSize: '0.75rem', fontWeight: '600', color: '#8b7355', textAlign: 'left' }}>Speed</p>
+                        <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
+                          {['0.5x', '0.75x', '1.0x', '1.25x', '1.5x', '2.0x'].map(s => (
+                            <button key={s} onClick={() => onSpeedChange(s)}
+                              style={{ padding: '4px 6px', borderRadius: '4px', border: 'none', background: narrationSpeed === s ? '#8b7355' : '#f4f1de', color: narrationSpeed === s ? 'white' : 'inherit', fontSize: '0.7rem' }}>{s}</button>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                      <button onClick={togglePlayback} className="home-cta-btn" style={{ height: '45px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                        {isPlaying ? <><Pause size={18} /> Pause</> : <><Play size={18} fill="currentColor" /> Resume</>}
+                      </button>
+                      <button onClick={() => onRestartNarration()} className="home-cta-btn" style={{ height: '45px', background: 'transparent', color: '#45322e', border: '1px solid #45322e', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                        <RefreshCcw size={16} /> Restart
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div style={{ textAlign: 'center' }}>
+                    <div style={{ marginBottom: '20px' }}>
+                      <BookOpen size={48} color="#e07a5f" style={{ opacity: 0.5, marginBottom: '10px' }} />
+                      <h3 style={{ margin: 0, color: '#45322e' }}>Read Aloud</h3>
+                    </div>
+
+                    <div style={{ background: 'rgba(255,255,255,0.4)', borderRadius: '12px', padding: '15px', marginBottom: '20px', border: '1px solid rgba(139, 115, 85, 0.2)' }}>
+                      <div style={{ marginBottom: '12px' }}>
+                        <p style={{ margin: '0 0 5px 0', fontSize: '0.75rem', fontWeight: '600', color: '#8b7355', textAlign: 'left' }}>Tone</p>
+                        <div style={{ display: 'flex', gap: '8px' }}>
+                          <button onClick={() => onGenderChange('f')}
+                            style={{ flex: 1, padding: '5px', borderRadius: '6px', border: 'none', background: narrationGender === 'f' ? '#e07a5f' : '#f4f1de', color: narrationGender === 'f' ? 'white' : 'inherit', fontSize: '0.75rem' }}>Female</button>
+                          <button onClick={() => onGenderChange('m')}
+                            style={{ flex: 1, padding: '5px', borderRadius: '6px', border: 'none', background: narrationGender === 'm' ? '#e07a5f' : '#f4f1de', color: narrationGender === 'm' ? 'white' : 'inherit', fontSize: '0.75rem' }}>Male</button>
+                        </div>
+                      </div>
+                      <div>
+                        <p style={{ margin: '0 0 5px 0', fontSize: '0.75rem', fontWeight: '600', color: '#8b7355', textAlign: 'left' }}>Speed</p>
+                        <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
+                          {['0.5x', '0.75x', '1.0x', '1.25x', '1.5x', '2.0x'].map(s => (
+                            <button key={s} onClick={() => onSpeedChange(s)}
+                              style={{ padding: '4px 6px', borderRadius: '4px', border: 'none', background: narrationSpeed === s ? '#8b7355' : '#f4f1de', color: narrationSpeed === s ? 'white' : 'inherit', fontSize: '0.7rem' }}>{s}</button>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                      <button onClick={() => onStartNarration()} className="home-cta-btn" style={{ height: '50px', background: '#e07a5f', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                        <Play size={22} fill="currentColor" /> Start
+                      </button>
+                      <button onClick={() => onRestartNarration()} className="home-cta-btn" style={{ height: '45px', background: 'transparent', color: '#45322e', border: '1px solid #45322e', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                        <RefreshCcw size={16} /> Restart
+                      </button>
+                    </div>
+                    <p style={{ marginTop: '15px', fontSize: '0.8rem', color: '#8b7355' }}>Continuously reads through the entire book.</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {result && activeTab !== 'summary' && activeTab !== 'meaning' && (
+            <div className="ai-result-box" style={{ marginTop: '25px', padding: '18px', background: 'white', borderRadius: '15px', border: '1px solid #d4a373', boxShadow: '0 4px 15px rgba(0,0,0,0.05)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#e07a5f' }}></div>
+                <h5 style={{ margin: 0, color: '#b5651d', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>AI Response</h5>
+              </div>
+              <div
+                style={{ fontSize: '0.95rem', lineHeight: '1.7', color: '#4a342e', whiteSpace: 'pre-wrap' }}
+                dangerouslySetInnerHTML={{ __html: result.replace(/\n\n/g, '<br/><br/>').replace(/\n/g, '<br/>') }}
+              />
+            </div>
+          )}
+
         </div>
       </div>
     </>

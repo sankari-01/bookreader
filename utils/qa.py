@@ -1,4 +1,5 @@
 from utils.model_loader import AIModels
+from utils.logger import log_error
 import re
 
 def strip_markers(text):
@@ -71,22 +72,24 @@ def generate_answer(question, context):
     try:
         summarizer_model, summarizer_tokenizer = AIModels.get_summarizer()
         
-        # Construct a prompt for answering
-        input_text = f"Context: {context[:1200]}\n\nQuestion: {question}\n\nAnswer based on the story: "
+        # Construct a more direct prompt for concise answering
+        input_text = f"Context: {context[:1200]}\n\nBased on the context, what is the short answer to: {question}?\nAnswer: "
         
         inputs = summarizer_tokenizer(input_text, max_length=1024, truncation=True, return_tensors="pt")
         output_ids = summarizer_model.generate(
             inputs["input_ids"],
-            max_length=60,
-            min_length=10,
+            max_length=30,  # Reduced max_length for conciseness
+            min_length=2,
             num_beams=4,
             early_stopping=True
         )
         answer = summarizer_tokenizer.decode(output_ids[0], skip_special_tokens=True).strip()
         
         # Clean boilerplate
-        if "answer based on the story:" in answer.lower():
-            answer = answer.lower().split("answer based on the story:", 1)[1].strip()
+        if "answer:" in answer.lower():
+            answer = answer.lower().split("answer:", 1)[1].strip()
+        elif "based on the context," in answer.lower():
+            answer = answer.lower().split("based on the context,", 1)[1].strip()
         
         if len(answer) < 5 or answer.lower() in question.lower():
             return None

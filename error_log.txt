@@ -4069,3 +4069,1479 @@ Her Prayers'
 2026-03-20 17:31:33.076453: Using cached text for: blue-moon-beach-sue-murray-2203.pdf
 2026-03-20 17:31:33.111125: Detected language for blue-moon-beach-sue-murray-2203.pdf: en (English)
 2026-03-20 17:31:33.114283: Using cached translation for blue-moon-beach-sue-murray-2203.pdf (hi)
+2026-03-20 17:45:43.777265: Starting extraction for: blue-moon-beach-sue-murray-2203.pdf
+2026-03-20 17:45:43.793194: Using cached text for: blue-moon-beach-sue-murray-2203.pdf
+2026-03-20 17:45:44.161070: Detected language for blue-moon-beach-sue-murray-2203.pdf: en (English)
+2026-03-20 17:45:44.243422: Starting extraction for: blue-moon-beach-sue-murray-2203.pdf
+2026-03-20 17:45:44.243993: Using cached text for: blue-moon-beach-sue-murray-2203.pdf
+2026-03-20 17:45:44.310762: Detected language for blue-moon-beach-sue-murray-2203.pdf: en (English)
+2026-03-20 17:46:16.897781: Starting extraction for: blue-moon-beach-sue-murray-2203.pdf
+2026-03-20 17:46:16.906391: Using cached text for: blue-moon-beach-sue-murray-2203.pdf
+2026-03-20 17:46:16.994982: Detected language for blue-moon-beach-sue-murray-2203.pdf: en (English)
+2026-03-20 17:46:17.054550: Starting extraction for: blue-moon-beach-sue-murray-2203.pdf
+2026-03-20 17:46:17.055106: Using cached text for: blue-moon-beach-sue-murray-2203.pdf
+2026-03-20 17:46:17.111100: Detected language for blue-moon-beach-sue-murray-2203.pdf: en (English)
+2026-03-20 17:49:49.490808: Starting extraction for: blue-moon-beach-sue-murray-2203.pdf
+2026-03-20 17:49:49.493351: Using cached text for: blue-moon-beach-sue-murray-2203.pdf
+2026-03-20 17:49:49.549028: Detected language for blue-moon-beach-sue-murray-2203.pdf: en (English)
+2026-03-20 17:49:49.593632: Starting extraction for: blue-moon-beach-sue-murray-2203.pdf
+2026-03-20 17:49:49.594597: Using cached text for: blue-moon-beach-sue-murray-2203.pdf
+2026-03-20 17:49:49.626899: Detected language for blue-moon-beach-sue-murray-2203.pdf: en (English)
+2026-03-20 17:56:53.482722: TTS: lang=en, voice=en-US-AriaNeural, ssml=yes, h=860664162542
+2026-03-20 17:56:57.959364: TTS: Audio generated successfully for h=860664162542
+2026-03-20 17:57:40.849149: Starting extraction for: blue-moon-beach-sue-murray-2203.pdf
+2026-03-20 17:57:40.850892: Using cached text for: blue-moon-beach-sue-murray-2203.pdf
+2026-03-20 17:57:40.896339: Preparing translation for blue-moon-beach-sue-murray-2203.pdf to kn
+2026-03-20 17:57:50.379230: Translating chunk 10/49 (Target: kn)
+2026-03-20 17:58:00.795902: Translating chunk 20/49 (Target: kn)
+2026-03-20 17:58:11.423324: Translating chunk 30/49 (Target: kn)
+2026-03-20 17:58:21.068143: Translating chunk 40/49 (Target: kn)
+2026-03-20 17:58:36.545049: Starting extraction for: blue-moon-beach-sue-murray-2203.pdf
+2026-03-20 17:58:36.547453: Using cached text for: blue-moon-beach-sue-murray-2203.pdf
+2026-03-20 17:58:36.583925: Detected language for blue-moon-beach-sue-murray-2203.pdf: en (English)
+2026-03-20 17:58:36.593974: Using cached translation for blue-moon-beach-sue-murray-2203.pdf (kn)
+2026-03-20 17:59:49.600098: Starting extraction for: blue-moon-beach-sue-murray-2203.pdf
+2026-03-20 17:59:49.600832: Using cached text for: blue-moon-beach-sue-murray-2203.pdf
+2026-03-20 17:59:49.625667: Detected language for blue-moon-beach-sue-murray-2203.pdf: en (English)
+2026-03-20 18:00:35.453855: Starting extraction for: blue-moon-beach-sue-murray-2203.pdf
+2026-03-20 18:00:35.455869: Using cached text for: blue-moon-beach-sue-murray-2203.pdf
+2026-03-20 18:00:36.057307: Starting extraction for: blue-moon-beach-sue-murray-2203.pdf
+2026-03-20 18:00:36.058726: Using cached text for: blue-moon-beach-sue-murray-2203.pdf
+2026-03-20 18:00:36.083884: Detected language for blue-moon-beach-sue-murray-2203.pdf: en (English)
+2026-03-20 18:00:36.085210: Using cached translation for blue-moon-beach-sue-murray-2203.pdf (ta)
+2026-03-20 18:00:47.810726: Starting extraction for: blue-moon-beach-sue-murray-2203.pdf
+2026-03-20 18:00:47.814557: Using cached text for: blue-moon-beach-sue-murray-2203.pdf
+2026-03-20 18:00:47.830596: Detected language for blue-moon-beach-sue-murray-2203.pdf: en (English)
+2026-03-22 18:13:59.861166: DB Error on fetch files: 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (10061)
+2026-03-22 18:14:04.039182: DB Error on fetch files: 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (10061)
+2026-03-22 18:14:16.813978: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 18:14:16.972476: Extraction completed for: uploads\Ahsh learns to get up early.pdf
+2026-03-22 18:14:16.974714: Extraction successful for: Ahsh learns to get up early.pdf (2053 chars)
+2026-03-22 18:14:18.296532: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 18:14:18.328623: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 18:14:18.329582: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 18:14:18.357941: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 18:16:52.244198: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 18:16:52.244791: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 18:16:52.250722: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 18:16:52.268179: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 18:16:52.272177: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 18:16:52.284711: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 18:25:22.431749: DB Error on fetch files: 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (10061)
+2026-03-22 18:25:26.938987: DB Error on fetch files: 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (10061)
+2026-03-22 18:25:30.029363: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 18:25:30.030152: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 18:25:30.044845: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 18:25:30.053664: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 18:25:30.054324: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 18:25:30.063576: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 18:27:09.509447: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 18:27:09.512052: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 18:27:09.530254: Preparing translation for Ahsh learns to get up early.pdf to ta
+2026-03-22 18:27:21.106312: Translating chunk 10/45 (Target: ta)
+2026-03-22 18:27:33.130881: Translating chunk 20/45 (Target: ta)
+2026-03-22 18:27:47.618760: Translating chunk 30/45 (Target: ta)
+2026-03-22 18:27:59.751712: Translating chunk 40/45 (Target: ta)
+2026-03-22 18:28:08.280198: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 18:28:08.281692: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 18:28:08.478932: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 18:28:08.484004: Using cached translation for Ahsh learns to get up early.pdf (ta)
+2026-03-22 18:38:46.010803: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 18:38:46.022981: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 18:38:46.327989: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 18:38:46.547700: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 18:38:46.551313: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 18:38:46.835941: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 20:04:38.787881: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 20:04:38.791915: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 20:04:38.840060: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 20:04:38.857827: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 20:04:38.859979: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 20:04:38.886983: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 20:28:08.707141: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 20:28:08.708829: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 20:28:08.730655: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 20:28:08.741098: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 20:28:08.741720: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 20:28:08.762298: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 20:29:09.372905: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 20:29:09.373840: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 20:29:09.938388: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 20:29:09.938932: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 20:29:09.958463: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 20:29:09.959863: Using cached translation for Ahsh learns to get up early.pdf (ta)
+2026-03-22 20:37:16.170987: DB Error on fetch files: 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (10061)
+2026-03-22 20:37:20.326452: DB Error on fetch files: 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (10061)
+2026-03-22 20:37:32.758735: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 20:37:32.760369: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 20:37:32.781032: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 20:37:32.798075: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 20:37:32.798601: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 20:37:32.811517: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 20:39:44.467077: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 20:39:44.467558: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 20:39:44.475800: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 20:39:44.481112: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 20:39:44.481599: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 20:39:44.488497: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 20:39:58.460910: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 20:39:58.461365: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 20:39:58.468336: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 20:39:58.472999: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 20:39:58.473376: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 20:39:58.478209: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 20:40:34.261514: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 20:40:34.263371: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 20:40:34.967097: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 20:40:34.971567: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 20:40:34.986877: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 20:40:34.988540: Using cached translation for Ahsh learns to get up early.pdf (ta)
+2026-03-22 20:47:31.121372: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 20:47:31.121975: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 20:47:31.129059: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 20:48:26.062004: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 20:48:26.062464: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 20:48:26.070354: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 20:48:26.077379: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 20:48:26.078184: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 20:48:26.087118: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 20:49:10.146016: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 20:49:10.148039: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 20:49:10.860518: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 20:49:10.864557: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 20:49:10.885744: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 20:49:10.886321: Using cached translation for Ahsh learns to get up early.pdf (ta)
+2026-03-22 20:50:48.134800: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 20:50:48.135160: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 20:50:48.142323: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 20:50:48.148321: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 20:50:48.148710: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 20:50:48.152713: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 20:51:44.848231: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 20:51:44.849397: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 20:51:45.529418: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 20:51:45.530298: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 20:51:45.551474: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 20:51:45.551978: Using cached translation for Ahsh learns to get up early.pdf (ta)
+2026-03-22 20:53:09.996878: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 20:53:09.998702: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 20:53:10.009796: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 20:53:10.028631: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 20:53:10.029290: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 20:53:10.041906: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 20:53:36.321280: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 20:53:36.321829: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 20:53:36.327451: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 20:53:36.332971: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 20:53:36.333534: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 20:53:36.339214: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 20:54:11.145147: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 20:54:11.145637: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 20:54:11.150903: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 20:54:11.157242: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 20:54:11.157649: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 20:54:11.165042: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 20:54:53.813659: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 20:54:53.815213: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 20:54:54.506494: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 20:54:54.509647: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 20:54:54.522010: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 20:54:54.522569: Using cached translation for Ahsh learns to get up early.pdf (ta)
+2026-03-22 20:57:44.206128: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 20:57:44.206420: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 20:57:44.212438: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 20:57:44.218984: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 20:57:44.219373: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 20:57:44.224114: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 20:58:23.954960: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 20:58:23.956326: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 20:58:24.934664: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 20:58:24.936755: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 20:58:24.943210: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 20:58:24.943476: Using cached translation for Ahsh learns to get up early.pdf (ta)
+2026-03-22 20:59:44.870904: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 20:59:44.871487: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 20:59:44.876383: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 20:59:44.882286: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 20:59:44.882799: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 20:59:44.890807: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 21:00:20.925459: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 21:00:20.928360: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 21:00:21.817245: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 21:00:21.817691: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 21:00:21.823500: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 21:00:21.824020: Using cached translation for Ahsh learns to get up early.pdf (ta)
+2026-03-22 21:02:15.020687: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 21:02:15.021092: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 21:02:15.026341: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 21:02:15.032493: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 21:02:15.032979: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 21:02:15.039492: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 21:03:23.025768: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 21:03:23.027029: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 21:03:23.757789: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 21:03:23.758650: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 21:03:23.770656: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 21:03:23.771321: Using cached translation for Ahsh learns to get up early.pdf (ta)
+2026-03-22 21:05:36.391440: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 21:05:36.393018: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 21:05:36.405167: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 21:05:36.417968: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 21:05:36.419049: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 21:05:36.431005: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 21:07:32.498613: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 21:07:32.498980: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 21:07:32.503112: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 21:07:32.508643: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 21:07:32.508953: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 21:07:32.514974: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 21:08:13.372660: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 21:08:13.373330: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 21:08:13.378810: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 21:08:13.386182: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 21:08:13.386556: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 21:08:13.392118: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 21:09:06.077866: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 21:09:06.080593: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 21:09:06.805678: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 21:09:06.808189: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 21:09:06.827122: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 21:09:06.829599: Using cached translation for Ahsh learns to get up early.pdf (ta)
+2026-03-22 21:11:26.225633: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 21:11:26.226416: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 21:11:26.233455: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 21:11:26.239767: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 21:11:26.240122: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 21:11:26.246147: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 21:16:25.962555: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 21:16:25.963351: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 21:16:25.971480: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 21:16:25.978492: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 21:16:25.978986: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 21:16:25.985858: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 21:22:59.478144: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 21:22:59.478939: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 21:22:59.507617: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 21:22:59.538743: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 21:22:59.539673: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 21:22:59.553631: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 21:24:26.590195: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 21:24:26.591417: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 21:24:26.612825: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 21:24:26.631217: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 21:24:26.632081: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 21:24:26.645594: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 21:26:12.386480: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 21:26:12.386987: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 21:26:12.394867: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 21:26:13.114344: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 21:26:13.114948: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 21:26:13.121054: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 21:27:01.803310: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 21:27:01.803630: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 21:27:01.808018: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 21:27:01.818178: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 21:27:01.818822: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 21:27:01.825377: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 21:27:02.108836: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 21:27:02.109379: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 21:27:02.116090: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 21:27:02.122188: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 21:27:02.122472: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 21:27:02.126101: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 21:27:10.088973: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 21:27:10.089291: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 21:27:10.093752: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 21:27:10.098521: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 21:27:10.099911: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 21:27:10.100078: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 21:27:10.100805: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 21:27:10.106725: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 21:27:10.116094: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 21:27:10.131178: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 21:27:10.131855: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 21:27:10.139990: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 21:27:43.308335: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 21:27:43.308973: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 21:27:43.315402: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 21:27:43.331645: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 21:27:43.333150: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 21:27:43.342636: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 21:27:44.104517: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 21:27:44.104833: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 21:27:44.109087: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 21:27:44.114582: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 21:27:44.114874: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 21:27:44.117789: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 21:28:11.904814: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 21:28:11.905125: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 21:28:11.911642: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 21:28:11.918968: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 21:28:11.919173: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 21:28:11.923380: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 21:28:12.102648: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 21:28:12.103012: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 21:28:12.107530: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 21:28:12.112901: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 21:28:12.113108: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 21:28:12.116229: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 21:28:19.557707: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 21:28:19.558046: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 21:28:19.562458: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 21:28:19.571510: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 21:28:19.572033: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 21:28:19.577416: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 21:28:20.101510: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 21:28:20.102276: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 21:28:20.105274: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 21:28:20.110150: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 21:28:20.110355: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 21:28:20.113449: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 21:28:33.765946: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 21:28:33.766274: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 21:28:33.769463: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 21:28:33.774424: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 21:28:33.775089: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 21:28:33.779181: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 21:28:34.100495: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 21:28:34.100706: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 21:28:34.103360: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 21:28:34.107902: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 21:28:34.108124: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 21:28:34.110808: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 21:35:38.648998: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 21:35:38.649360: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 21:35:39.142164: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 21:35:39.153853: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 21:35:39.164036: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 21:35:39.189601: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 21:35:39.190545: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 21:35:39.214599: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 21:35:39.232044: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 21:35:39.243252: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 21:35:39.244128: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 21:35:39.249953: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 21:36:10.520987: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 21:36:10.521838: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 21:36:10.532130: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 21:36:10.545538: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 21:36:10.546914: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 21:36:10.555000: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 21:43:15.108672: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 21:43:15.109861: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 21:43:15.140072: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 21:43:15.140324: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 21:43:15.148383: Detected language for Ahsh learns to get up early.pdf: af (AF)
+2026-03-22 21:43:15.149814: NO CACHE FOUND. Translating Ahsh learns to get up early.pdf (en)...
+2026-03-22 21:43:15.415971: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 21:43:15.427804: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 21:43:15.429550: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 21:43:15.436641: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 21:43:23.162259: Translating chunk 10/45 (Target: en)
+2026-03-22 21:43:30.431681: Translating chunk 20/45 (Target: en)
+2026-03-22 21:43:39.375077: Translating chunk 30/45 (Target: en)
+2026-03-22 21:43:45.848453: Translating chunk 40/45 (Target: en)
+2026-03-22 21:43:49.536903: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 21:43:49.543237: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 21:43:49.556684: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 21:43:49.557303: NO CACHE FOUND. Translating Ahsh learns to get up early.pdf (af)...
+2026-03-22 21:43:59.988821: Translating chunk 10/45 (Target: af)
+2026-03-22 21:44:08.854409: Translating chunk 20/45 (Target: af)
+2026-03-22 21:44:18.999741: Translating chunk 30/45 (Target: af)
+2026-03-22 21:44:27.793619: Translating chunk 40/45 (Target: af)
+2026-03-22 21:46:41.173032: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 21:46:41.173732: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 21:46:41.210385: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 21:51:44.809233: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 21:51:44.809868: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 21:51:44.815837: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 21:51:44.821767: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 21:51:44.822106: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 21:51:44.829390: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 21:57:42.891170: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 21:57:42.891532: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 21:57:42.896017: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 21:57:42.900634: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 21:57:42.901075: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 21:57:42.906247: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 22:05:36.406739: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 22:05:36.407567: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 22:05:37.336976: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 22:05:37.355000: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 22:05:37.355676: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 22:05:37.366328: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 22:09:23.120210: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 22:09:23.120482: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 22:09:23.125577: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 22:10:29.759725: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 22:10:29.760361: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 22:10:29.765847: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 22:10:29.771757: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 22:10:29.772163: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 22:10:29.779770: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 22:13:23.201243: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 22:13:23.203539: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 22:13:23.773665: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 22:13:23.779785: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 22:13:23.798411: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 22:13:23.799994: Using cached translation for Ahsh learns to get up early.pdf (ta)
+2026-03-22 22:16:08.118458: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 22:16:08.119097: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 22:16:08.125465: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 22:16:08.131244: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 22:16:08.131494: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 22:16:08.134437: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 22:17:02.356121: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 22:17:02.360623: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 22:17:02.972668: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 22:17:02.973705: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 22:17:03.005033: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 22:17:03.008685: Using cached translation for Ahsh learns to get up early.pdf (ta)
+2026-03-22 22:17:52.761986: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 22:17:52.763148: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 22:17:52.778534: Preparing translation for Ahsh learns to get up early.pdf to hi
+2026-03-22 22:18:04.908594: Translating chunk 10/45 (Target: hi)
+2026-03-22 22:18:17.900815: Translating chunk 20/45 (Target: hi)
+2026-03-22 22:18:32.888053: Translating chunk 30/45 (Target: hi)
+2026-03-22 22:18:44.593499: Translating chunk 40/45 (Target: hi)
+2026-03-22 22:18:51.160302: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 22:18:51.161067: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 22:18:51.165929: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 22:18:51.166162: Using cached translation for Ahsh learns to get up early.pdf (hi)
+2026-03-22 22:29:47.664645: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 22:29:47.666083: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 22:29:48.425844: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 22:32:51.122388: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 22:32:51.122934: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 22:32:51.320031: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 22:33:29.111448: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 22:33:29.111742: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 22:33:29.114769: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 22:33:29.120709: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 22:33:29.120910: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 22:33:29.124055: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 22:36:42.108893: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 22:36:42.109631: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 22:36:42.116234: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 22:36:42.122789: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 22:36:42.123085: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 22:36:42.127106: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 22:38:26.429099: DB Error on fetch files: 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (10061)
+2026-03-22 22:38:30.560680: DB Error on fetch files: 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (10061)
+2026-03-22 22:47:08.117159: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 22:47:08.117470: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 22:47:08.125690: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 22:50:54.113443: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 22:50:54.113981: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 22:50:54.119125: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 22:56:38.158347: Meaning lookup triggered for word: 'Learns' in file: Ahsh learns to get up early.pdf (lang: en)
+2026-03-22 22:56:38.159183: Calling get_meaning for 'Learns'...
+2026-03-22 22:56:38.159926: Starting meaning lookup for: 'Learns'
+2026-03-22 22:56:38.197254: Meaning lookup triggered for word: 'Learns' in file: Ahsh learns to get up early.pdf (lang: en)
+2026-03-22 22:56:38.199381: Calling get_meaning for 'Learns'...
+2026-03-22 22:56:38.201028: Starting meaning lookup for: 'Learns'
+2026-03-22 22:56:40.628163: Dictionary API success for 'Learns'
+2026-03-22 22:56:40.633574: get_meaning returned successfully for 'Learns'
+2026-03-22 22:56:40.634460: Returning JSON meaning for 'Learns'
+2026-03-22 22:56:41.234288: Dictionary API success for 'Learns'
+2026-03-22 22:56:41.244065: get_meaning returned successfully for 'Learns'
+2026-03-22 22:56:41.246687: Returning JSON meaning for 'Learns'
+2026-03-22 22:57:02.007214: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 22:57:02.009247: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 22:57:02.576227: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 22:57:02.581970: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 22:57:02.601559: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 22:57:02.603056: Using cached translation for Ahsh learns to get up early.pdf (ta)
+2026-03-22 22:57:09.389790: Meaning lookup triggered for word: 'எழுந்து' in file: Ahsh learns to get up early.pdf (lang: ta)
+2026-03-22 22:57:09.390265: Calling get_meaning for 'எழுந்து'...
+2026-03-22 22:57:09.390585: Starting meaning lookup for: 'எழுந்து'
+2026-03-22 22:57:09.396085: Meaning lookup triggered for word: 'எழுந்து' in file: Ahsh learns to get up early.pdf (lang: ta)
+2026-03-22 22:57:09.397917: Calling get_meaning for 'எழுந்து'...
+2026-03-22 22:57:09.399991: Starting meaning lookup for: 'எழுந்து'
+2026-03-22 22:57:11.385253: Dictionary API failed for 'எழநத', trying AI fallback...
+2026-03-22 22:57:11.658129: Dictionary API failed for 'எழநத', trying AI fallback...
+2026-03-22 22:57:51.741789: AI fallback success for 'எழுந்து'
+2026-03-22 22:57:51.820789: AI fallback success for 'எழுந்து'
+2026-03-22 22:57:53.421126: get_meaning returned successfully for 'எழுந்து'
+2026-03-22 22:57:53.423413: Returning JSON meaning for 'எழுந்து'
+2026-03-22 22:57:53.650839: get_meaning returned successfully for 'எழுந்து'
+2026-03-22 22:57:53.651796: Returning JSON meaning for 'எழுந்து'
+2026-03-22 23:08:46.118587: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 23:08:46.119173: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 23:08:46.125696: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 23:08:46.131102: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 23:08:46.131342: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 23:08:46.134321: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 23:09:20.172006: DB Error on fetch files: 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (10061)
+2026-03-22 23:09:24.319137: DB Error on fetch files: 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (10061)
+2026-03-22 23:17:54.104835: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 23:17:54.105199: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 23:17:54.109155: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 23:18:46.301860: DB Error on fetch files: 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (10061)
+2026-03-22 23:18:50.416011: DB Error on fetch files: 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (10061)
+2026-03-22 23:22:28.796060: DB Error on fetch files: 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (10061)
+2026-03-22 23:22:32.906074: DB Error on fetch files: 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (10061)
+2026-03-22 23:22:44.375471: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 23:22:44.376232: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 23:22:44.390043: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 23:22:44.404304: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 23:22:44.404934: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 23:22:44.412303: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 23:27:58.519663: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 23:27:58.521408: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 23:27:59.095511: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-22 23:27:59.096779: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-22 23:27:59.118868: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-22 23:27:59.123059: Using cached translation for Ahsh learns to get up early.pdf (ta)
+2026-03-22 23:41:40.651978: Starting meaning lookup for: 'Bonjour'
+2026-03-22 23:41:42.084697: Dictionary API success for 'bonjour'
+2026-03-22 23:41:42.087033: Starting meaning lookup for: 'வணக்கம்'
+2026-03-22 23:41:42.725065: Translated 'வணககம' to 'Vanakagama' for dictionary lookup.
+2026-03-22 23:41:43.684348: FAILED to find meaning for 'வணக்கம்'.
+2026-03-22 23:43:41.448428: Starting meaning lookup for: 'Bonjour'
+2026-03-22 23:43:42.756587: Dictionary API success for 'bonjour'
+2026-03-22 23:43:42.759199: Starting meaning lookup for: 'வணக்கம்'
+2026-03-22 23:43:43.266816: Translated 'வணககம' to 'Vanakagama' for dictionary lookup.
+2026-03-22 23:43:45.117213: FAILED to find meaning for 'வணக்கம்'.
+2026-03-22 23:47:06.418612: Meaning lookup triggered for word: 'அதிகாலையில்' in file: Ahsh learns to get up early.pdf (lang: ta)
+2026-03-22 23:47:06.419776: Calling get_meaning for 'அதிகாலையில்'...
+2026-03-22 23:47:06.420366: Starting meaning lookup for: 'அதிகாலையில்'
+2026-03-22 23:47:06.438753: Meaning lookup triggered for word: 'அதிகாலையில்' in file: Ahsh learns to get up early.pdf (lang: ta)
+2026-03-22 23:47:06.439965: Calling get_meaning for 'அதிகாலையில்'...
+2026-03-22 23:47:06.440474: Starting meaning lookup for: 'அதிகாலையில்'
+2026-03-22 23:47:07.972293: Translated 'அதகலயல' to 'Not at all' for dictionary lookup.
+2026-03-22 23:47:08.012865: Translated 'அதகலயல' to 'Not at all' for dictionary lookup.
+2026-03-22 23:47:09.739337: Dictionary API success for 'not at all'
+2026-03-22 23:47:10.019565: Dictionary API success for 'not at all'
+2026-03-22 23:47:11.388859: get_meaning returned successfully for 'அதிகாலையில்'
+2026-03-22 23:47:11.393090: Returning JSON meaning for 'அதிகாலையில்'
+2026-03-22 23:47:11.650771: get_meaning returned successfully for 'அதிகாலையில்'
+2026-03-22 23:47:11.652342: Returning JSON meaning for 'அதிகாலையில்'
+2026-03-22 23:47:28.671340: Meaning lookup triggered for word: 'எழுந்து' in file: Ahsh learns to get up early.pdf (lang: ta)
+2026-03-22 23:47:28.671992: Calling get_meaning for 'எழுந்து'...
+2026-03-22 23:47:28.672357: Starting meaning lookup for: 'எழுந்து'
+2026-03-22 23:47:28.677426: Meaning lookup triggered for word: 'எழுந்து' in file: Ahsh learns to get up early.pdf (lang: ta)
+2026-03-22 23:47:28.678014: Calling get_meaning for 'எழுந்து'...
+2026-03-22 23:47:28.678277: Starting meaning lookup for: 'எழுந்து'
+2026-03-22 23:47:30.498492: Translated 'எழநத' to 'Don't wake up' for dictionary lookup.
+2026-03-22 23:47:30.624673: Translated 'எழநத' to 'Don't wake up' for dictionary lookup.
+2026-03-22 23:47:32.795374: Dictionary API failed for 'எழநத', trying AI fallback...
+2026-03-22 23:47:32.804655: Dictionary API failed for 'எழநத', trying AI fallback...
+2026-03-22 23:48:07.712743: FAILED to find meaning for 'எழுந்து'.
+2026-03-22 23:48:09.109200: get_meaning returned successfully for 'எழுந்து'
+2026-03-22 23:48:09.109829: Returning JSON meaning for 'எழுந்து'
+2026-03-22 23:48:15.906946: AI fallback success for 'எழுந்து'
+2026-03-22 23:48:17.721940: get_meaning returned successfully for 'எழுந்து'
+2026-03-22 23:48:17.725482: Returning JSON meaning for 'எழுந்து'
+2026-03-22 23:52:02.854545: Starting meaning lookup for: 'வணக்கம்' (Target Lang: ta)
+2026-03-22 23:52:03.393771: Translated 'வணககம' to 'Vanakagama' for dictionary lookup.
+2026-03-22 23:52:05.669303: FAILED to find meaning for 'வணக்கம்'.
+2026-03-22 23:52:05.671640: Starting meaning lookup for: 'Adventure' (Target Lang: hi)
+2026-03-22 23:52:08.354892: Dictionary API success for 'adventure'
+2026-03-22 23:53:16.277479: Meaning lookup triggered for word: 'அதிகாலையில்' in file: Ahsh learns to get up early.pdf (lang: ta)
+2026-03-22 23:53:16.277586: Meaning lookup triggered for word: 'அதிகாலையில்' in file: Ahsh learns to get up early.pdf (lang: ta)
+2026-03-22 23:53:16.278284: Calling get_meaning for 'அதிகாலையில்'...
+2026-03-22 23:53:16.279039: Calling get_meaning for 'அதிகாலையில்'...
+2026-03-22 23:53:16.279190: Starting meaning lookup for: 'அதிகாலையில்' (Target Lang: en)
+2026-03-22 23:53:16.282746: Starting meaning lookup for: 'அதிகாலையில்' (Target Lang: en)
+2026-03-22 23:53:17.934439: Translated 'அதகலயல' to 'Not at all' for dictionary lookup.
+2026-03-22 23:53:18.266404: Translated 'அதகலயல' to 'Not at all' for dictionary lookup.
+2026-03-22 23:53:21.239033: Dictionary API success for 'not at all'
+2026-03-22 23:53:22.147342: Dictionary API success for 'not at all'
+2026-03-22 23:53:23.782827: get_meaning returned successfully for 'அதிகாலையில்'
+2026-03-22 23:53:23.791277: Returning JSON meaning for 'அதிகாலையில்'
+2026-03-22 23:53:24.506827: get_meaning returned successfully for 'அதிகாலையில்'
+2026-03-22 23:53:24.508084: Returning JSON meaning for 'அதிகாலையில்'
+2026-03-22 23:53:31.109142: Meaning lookup triggered for word: 'எழுந்து' in file: Ahsh learns to get up early.pdf (lang: ta)
+2026-03-22 23:53:31.130841: Calling get_meaning for 'எழுந்து'...
+2026-03-22 23:53:31.141995: Starting meaning lookup for: 'எழுந்து' (Target Lang: en)
+2026-03-22 23:53:31.143233: Meaning lookup triggered for word: 'எழுந்து' in file: Ahsh learns to get up early.pdf (lang: ta)
+2026-03-22 23:53:31.144318: Calling get_meaning for 'எழுந்து'...
+2026-03-22 23:53:31.145084: Starting meaning lookup for: 'எழுந்து' (Target Lang: en)
+2026-03-22 23:53:33.336810: Translated 'எழநத' to 'Don't wake up' for dictionary lookup.
+2026-03-22 23:53:33.369047: Translated 'எழநத' to 'Don't wake up' for dictionary lookup.
+2026-03-22 23:53:35.722114: Dictionary API failed for 'எழநத', trying AI fallback...
+2026-03-22 23:53:35.738540: Dictionary API failed for 'எழநத', trying AI fallback...
+2026-03-22 23:54:08.745179: FAILED to find meaning for 'எழுந்து'.
+2026-03-22 23:54:10.183790: get_meaning returned successfully for 'எழுந்து'
+2026-03-22 23:54:10.187925: Returning JSON meaning for 'எழுந்து'
+2026-03-22 23:54:16.804690: AI fallback success for 'எழுந்து'
+2026-03-22 23:54:18.933798: get_meaning returned successfully for 'எழுந்து'
+2026-03-22 23:54:18.935414: Returning JSON meaning for 'எழுந்து'
+2026-03-22 23:54:46.268761: DB Error on fetch files: 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (10061)
+2026-03-22 23:54:50.387398: DB Error on fetch files: 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (10061)
+2026-03-22 23:54:57.055300: Starting extraction for: blue-moon-beach-sue-murray-2203.pdf
+2026-03-22 23:54:57.057224: Using cached text for: blue-moon-beach-sue-murray-2203.pdf
+2026-03-22 23:54:57.844474: Detected language for blue-moon-beach-sue-murray-2203.pdf: en (English)
+2026-03-22 23:54:57.866115: Starting extraction for: blue-moon-beach-sue-murray-2203.pdf
+2026-03-22 23:54:57.868948: Using cached text for: blue-moon-beach-sue-murray-2203.pdf
+2026-03-22 23:54:57.883533: Detected language for blue-moon-beach-sue-murray-2203.pdf: en (English)
+2026-03-22 23:55:06.110138: Starting extraction for: blue-moon-beach-sue-murray-2203.pdf
+2026-03-22 23:55:06.111004: Using cached text for: blue-moon-beach-sue-murray-2203.pdf
+2026-03-22 23:55:06.740766: Starting extraction for: blue-moon-beach-sue-murray-2203.pdf
+2026-03-22 23:55:06.741638: Using cached text for: blue-moon-beach-sue-murray-2203.pdf
+2026-03-22 23:55:06.752613: Detected language for blue-moon-beach-sue-murray-2203.pdf: en (English)
+2026-03-22 23:55:06.753554: Using cached translation for blue-moon-beach-sue-murray-2203.pdf (ta)
+2026-03-23 00:07:24.525643: Starting extraction for: blue-moon-beach-sue-murray-2203.pdf
+2026-03-23 00:07:24.526093: Using cached text for: blue-moon-beach-sue-murray-2203.pdf
+2026-03-23 00:07:24.797066: Detected language for blue-moon-beach-sue-murray-2203.pdf: en (English)
+2026-03-23 00:07:24.801299: Starting extraction for: blue-moon-beach-sue-murray-2203.pdf
+2026-03-23 00:07:24.801502: Using cached text for: blue-moon-beach-sue-murray-2203.pdf
+2026-03-23 00:07:24.805984: Detected language for blue-moon-beach-sue-murray-2203.pdf: en (English)
+2026-03-23 00:07:42.339909: Starting extraction for: blue-moon-beach-sue-murray-2203.pdf
+2026-03-23 00:07:42.340485: Using cached text for: blue-moon-beach-sue-murray-2203.pdf
+2026-03-23 00:07:42.345445: Detected language for blue-moon-beach-sue-murray-2203.pdf: en (English)
+2026-03-23 00:07:42.351007: Starting extraction for: blue-moon-beach-sue-murray-2203.pdf
+2026-03-23 00:07:42.351393: Using cached text for: blue-moon-beach-sue-murray-2203.pdf
+2026-03-23 00:07:42.356292: Detected language for blue-moon-beach-sue-murray-2203.pdf: en (English)
+2026-03-23 00:08:03.312659: Starting extraction for: blue-moon-beach-sue-murray-2203.pdf
+2026-03-23 00:08:03.313022: Using cached text for: blue-moon-beach-sue-murray-2203.pdf
+2026-03-23 00:08:03.317875: Detected language for blue-moon-beach-sue-murray-2203.pdf: en (English)
+2026-03-23 00:08:03.325514: Starting extraction for: blue-moon-beach-sue-murray-2203.pdf
+2026-03-23 00:08:03.326121: Using cached text for: blue-moon-beach-sue-murray-2203.pdf
+2026-03-23 00:08:03.330581: Detected language for blue-moon-beach-sue-murray-2203.pdf: en (English)
+2026-03-23 00:09:45.330233: Starting extraction for: blue-moon-beach-sue-murray-2203.pdf
+2026-03-23 00:09:45.330762: Using cached text for: blue-moon-beach-sue-murray-2203.pdf
+2026-03-23 00:09:45.335490: Detected language for blue-moon-beach-sue-murray-2203.pdf: en (English)
+2026-03-23 00:09:45.341004: Starting extraction for: blue-moon-beach-sue-murray-2203.pdf
+2026-03-23 00:09:45.341393: Using cached text for: blue-moon-beach-sue-murray-2203.pdf
+2026-03-23 00:09:45.345304: Detected language for blue-moon-beach-sue-murray-2203.pdf: en (English)
+2026-03-23 00:09:59.934846: Starting extraction for: blue-moon-beach-sue-murray-2203.pdf
+2026-03-23 00:09:59.935106: Using cached text for: blue-moon-beach-sue-murray-2203.pdf
+2026-03-23 00:09:59.940848: Detected language for blue-moon-beach-sue-murray-2203.pdf: en (English)
+2026-03-23 00:09:59.945544: Starting extraction for: blue-moon-beach-sue-murray-2203.pdf
+2026-03-23 00:09:59.945765: Using cached text for: blue-moon-beach-sue-murray-2203.pdf
+2026-03-23 00:09:59.951224: Detected language for blue-moon-beach-sue-murray-2203.pdf: en (English)
+2026-03-23 00:12:45.610915: Starting extraction for: blue-moon-beach-sue-murray-2203.pdf
+2026-03-23 00:12:45.612136: Using cached text for: blue-moon-beach-sue-murray-2203.pdf
+2026-03-23 00:12:46.186002: Starting extraction for: blue-moon-beach-sue-murray-2203.pdf
+2026-03-23 00:12:46.186522: Using cached text for: blue-moon-beach-sue-murray-2203.pdf
+2026-03-23 00:12:46.199397: Detected language for blue-moon-beach-sue-murray-2203.pdf: en (English)
+2026-03-23 00:12:46.200139: Using cached translation for blue-moon-beach-sue-murray-2203.pdf (ta)
+2026-03-23 00:12:55.264400: DB Error on fetch files: 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (10061)
+2026-03-23 00:12:59.368582: DB Error on fetch files: 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (10061)
+2026-03-23 00:15:44.275756: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-23 00:15:44.279118: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-23 00:15:44.308495: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-23 00:15:44.339065: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-23 00:15:44.340980: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-23 00:15:44.363639: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-23 00:36:45.940456: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-23 00:36:45.947205: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-23 00:36:46.023535: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-23 00:36:46.037205: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-23 00:36:46.038703: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-23 00:36:46.060147: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-23 00:36:47.026416: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-23 00:36:47.029474: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-23 00:36:47.043791: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-23 00:36:47.056702: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-23 00:36:47.058533: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-23 00:36:47.076297: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-23 00:37:22.015615: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-23 00:37:22.016338: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-23 00:37:22.028688: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-23 00:37:22.036180: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-23 00:37:22.036881: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-23 00:37:22.049027: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-23 00:38:41.859136: Starting extraction for: Fairytale-Mulan.pdf
+2026-03-23 00:38:41.859697: Using cached text for: Fairytale-Mulan.pdf
+2026-03-23 00:38:41.870346: Detected language for Fairytale-Mulan.pdf: en (English)
+2026-03-23 00:38:41.878178: Starting extraction for: Fairytale-Mulan.pdf
+2026-03-23 00:38:41.878628: Using cached text for: Fairytale-Mulan.pdf
+2026-03-23 00:38:41.886601: Detected language for Fairytale-Mulan.pdf: en (English)
+2026-03-23 00:39:04.117969: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-23 00:39:04.118282: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-23 00:39:04.122647: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-23 00:39:04.126927: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-23 00:39:04.127138: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-23 00:39:04.130490: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-23 00:39:56.130474: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-23 00:39:56.131950: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-23 00:39:56.142794: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-23 00:39:56.156510: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-23 00:39:56.157541: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-23 00:39:56.171646: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-23 00:41:58.110200: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-23 00:41:58.110476: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-23 00:41:58.113839: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-23 00:41:58.121386: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-23 00:41:58.121635: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-23 00:41:58.124517: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-23 00:49:12.110328: Starting extraction for: Ahsh learns to get up early.pdf
+2026-03-23 00:49:12.110702: Using cached text for: Ahsh learns to get up early.pdf
+2026-03-23 00:49:12.117264: Detected language for Ahsh learns to get up early.pdf: en (English)
+2026-03-23 09:18:11.008351: Starting extraction for: Ahsh learns to get up early.ppt
+2026-03-23 09:18:12.097479: Using cached text for: Ahsh learns to get up early.ppt
+2026-03-23 09:18:40.106462: Starting extraction for: Ahsh learns to get up early.ppt
+2026-03-23 09:18:40.107351: Using cached text for: Ahsh learns to get up early.ppt
+2026-03-23 09:18:40.505961: Detected language for Ahsh learns to get up early.ppt: af (AF)
+2026-03-23 09:18:40.648408: NO CACHE FOUND. Translating Ahsh learns to get up early.ppt (en)...
+2026-03-23 09:18:48.716358: Detected language for Ahsh learns to get up early.ppt: en (English)
+2026-03-23 09:18:53.370120: Translating chunk 10/45 (Target: en)
+2026-03-23 09:18:57.948177: Translating chunk 20/45 (Target: en)
+2026-03-23 09:19:02.994503: Translating chunk 30/45 (Target: en)
+2026-03-23 09:19:07.897240: Translating chunk 40/45 (Target: en)
+2026-03-23 09:20:13.778080: Starting extraction for: Ahsh learns to get up early.ppt
+2026-03-23 09:20:13.778931: Using cached text for: Ahsh learns to get up early.ppt
+2026-03-23 09:20:13.788612: Detected language for Ahsh learns to get up early.ppt: en (English)
+2026-03-23 09:20:13.795196: Starting extraction for: Ahsh learns to get up early.ppt
+2026-03-23 09:20:13.795640: Using cached text for: Ahsh learns to get up early.ppt
+2026-03-23 09:20:13.804845: Detected language for Ahsh learns to get up early.ppt: en (English)
+2026-03-23 09:49:44.603652: Starting extraction for: Ahsh learns to get up early.ppt
+2026-03-23 09:49:44.605694: Using cached text for: Ahsh learns to get up early.ppt
+2026-03-23 09:49:44.651400: Detected language for Ahsh learns to get up early.ppt: en (English)
+2026-03-23 09:49:44.663058: Starting extraction for: Ahsh learns to get up early.ppt
+2026-03-23 09:49:44.663723: Using cached text for: Ahsh learns to get up early.ppt
+2026-03-23 09:49:44.674725: Detected language for Ahsh learns to get up early.ppt: en (English)
+2026-03-23 09:57:30.871314: Starting extraction for: Ahsh learns to get up early.ppt
+2026-03-23 09:57:30.874160: Using cached text for: Ahsh learns to get up early.ppt
+2026-03-23 09:57:30.889973: Detected language for Ahsh learns to get up early.ppt: en (English)
+2026-03-23 09:57:30.898083: Starting extraction for: Ahsh learns to get up early.ppt
+2026-03-23 09:57:30.898615: Using cached text for: Ahsh learns to get up early.ppt
+2026-03-23 09:57:30.912055: Detected language for Ahsh learns to get up early.ppt: en (English)
+2026-03-23 10:05:00.904604: Meaning lookup triggered for word: 'Learns' in file: Ahsh learns to get up early.ppt (lang: en)
+2026-03-23 10:05:00.904948: Calling get_meaning for 'Learns'...
+2026-03-23 10:05:00.905784: Starting meaning lookup for: 'Learns' (Target Lang: en)
+2026-03-23 10:05:00.971009: Meaning lookup triggered for word: 'Learns' in file: Ahsh learns to get up early.ppt (lang: en)
+2026-03-23 10:05:00.971285: Calling get_meaning for 'Learns'...
+2026-03-23 10:05:00.971431: Starting meaning lookup for: 'Learns' (Target Lang: en)
+2026-03-23 10:05:03.779475: Dictionary API success for 'learns'
+2026-03-23 10:05:03.779635: Dictionary API success for 'learns'
+2026-03-23 10:05:03.786344: get_meaning returned successfully for 'Learns'
+2026-03-23 10:05:03.787103: get_meaning returned successfully for 'Learns'
+2026-03-23 10:05:03.787220: Returning JSON meaning for 'Learns'
+2026-03-23 10:05:03.788699: Returning JSON meaning for 'Learns'
+2026-03-23 10:05:28.943500: Meaning lookup triggered for word: 'first' in file: Ahsh learns to get up early.ppt (lang: en)
+2026-03-23 10:05:28.944019: Calling get_meaning for 'first'...
+2026-03-23 10:05:28.945208: Meaning lookup triggered for word: 'first' in file: Ahsh learns to get up early.ppt (lang: en)
+2026-03-23 10:05:28.945426: Calling get_meaning for 'first'...
+2026-03-23 10:05:28.945484: Starting meaning lookup for: 'first' (Target Lang: en)
+2026-03-23 10:05:28.946015: Starting meaning lookup for: 'first' (Target Lang: en)
+2026-03-23 10:05:31.030657: Dictionary API success for 'first'
+2026-03-23 10:05:31.047280: get_meaning returned successfully for 'first'
+2026-03-23 10:05:31.049906: Returning JSON meaning for 'first'
+2026-03-23 10:05:31.093180: Dictionary API success for 'first'
+2026-03-23 10:05:31.101379: get_meaning returned successfully for 'first'
+2026-03-23 10:05:31.103424: Returning JSON meaning for 'first'
+2026-03-23 10:05:44.510902: Meaning lookup triggered for word: 'shining' in file: Ahsh learns to get up early.ppt (lang: en)
+2026-03-23 10:05:44.511235: Calling get_meaning for 'shining'...
+2026-03-23 10:05:44.512403: Meaning lookup triggered for word: 'shining' in file: Ahsh learns to get up early.ppt (lang: en)
+2026-03-23 10:05:44.512853: Starting meaning lookup for: 'shining' (Target Lang: en)
+2026-03-23 10:05:44.513372: Calling get_meaning for 'shining'...
+2026-03-23 10:05:44.514737: Starting meaning lookup for: 'shining' (Target Lang: en)
+2026-03-23 10:05:47.308243: Dictionary API success for 'shining'
+2026-03-23 10:05:47.308425: Dictionary API success for 'shining'
+2026-03-23 10:05:47.313510: get_meaning returned successfully for 'shining'
+2026-03-23 10:05:47.316387: Returning JSON meaning for 'shining'
+2026-03-23 10:05:47.316574: get_meaning returned successfully for 'shining'
+2026-03-23 10:05:47.318202: Returning JSON meaning for 'shining'
+2026-03-23 10:06:03.673664: Meaning lookup triggered for word: 'Early' in file: Ahsh learns to get up early.ppt (lang: en)
+2026-03-23 10:06:03.674039: Calling get_meaning for 'Early'...
+2026-03-23 10:06:03.675803: Meaning lookup triggered for word: 'Early' in file: Ahsh learns to get up early.ppt (lang: en)
+2026-03-23 10:06:03.675902: Starting meaning lookup for: 'Early' (Target Lang: en)
+2026-03-23 10:06:03.676285: Calling get_meaning for 'Early'...
+2026-03-23 10:06:03.677732: Starting meaning lookup for: 'Early' (Target Lang: en)
+2026-03-23 10:06:06.408910: Dictionary API success for 'early'
+2026-03-23 10:06:06.412432: Dictionary API success for 'early'
+2026-03-23 10:06:06.413560: get_meaning returned successfully for 'Early'
+2026-03-23 10:06:06.417135: get_meaning returned successfully for 'Early'
+2026-03-23 10:06:06.417348: Returning JSON meaning for 'Early'
+2026-03-23 10:06:06.418619: Returning JSON meaning for 'Early'
+2026-03-23 10:06:45.949186: Meaning lookup triggered for word: 'Asha' in file: Ahsh learns to get up early.ppt (lang: en)
+2026-03-23 10:06:45.949633: Meaning lookup triggered for word: 'Asha' in file: Ahsh learns to get up early.ppt (lang: en)
+2026-03-23 10:06:45.949836: Calling get_meaning for 'Asha'...
+2026-03-23 10:06:45.950071: Calling get_meaning for 'Asha'...
+2026-03-23 10:06:45.950220: Starting meaning lookup for: 'Asha' (Target Lang: en)
+2026-03-23 10:06:45.951721: Starting meaning lookup for: 'Asha' (Target Lang: en)
+2026-03-23 10:06:49.057852: Dictionary API failed for 'Asha', trying AI fallback...
+2026-03-23 10:06:49.058104: Dictionary API failed for 'Asha', trying AI fallback...
+2026-03-23 10:07:02.761489: AI fallback success for 'Asha'
+2026-03-23 10:07:02.764766: get_meaning returned successfully for 'Asha'
+2026-03-23 10:07:02.765360: Returning JSON meaning for 'Asha'
+2026-03-23 10:07:02.780491: AI fallback success for 'Asha'
+2026-03-23 10:07:02.783415: get_meaning returned successfully for 'Asha'
+2026-03-23 10:07:02.783882: Returning JSON meaning for 'Asha'
+2026-03-23 10:08:28.439067: Starting extraction for: Ahsh learns to get up early.ppt
+2026-03-23 10:08:28.439701: Using cached text for: Ahsh learns to get up early.ppt
+2026-03-23 10:08:28.455617: Detected language for Ahsh learns to get up early.ppt: en (English)
+2026-03-23 10:13:37.528606: Starting extraction for: Ahsh learns to get up early.ppt
+2026-03-23 10:13:37.529466: Using cached text for: Ahsh learns to get up early.ppt
+2026-03-23 10:13:37.548432: Detected language for Ahsh learns to get up early.ppt: en (English)
+2026-03-23 10:22:14.693209: Starting extraction for: Ahsh learns to get up early.ppt
+2026-03-23 10:22:14.693851: Using cached text for: Ahsh learns to get up early.ppt
+2026-03-23 10:22:14.706527: Detected language for Ahsh learns to get up early.ppt: en (English)
+2026-03-23 10:22:14.715894: Starting extraction for: Ahsh learns to get up early.ppt
+2026-03-23 10:22:14.716480: Using cached text for: Ahsh learns to get up early.ppt
+2026-03-23 10:22:14.727173: Detected language for Ahsh learns to get up early.ppt: en (English)
+2026-03-23 10:23:05.905445: Starting extraction for: Ahsh learns to get up early.ppt
+2026-03-23 10:23:06.110913: Extraction completed for: D:\AI_Book_Reader\uploads\Ahsh learns to get up early.pdf
+2026-03-23 10:23:06.116298: Extraction successful for: Ahsh learns to get up early.ppt (2053 chars)
+2026-03-23 10:23:06.130001: Detected language for Ahsh learns to get up early.ppt: en (English)
+2026-03-23 10:23:06.140886: Starting extraction for: Ahsh learns to get up early.ppt
+2026-03-23 10:23:06.145534: Using cached text for: Ahsh learns to get up early.ppt
+2026-03-23 10:23:06.156811: Detected language for Ahsh learns to get up early.ppt: en (English)
+2026-03-23 10:23:42.825731: Starting extraction for: Ahsh learns to get up early.ppt
+2026-03-23 10:23:42.826820: Using cached text for: Ahsh learns to get up early.ppt
+2026-03-23 10:23:42.838696: Detected language for Ahsh learns to get up early.ppt: en (English)
+2026-03-23 10:23:42.848204: Starting extraction for: Ahsh learns to get up early.ppt
+2026-03-23 10:23:42.848602: Using cached text for: Ahsh learns to get up early.ppt
+2026-03-23 10:23:42.859046: Detected language for Ahsh learns to get up early.ppt: en (English)
+2026-03-23 10:25:35.924365: Starting extraction for: Ahsh learns to get up early.ppt
+2026-03-23 10:25:35.925043: Using cached text for: Ahsh learns to get up early.ppt
+2026-03-23 10:25:35.942624: Detected language for Ahsh learns to get up early.ppt: en (English)
+2026-03-23 10:25:35.951307: Starting extraction for: Ahsh learns to get up early.ppt
+2026-03-23 10:25:35.951960: Using cached text for: Ahsh learns to get up early.ppt
+2026-03-23 10:25:35.969507: Detected language for Ahsh learns to get up early.ppt: en (English)
+2026-03-23 10:28:35.909269: Starting extraction for: Ahsh learns to get up early.ppt
+2026-03-23 10:28:35.910144: Using cached text for: Ahsh learns to get up early.ppt
+2026-03-23 10:28:35.922314: Detected language for Ahsh learns to get up early.ppt: en (English)
+2026-03-23 10:28:35.931109: Starting extraction for: Ahsh learns to get up early.ppt
+2026-03-23 10:28:35.931710: Using cached text for: Ahsh learns to get up early.ppt
+2026-03-23 10:28:35.942522: Detected language for Ahsh learns to get up early.ppt: en (English)
+2026-03-23 10:59:03.436732: Starting extraction for: Ahsh learns to get up early.ppt
+2026-03-23 10:59:03.438486: Using cached text for: Ahsh learns to get up early.ppt
+2026-03-23 10:59:04.124880: Detected language for Ahsh learns to get up early.ppt: en (English)
+2026-03-23 10:59:04.251737: Starting extraction for: Ahsh learns to get up early.ppt
+2026-03-23 10:59:04.252319: Using cached text for: Ahsh learns to get up early.ppt
+2026-03-23 10:59:04.262217: Detected language for Ahsh learns to get up early.ppt: en (English)
+2026-03-23 11:00:23.240383: Starting extraction for: Ahsh learns to get up early.ppt
+2026-03-23 11:00:23.242915: Using cached text for: Ahsh learns to get up early.ppt
+2026-03-23 11:00:24.036911: Detected language for Ahsh learns to get up early.ppt: en (English)
+2026-03-23 11:00:24.152242: Starting extraction for: Ahsh learns to get up early.ppt
+2026-03-23 11:00:24.153065: Using cached text for: Ahsh learns to get up early.ppt
+2026-03-23 11:00:24.165680: Detected language for Ahsh learns to get up early.ppt: en (English)
+2026-03-23 11:04:49.847200: Meaning lookup triggered for word: 'Learns' in file: Ahsh learns to get up early.ppt (lang: en)
+2026-03-23 11:04:49.849720: Calling get_meaning for 'Learns'...
+2026-03-23 11:04:49.850305: Starting meaning lookup for: 'Learns' (Target Lang: en)
+2026-03-23 11:04:49.850391: Meaning lookup triggered for word: 'Learns' in file: Ahsh learns to get up early.ppt (lang: en)
+2026-03-23 11:04:49.854375: Calling get_meaning for 'Learns'...
+2026-03-23 11:04:49.855076: Starting meaning lookup for: 'Learns' (Target Lang: en)
+2026-03-23 11:04:53.814498: Dictionary API success for 'learns'
+2026-03-23 11:04:53.827794: get_meaning returned successfully for 'Learns'
+2026-03-23 11:04:53.841248: Returning JSON meaning for 'Learns'
+2026-03-23 11:04:53.855599: Dictionary API success for 'learns'
+2026-03-23 11:04:53.867079: get_meaning returned successfully for 'Learns'
+2026-03-23 11:04:53.870036: Returning JSON meaning for 'Learns'
+2026-03-23 11:05:49.130830: Meaning lookup triggered for word: 'Asha' in file: Ahsh learns to get up early.ppt (lang: en)
+2026-03-23 11:05:49.131388: Calling get_meaning for 'Asha'...
+2026-03-23 11:05:49.131710: Starting meaning lookup for: 'Asha' (Target Lang: en)
+2026-03-23 11:05:49.135035: Meaning lookup triggered for word: 'Asha' in file: Ahsh learns to get up early.ppt (lang: en)
+2026-03-23 11:05:49.135551: Calling get_meaning for 'Asha'...
+2026-03-23 11:05:49.136051: Starting meaning lookup for: 'Asha' (Target Lang: en)
+2026-03-23 11:05:51.436866: Dictionary API failed for 'Asha', trying AI fallback...
+2026-03-23 11:05:51.449339: Dictionary API failed for 'Asha', trying AI fallback...
+2026-03-23 11:06:08.146045: AI fallback success for 'Asha'
+2026-03-23 11:06:08.152856: get_meaning returned successfully for 'Asha'
+2026-03-23 11:06:08.153666: Returning JSON meaning for 'Asha'
+2026-03-23 11:06:08.257489: AI fallback success for 'Asha'
+2026-03-23 11:06:08.262395: get_meaning returned successfully for 'Asha'
+2026-03-23 11:06:08.263488: Returning JSON meaning for 'Asha'
+2026-03-23 11:19:30.750120: Starting meaning lookup for: 'Bonjour' (Target Lang: en)
+2026-03-23 11:19:32.287723: Dictionary API success for 'bonjour'
+2026-03-23 11:19:32.289398: Starting meaning lookup for: 'வணக்கம்' (Target Lang: ta)
+2026-03-23 11:19:32.651496: Translated 'வணககம' to 'Vanakagama' for dictionary lookup.
+2026-03-23 11:19:34.039494: FAILED to find meaning for 'வணக்கம்'.
+2026-03-23 11:25:16.176593: Dictionary lookup: 'Bonjour' (Target: en)
+2026-03-23 11:25:16.872381: Dictionary lookup: 'வணக்கம்' (Target: ta)
+2026-03-23 11:25:17.290950: Lookup translated 'வணககம' -> 'Vanakagama'
+2026-03-23 11:25:17.576207: Trying AI fallback for 'வணக்கம்'...
+2026-03-23 11:25:50.698984: Dictionary lookup: 'Bonjour' (Target: en)
+2026-03-23 11:26:56.337284: Starting extraction for: cloud case study .docx
+2026-03-23 11:26:56.409340: Extraction successful for: cloud case study .docx (4723 chars)
+2026-03-23 11:26:57.376834: Detected language for cloud case study .docx: en (English)
+2026-03-23 11:27:16.339901: Starting extraction for: cloud case study .docx
+2026-03-23 11:27:16.340741: Using cached text for: cloud case study .docx
+2026-03-23 11:27:16.354055: Detected language for cloud case study .docx: en (English)
+2026-03-23 11:29:16.813588: Starting extraction for: Ahsh learns to get up early.ppt
+2026-03-23 11:29:16.814646: Using cached text for: Ahsh learns to get up early.ppt
+2026-03-23 11:29:16.824492: Detected language for Ahsh learns to get up early.ppt: en (English)
+2026-03-23 11:29:16.836161: Starting extraction for: Ahsh learns to get up early.ppt
+2026-03-23 11:29:16.838249: Using cached text for: Ahsh learns to get up early.ppt
+2026-03-23 11:29:16.855083: Detected language for Ahsh learns to get up early.ppt: en (English)
+2026-03-23 11:29:23.135686: Meaning lookup triggered for word: 'Oh it’s so early' in file: Ahsh learns to get up early.ppt (lang: en)
+2026-03-23 11:29:23.136563: Calling get_meaning for 'Oh it’s so early'...
+2026-03-23 11:29:23.137156: Dictionary lookup: 'Oh it’s so early' (Target: en)
+2026-03-23 11:29:23.185584: Meaning lookup triggered for word: 'Oh it’s so early' in file: Ahsh learns to get up early.ppt (lang: en)
+2026-03-23 11:29:23.186283: Calling get_meaning for 'Oh it’s so early'...
+2026-03-23 11:29:23.186767: Dictionary lookup: 'Oh it’s so early' (Target: en)
+2026-03-23 11:29:28.851815: Trying AI fallback for 'Oh it’s so early'...
+2026-03-23 11:29:28.852825: Trying AI fallback for 'Oh it’s so early'...
+2026-03-23 11:29:49.854893: get_meaning returned successfully for 'Oh it’s so early'
+2026-03-23 11:29:49.855691: Returning JSON meaning for 'Oh it’s so early'
+2026-03-23 11:29:49.915542: get_meaning returned successfully for 'Oh it’s so early'
+2026-03-23 11:29:49.916408: Returning JSON meaning for 'Oh it’s so early'
+2026-03-23 11:30:00.226705: Meaning lookup triggered for word: 'onger' in file: Ahsh learns to get up early.ppt (lang: en)
+2026-03-23 11:30:00.227375: Calling get_meaning for 'onger'...
+2026-03-23 11:30:00.228784: Meaning lookup triggered for word: 'onger' in file: Ahsh learns to get up early.ppt (lang: en)
+2026-03-23 11:30:00.228867: Dictionary lookup: 'onger' (Target: en)
+2026-03-23 11:30:00.229325: Calling get_meaning for 'onger'...
+2026-03-23 11:30:00.230608: Dictionary lookup: 'onger' (Target: en)
+2026-03-23 11:30:03.680966: Trying AI fallback for 'onger'...
+2026-03-23 11:30:03.681163: Trying AI fallback for 'onger'...
+2026-03-23 11:30:11.091393: Meaning lookup triggered for word: 'longer' in file: Ahsh learns to get up early.ppt (lang: en)
+2026-03-23 11:30:11.092574: Calling get_meaning for 'longer'...
+2026-03-23 11:30:11.093700: Dictionary lookup: 'longer' (Target: en)
+2026-03-23 11:30:15.600320: get_meaning returned successfully for 'longer'
+2026-03-23 11:30:15.601323: Returning JSON meaning for 'longer'
+2026-03-23 11:30:22.308183: get_meaning returned successfully for 'onger'
+2026-03-23 11:30:22.309017: Returning JSON meaning for 'onger'
+2026-03-23 11:30:22.367143: get_meaning returned successfully for 'onger'
+2026-03-23 11:30:22.368674: Returning JSON meaning for 'onger'
+2026-03-23 11:30:34.277911: Meaning lookup triggered for word: 'longer' in file: Ahsh learns to get up early.ppt (lang: en)
+2026-03-23 11:30:34.278666: Calling get_meaning for 'longer'...
+2026-03-23 11:30:34.279423: Dictionary lookup: 'longer' (Target: en)
+2026-03-23 11:30:37.326884: get_meaning returned successfully for 'longer'
+2026-03-23 11:30:37.327826: Returning JSON meaning for 'longer'
+2026-03-23 11:31:07.302258: Meaning lookup triggered for word: 'Learns
+To Get Up
+Early' in file: Ahsh learns to get up early.ppt (lang: en)
+2026-03-23 11:31:07.302614: Meaning lookup triggered for word: 'Learns
+To Get Up
+Early' in file: Ahsh learns to get up early.ppt (lang: en)
+2026-03-23 11:31:07.303007: Calling get_meaning for 'Learns
+To Get Up
+Early'...
+2026-03-23 11:31:07.303350: Calling get_meaning for 'Learns
+To Get Up
+Early'...
+2026-03-23 11:31:07.303663: Dictionary lookup: 'Learns
+To Get Up
+Early' (Target: en)
+2026-03-23 11:31:07.304344: Dictionary lookup: 'Learns
+To Get Up
+Early' (Target: en)
+2026-03-23 11:31:19.970103: get_meaning returned successfully for 'Learns
+To Get Up
+Early'
+2026-03-23 11:31:19.972142: Returning JSON meaning for 'Learns
+To Get Up
+Early'
+2026-03-23 11:31:20.044590: get_meaning returned successfully for 'Learns
+To Get Up
+Early'
+2026-03-23 11:31:20.045454: Returning JSON meaning for 'Learns
+To Get Up
+Early'
+2026-03-23 11:31:54.523343: Ask AI triggered: what happened in page 2? for Ahsh learns to get up early.ppt (lang: en)
+2026-03-23 11:32:02.254456: Error in answer_question: name 'log_error' is not defined
+2026-03-23 11:33:55.778855: Meaning lookup triggered for word: 'Asha' in file: Ahsh learns to get up early.ppt (lang: en)
+2026-03-23 11:33:55.779797: Calling get_meaning for 'Asha'...
+2026-03-23 11:33:55.780378: Dictionary lookup: 'Asha' (Target: en)
+2026-03-23 11:33:55.832672: Meaning lookup triggered for word: 'Asha' in file: Ahsh learns to get up early.ppt (lang: en)
+2026-03-23 11:33:55.833100: Calling get_meaning for 'Asha'...
+2026-03-23 11:33:55.833410: Dictionary lookup: 'Asha' (Target: en)
+2026-03-23 11:33:58.817363: Trying AI fallback for 'Asha'...
+2026-03-23 11:33:58.818300: Trying AI fallback for 'Asha'...
+2026-03-23 11:34:13.054178: get_meaning returned successfully for 'Asha'
+2026-03-23 11:34:13.054944: Returning JSON meaning for 'Asha'
+2026-03-23 11:34:13.093923: get_meaning returned successfully for 'Asha'
+2026-03-23 11:34:13.094571: Returning JSON meaning for 'Asha'
+2026-03-23 11:35:22.096549: Meaning lookup triggered for word: 'Asha
+Learns
+To Get Up
+Early' in file: Ahsh learns to get up early.ppt (lang: en)
+2026-03-23 11:35:22.097186: Calling get_meaning for 'Asha
+Learns
+To Get Up
+Early'...
+2026-03-23 11:35:22.097695: Dictionary lookup: 'Asha
+Learns
+To Get Up
+Early' (Target: en)
+2026-03-23 11:35:26.601884: Trying AI fallback for 'Asha
+'...
+2026-03-23 11:35:56.453586: get_meaning returned successfully for 'Asha
+Learns
+To Get Up
+Early'
+2026-03-23 11:35:56.454922: Returning JSON meaning for 'Asha
+Learns
+To Get Up
+Early'
+2026-03-23 11:36:41.077985: Ask AI triggered: who is chintu? for Ahsh learns to get up early.ppt (lang: en)
+2026-03-23 11:37:19.341620: Ask AI triggered: display the character names for Ahsh learns to get up early.ppt (lang: en)
+2026-03-23 11:37:20.825933: Error in answer_question: name 'log_error' is not defined
+2026-03-23 11:41:48.669478: Starting extraction for: Ahsh learns to get up early.ppt
+2026-03-23 11:41:48.670016: Using cached text for: Ahsh learns to get up early.ppt
+2026-03-23 11:41:49.939856: Preparing translation for Ahsh learns to get up early.ppt to ta
+2026-03-23 11:41:59.000457: Translating chunk 10/45 (Target: ta)
+2026-03-23 11:42:10.048596: Translating chunk 20/45 (Target: ta)
+2026-03-23 11:42:21.283138: Translating chunk 30/45 (Target: ta)
+2026-03-23 11:42:27.118972: Translating chunk 40/45 (Target: ta)
+2026-03-23 11:42:35.719392: Starting extraction for: Ahsh learns to get up early.ppt
+2026-03-23 11:42:35.720425: Using cached text for: Ahsh learns to get up early.ppt
+2026-03-23 11:42:35.731921: Detected language for Ahsh learns to get up early.ppt: en (English)
+2026-03-23 11:42:35.732393: Using cached translation for Ahsh learns to get up early.ppt (ta)
+2026-03-23 11:45:43.075594: Ask AI triggered: how is asha for Ahsh learns to get up early.ppt (lang: ta)
+2026-03-23 11:45:46.226165: Gemini AI configured successfully.
+2026-03-23 11:45:46.514768: Gemini AI Error: 400 API key not valid. Please pass a valid API key. [reason: "API_KEY_INVALID"
+domain: "googleapis.com"
+metadata {
+  key: "service"
+  value: "generativelanguage.googleapis.com"
+}
+, locale: "en-US"
+message: "API key not valid. Please pass a valid API key."
+]
+2026-03-23 11:46:04.400426: Starting extraction for: Ahsh learns to get up early.ppt
+2026-03-23 11:46:04.401067: Using cached text for: Ahsh learns to get up early.ppt
+2026-03-23 11:46:04.413348: Detected language for Ahsh learns to get up early.ppt: en (English)
+2026-03-23 11:46:16.915682: Ask AI triggered: how is asha for Ahsh learns to get up early.ppt (lang: en)
+2026-03-23 11:46:16.983664: Gemini AI Error: 400 API key not valid. Please pass a valid API key. [reason: "API_KEY_INVALID"
+domain: "googleapis.com"
+metadata {
+  key: "service"
+  value: "generativelanguage.googleapis.com"
+}
+, locale: "en-US"
+message: "API key not valid. Please pass a valid API key."
+]
+2026-03-23 11:46:40.514968: Ask AI triggered: how is asha? for Ahsh learns to get up early.ppt (lang: en)
+2026-03-23 11:46:40.579010: Gemini AI Error: 400 API key not valid. Please pass a valid API key. [reason: "API_KEY_INVALID"
+domain: "googleapis.com"
+metadata {
+  key: "service"
+  value: "generativelanguage.googleapis.com"
+}
+, locale: "en-US"
+message: "API key not valid. Please pass a valid API key."
+]
+2026-03-23 11:46:41.642704: Ask AI triggered: how is asha? for Ahsh learns to get up early.ppt (lang: en)
+2026-03-23 11:46:41.735852: Gemini AI Error: 400 API key not valid. Please pass a valid API key. [reason: "API_KEY_INVALID"
+domain: "googleapis.com"
+metadata {
+  key: "service"
+  value: "generativelanguage.googleapis.com"
+}
+, locale: "en-US"
+message: "API key not valid. Please pass a valid API key."
+]
+2026-03-23 11:46:42.208632: Ask AI triggered: how is asha? for Ahsh learns to get up early.ppt (lang: en)
+2026-03-23 11:46:42.267719: Gemini AI Error: 400 API key not valid. Please pass a valid API key. [reason: "API_KEY_INVALID"
+domain: "googleapis.com"
+metadata {
+  key: "service"
+  value: "generativelanguage.googleapis.com"
+}
+, locale: "en-US"
+message: "API key not valid. Please pass a valid API key."
+]
+2026-03-23 11:46:42.370573: Ask AI triggered: how is asha? for Ahsh learns to get up early.ppt (lang: en)
+2026-03-23 11:46:42.432864: Gemini AI Error: 400 API key not valid. Please pass a valid API key. [reason: "API_KEY_INVALID"
+domain: "googleapis.com"
+metadata {
+  key: "service"
+  value: "generativelanguage.googleapis.com"
+}
+, locale: "en-US"
+message: "API key not valid. Please pass a valid API key."
+]
+2026-03-23 11:49:00.915844: Starting extraction for: 07.-The-Yellow-Wall-Papper-Charlotte-Perkins-Stetson.pdf
+2026-03-23 11:49:00.977162: Page 1 appears empty or image-based. Running OCR fallback...
+2026-03-23 11:49:03.509118: Extraction completed for: uploads\07.-The-Yellow-Wall-Papper-Charlotte-Perkins-Stetson.pdf
+2026-03-23 11:49:03.524731: Extraction successful for: 07.-The-Yellow-Wall-Papper-Charlotte-Perkins-Stetson.pdf (51690 chars)
+2026-03-23 11:49:05.022977: Detected language for 07.-The-Yellow-Wall-Papper-Charlotte-Perkins-Stetson.pdf: en (English)
+2026-03-23 11:49:05.035462: Starting extraction for: 07.-The-Yellow-Wall-Papper-Charlotte-Perkins-Stetson.pdf
+2026-03-23 11:49:05.036165: Using cached text for: 07.-The-Yellow-Wall-Papper-Charlotte-Perkins-Stetson.pdf
+2026-03-23 11:49:05.047955: Detected language for 07.-The-Yellow-Wall-Papper-Charlotte-Perkins-Stetson.pdf: en (English)
+2026-03-23 11:49:22.114205: Starting extraction for: cloud case study .docx
+2026-03-23 11:49:22.115183: Using cached text for: cloud case study .docx
+2026-03-23 11:49:22.163573: Detected language for cloud case study .docx: en (English)
+2026-03-23 11:49:42.088717: Starting extraction for: cloud case study .docx
+2026-03-23 11:49:42.089534: Using cached text for: cloud case study .docx
+2026-03-23 11:49:42.095044: Detected language for cloud case study .docx: en (English)
+2026-03-23 11:49:54.875358: Starting extraction for: Ahsh learns to get up early.ppt
+2026-03-23 11:49:54.876150: Using cached text for: Ahsh learns to get up early.ppt
+2026-03-23 11:49:54.885929: Detected language for Ahsh learns to get up early.ppt: en (English)
+2026-03-23 11:49:54.893951: Starting extraction for: Ahsh learns to get up early.ppt
+2026-03-23 11:49:54.894533: Using cached text for: Ahsh learns to get up early.ppt
+2026-03-23 11:49:54.905303: Detected language for Ahsh learns to get up early.ppt: en (English)
+2026-03-23 11:50:13.040166: Ask AI triggered: who is asha? for Ahsh learns to get up early.ppt (lang: en)
+2026-03-23 11:50:13.955258: Gemini not available. Falling back to local model for: who is asha?
+2026-03-23 11:51:07.489968: Ask AI triggered: who is chintu? for Ahsh learns to get up early.ppt (lang: en)
+2026-03-23 11:51:07.490673: Gemini not available. Falling back to local model for: who is chintu?
+2026-03-23 11:51:25.962272: Ask AI triggered: who is chintu in this story? for Ahsh learns to get up early.ppt (lang: en)
+2026-03-23 11:51:25.963113: Gemini not available. Falling back to local model for: who is chintu in this story?
+2026-03-23 11:51:51.589854: Ask AI triggered: who get ups late in the moring? for Ahsh learns to get up early.ppt (lang: en)
+2026-03-23 11:51:51.590338: Gemini not available. Falling back to local model for: who get ups late in the moring?
+2026-03-23 11:51:53.155756: Extractive QA failed for 'who get ups late in the moring?'. Trying generative fallback...
+2026-03-23 11:53:06.959862: Ask AI triggered: how sung the song for Ahsh learns to get up early.ppt (lang: en)
+2026-03-23 11:53:06.960519: Gemini not available. Falling back to local model for: how sung the song
+2026-03-23 11:53:08.528606: Extractive QA failed for 'how sung the song'. Trying generative fallback...
+2026-03-23 11:53:26.076707: Ask AI triggered: how sung the song for Ahsh learns to get up early.ppt (lang: en)
+2026-03-23 11:53:26.077328: Gemini not available. Falling back to local model for: how sung the song
+2026-03-23 11:53:27.309191: Extractive QA failed for 'how sung the song'. Trying generative fallback...
+2026-03-23 11:53:49.872188: Ask AI triggered: who sung the song for Ahsh learns to get up early.ppt (lang: en)
+2026-03-23 11:53:49.873189: Gemini not available. Falling back to local model for: who sung the song
+2026-03-23 11:53:51.412376: Extractive QA failed for 'who sung the song'. Trying generative fallback...
+2026-03-23 11:56:28.415014: Ask AI triggered: who is asha for Ahsh learns to get up early.ppt (lang: en)
+2026-03-23 11:57:16.181146: Ask AI triggered: who sung the song ? for Ahsh learns to get up early.ppt (lang: en)
+2026-03-23 11:57:18.966276: Gemini not available. Falling back to local model for: who sung the song ?
+2026-03-23 11:58:16.005497: Ask AI triggered: who is very lazy? for Ahsh learns to get up early.ppt (lang: en)
+2026-03-23 11:58:16.006070: Gemini not available. Falling back to local model for: who is very lazy?
+2026-03-23 11:58:58.448932: Ask AI triggered: who trys to wake up asha for Ahsh learns to get up early.ppt (lang: en)
+2026-03-23 11:58:58.449721: Gemini not available. Falling back to local model for: who trys to wake up asha
+2026-03-23 11:59:31.479531: Ask AI triggered: everyday who trys to wake up asha for Ahsh learns to get up early.ppt (lang: en)
+2026-03-23 11:59:31.480013: Gemini not available. Falling back to local model for: everyday who trys to wake up asha
+2026-03-23 11:59:33.052333: Extractive QA failed for 'everyday who trys to wake up asha'. Trying generative fallback...
+2026-03-23 12:00:05.150310: Ask AI triggered: everyday who trys to wake up asha early for Ahsh learns to get up early.ppt (lang: en)
+2026-03-23 12:00:05.151091: Gemini not available. Falling back to local model for: everyday who trys to wake up asha early
+2026-03-23 12:00:06.301315: Extractive QA failed for 'everyday who trys to wake up asha early'. Trying generative fallback...
+2026-03-23 12:00:24.568929: Ask AI triggered: everyday who trys to wake up asha early for Ahsh learns to get up early.ppt (lang: en)
+2026-03-23 12:00:24.569593: Gemini not available. Falling back to local model for: everyday who trys to wake up asha early
+2026-03-23 12:00:25.820088: Extractive QA failed for 'everyday who trys to wake up asha early'. Trying generative fallback...
+2026-03-23 12:01:19.608689: Ask AI triggered: who rush out dirty? for Ahsh learns to get up early.ppt (lang: en)
+2026-03-23 12:01:19.609222: Gemini not available. Falling back to local model for: who rush out dirty?
+2026-03-23 12:01:21.224372: Extractive QA failed for 'who rush out dirty?'. Trying generative fallback...
+2026-03-23 12:02:59.189264: Meaning lookup triggered for word: 'She would wake' in file: Ahsh learns to get up early.ppt (lang: en)
+2026-03-23 12:02:59.189771: Calling get_meaning for 'She would wake'...
+2026-03-23 12:02:59.190037: Dictionary lookup: 'She would wake' (Target: en)
+2026-03-23 12:02:59.249825: Meaning lookup triggered for word: 'She would wake' in file: Ahsh learns to get up early.ppt (lang: en)
+2026-03-23 12:02:59.251159: Calling get_meaning for 'She would wake'...
+2026-03-23 12:02:59.252054: Dictionary lookup: 'She would wake' (Target: en)
+2026-03-23 12:03:02.459478: Trying AI fallback for 'She would wake'...
+2026-03-23 12:03:02.460231: Trying AI fallback for 'She would wake'...
+2026-03-23 12:03:15.233298: get_meaning returned successfully for 'She would wake'
+2026-03-23 12:03:15.234200: Returning JSON meaning for 'She would wake'
+2026-03-23 12:03:15.272123: get_meaning returned successfully for 'She would wake'
+2026-03-23 12:03:15.272695: Returning JSON meaning for 'She would wake'
+2026-03-23 12:06:08.990512: Ask AI triggered: who never get up early? for Ahsh learns to get up early.ppt (lang: en)
+2026-03-23 12:06:08.991219: Gemini not available. Falling back to local model for: who never get up early?
+2026-03-23 12:07:02.199652: Ask AI triggered: who asked asha to say  prayers? for Ahsh learns to get up early.ppt (lang: en)
+2026-03-23 12:07:02.200492: Gemini not available. Falling back to local model for: who asked asha to say  prayers?
+2026-03-23 12:07:55.388494: Ask AI triggered: who ask asha to say her prayers? for Ahsh learns to get up early.ppt (lang: en)
+2026-03-23 12:07:55.388964: Gemini not available. Falling back to local model for: who ask asha to say her prayers?
+2026-03-23 12:11:23.513233: Ask AI triggered: what happened in page 5 for Ahsh learns to get up early.ppt (lang: en)
+2026-03-23 12:11:23.513702: Gemini not available. Falling back to local model for: what happened in page 5
+2026-03-23 12:11:25.480465: Extractive QA failed for 'what happened in page 5'. Trying generative fallback...
+2026-03-23 12:23:29.375258: quiz_history table verified/created.
+2026-03-23 12:24:51.509610: Starting extraction for: Ahsh learns to get up early.ppt
+2026-03-23 12:24:51.510390: Using cached text for: Ahsh learns to get up early.ppt
+2026-03-23 12:24:51.700240: Detected language for Ahsh learns to get up early.ppt: en (English)
+2026-03-23 12:24:51.755682: Starting extraction for: Ahsh learns to get up early.ppt
+2026-03-23 12:24:51.755917: Using cached text for: Ahsh learns to get up early.ppt
+2026-03-23 12:24:51.759043: Detected language for Ahsh learns to get up early.ppt: en (English)
+2026-03-23 12:25:30.748188: Valid GEMINI_API_KEY not found in environment (found placeholder or empty).
+2026-03-23 12:25:30.748374: Falling back to local quiz simulation...
+2026-03-23 12:25:30.749183: Valid GEMINI_API_KEY not found in environment (found placeholder or empty).
+2026-03-23 12:25:30.749308: Falling back to local quiz simulation...
+2026-03-23 12:26:21.654768: Starting extraction for: Ahsh learns to get up early.ppt
+2026-03-23 12:26:21.655141: Using cached text for: Ahsh learns to get up early.ppt
+2026-03-23 12:26:21.662049: Detected language for Ahsh learns to get up early.ppt: en (English)
+2026-03-23 12:26:21.669753: Starting extraction for: Ahsh learns to get up early.ppt
+2026-03-23 12:26:21.670159: Using cached text for: Ahsh learns to get up early.ppt
+2026-03-23 12:26:21.677725: Detected language for Ahsh learns to get up early.ppt: en (English)
+2026-03-23 12:28:19.505227: Starting extraction for: Ahsh learns to get up early.ppt
+2026-03-23 12:28:19.505452: Using cached text for: Ahsh learns to get up early.ppt
+2026-03-23 12:28:19.508265: Detected language for Ahsh learns to get up early.ppt: en (English)
+2026-03-23 12:28:19.512724: Starting extraction for: Ahsh learns to get up early.ppt
+2026-03-23 12:28:19.512995: Using cached text for: Ahsh learns to get up early.ppt
+2026-03-23 12:28:19.516101: Detected language for Ahsh learns to get up early.ppt: en (English)
+2026-03-23 12:30:06.604925: quiz_history table verified/created.
+2026-03-23 12:31:37.256738: Valid GEMINI_API_KEY not found in environment (found placeholder or empty).
+2026-03-23 12:31:37.257793: Falling back to local quiz simulation...
+2026-03-23 12:34:58.967945: Valid GEMINI_API_KEY not found in environment (found placeholder or empty).
+2026-03-23 12:34:58.968527: Falling back to local quiz simulation...
+2026-03-23 12:39:58.089231: quiz_history table verified/created.
+2026-03-23 12:40:49.375317: quiz_history table verified/created.
+2026-03-23 12:51:43.614514: Meaning lookup triggered for word: 'Wake up' in file: Ahsh learns to get up early.ppt (lang: en)
+2026-03-23 12:51:43.615139: Calling get_meaning for 'Wake up'...
+2026-03-23 12:51:43.615677: Dictionary lookup: 'Wake up' (Target: en)
+2026-03-23 12:51:43.650238: Meaning lookup triggered for word: 'Wake up' in file: Ahsh learns to get up early.ppt (lang: en)
+2026-03-23 12:51:43.651203: Calling get_meaning for 'Wake up'...
+2026-03-23 12:51:43.651685: Dictionary lookup: 'Wake up' (Target: en)
+2026-03-23 12:51:46.565900: Trying AI fallback for 'Wake up'...
+2026-03-23 12:51:46.567314: Trying AI fallback for 'Wake up'...
+2026-03-23 12:51:59.370083: get_meaning returned successfully for 'Wake up'
+2026-03-23 12:51:59.370470: Returning JSON meaning for 'Wake up'
+2026-03-23 12:52:00.734212: get_meaning returned successfully for 'Wake up'
+2026-03-23 12:52:00.734535: Returning JSON meaning for 'Wake up'
+2026-03-23 12:55:20.523093: quiz_history table verified/created.
+2026-03-23 12:55:56.687402: Generating LOCAL quiz (True/False)...
+2026-03-23 12:55:56.688509: Generating LOCAL quiz (Fill in the Blanks)...
+2026-03-23 12:56:39.434235: quiz_history table verified/created.
+2026-03-23 12:56:56.264112: Starting extraction for: Ahsh learns to get up early.ppt
+2026-03-23 12:56:56.265761: Using cached text for: Ahsh learns to get up early.ppt
+2026-03-23 12:56:56.838339: Detected language for Ahsh learns to get up early.ppt: en (English)
+2026-03-23 12:56:56.998977: Starting extraction for: Ahsh learns to get up early.ppt
+2026-03-23 12:56:57.000069: Using cached text for: Ahsh learns to get up early.ppt
+2026-03-23 12:56:57.009467: Detected language for Ahsh learns to get up early.ppt: en (English)
+2026-03-23 12:57:21.829687: Generating LOCAL quiz (MCQ)...
+2026-03-23 13:06:39.579052: Generating LOCAL quiz (True/False)...
+2026-03-23 13:16:24.316264: Starting extraction for: cloud case study .docx
+2026-03-23 13:16:24.317750: Using cached text for: cloud case study .docx
+2026-03-23 13:16:24.950815: Detected language for cloud case study .docx: en (English)
+2026-03-23 13:16:36.520364: Starting extraction for: Ahsh learns to get up early.ppt
+2026-03-23 13:16:36.521085: Using cached text for: Ahsh learns to get up early.ppt
+2026-03-23 13:16:36.530392: Detected language for Ahsh learns to get up early.ppt: en (English)
+2026-03-23 13:16:36.539969: Starting extraction for: Ahsh learns to get up early.ppt
+2026-03-23 13:16:36.541368: Using cached text for: Ahsh learns to get up early.ppt
+2026-03-23 13:16:36.554409: Detected language for Ahsh learns to get up early.ppt: en (English)
+2026-03-23 13:16:44.323565: Starting extraction for: cloud case study .docx
+2026-03-23 13:16:44.324225: Using cached text for: cloud case study .docx
+2026-03-23 13:16:44.346780: Detected language for cloud case study .docx: en (English)
+2026-03-23 13:28:06.253014: Starting extraction for: Ahsh learns to get up early.ppt
+2026-03-23 13:28:06.254129: Using cached text for: Ahsh learns to get up early.ppt
+2026-03-23 13:28:06.266347: Detected language for Ahsh learns to get up early.ppt: en (English)
+2026-03-23 13:28:06.283819: Starting extraction for: Ahsh learns to get up early.ppt
+2026-03-23 13:28:06.286734: Using cached text for: Ahsh learns to get up early.ppt
+2026-03-23 13:28:06.306507: Detected language for Ahsh learns to get up early.ppt: en (English)
+2026-03-23 13:52:15.972246: Failed to convert D:\AI_Book_Reader\uploads\cloud case study .docx to PDF via Office COM: (-2146824090, None, ('Command failed', 'Microsoft Word', 'wdmain11.chm', 36966, None))
+2026-03-23 13:52:16.975109: Failed to convert D:\AI_Book_Reader\uploads\cloud case study .docx to PDF via Office COM: (-2146824090, None, ('Command failed', 'Microsoft Word', 'wdmain11.chm', 36966, None))
+2026-03-23 14:39:05.812172: Starting extraction for: Ahsh learns to get up early.ppt
+2026-03-23 14:39:05.813232: Using cached text for: Ahsh learns to get up early.ppt
+2026-03-23 14:39:06.518416: Detected language for Ahsh learns to get up early.ppt: en (English)
+2026-03-23 14:39:06.533531: Starting extraction for: Ahsh learns to get up early.ppt
+2026-03-23 14:39:06.534243: Using cached text for: Ahsh learns to get up early.ppt
+2026-03-23 14:39:06.543848: Detected language for Ahsh learns to get up early.ppt: en (English)
+2026-03-23 14:52:00.307311: File deletion error: [WinError 32] The process cannot access the file because it is being used by another process: 'uploads\\cloud case study .docx'
+2026-03-23 14:52:07.979255: CRITICAL UPLOAD ERROR: [Errno 13] Permission denied: 'uploads\\cloud case study .docx'
+Traceback (most recent call last):
+  File "D:\AI_Book_Reader\app.py", line 386, in upload
+    file.save(path)
+    ~~~~~~~~~^^^^^^
+  File "C:\Users\sanka\AppData\Local\Programs\Python\Python314\Lib\site-packages\werkzeug\datastructures\file_storage.py", line 129, in save
+    dst = open(dst, "wb")
+PermissionError: [Errno 13] Permission denied: 'uploads\\cloud case study .docx'
+
+2026-03-23 14:54:30.044549: Starting extraction for: Ahsh learns to get up early.ppt
+2026-03-23 14:54:30.045070: Using cached text for: Ahsh learns to get up early.ppt
+2026-03-23 14:54:30.655143: Detected language for Ahsh learns to get up early.ppt: en (English)
+2026-03-23 14:54:30.668742: Starting extraction for: Ahsh learns to get up early.ppt
+2026-03-23 14:54:30.669495: Using cached text for: Ahsh learns to get up early.ppt
+2026-03-23 14:54:30.678687: Detected language for Ahsh learns to get up early.ppt: en (English)
+2026-03-23 15:01:10.779398: Starting extraction for: cloud case study .pdf
+2026-03-23 15:01:10.954293: Extraction completed for: uploads\cloud case study .pdf
+2026-03-23 15:01:10.956744: Extraction successful for: cloud case study .pdf (4858 chars)
+2026-03-23 15:01:11.585182: Detected language for cloud case study .pdf: en (English)
+2026-03-23 15:01:11.593530: Starting extraction for: cloud case study .pdf
+2026-03-23 15:01:11.594046: Using cached text for: cloud case study .pdf
+2026-03-23 15:01:11.606736: Detected language for cloud case study .pdf: en (English)
+2026-03-23 15:01:20.047485: Starting extraction for: cloud case study .pdf
+2026-03-23 15:01:20.048338: Using cached text for: cloud case study .pdf
+2026-03-23 15:01:20.087074: Preparing translation for cloud case study .pdf to ta
+2026-03-23 15:01:31.552941: Starting extraction for: cloud case study .pdf
+2026-03-23 15:01:31.553650: Using cached text for: cloud case study .pdf
+2026-03-23 15:01:31.561569: Detected language for cloud case study .pdf: en (English)
+2026-03-23 15:01:31.561791: Using cached translation for cloud case study .pdf (ta)
+2026-03-23 15:36:16.544710: Starting extraction for: Ahsh learns to get up early.ppt
+2026-03-23 15:36:16.545259: Using cached text for: Ahsh learns to get up early.ppt
+2026-03-23 15:36:17.227705: Detected language for Ahsh learns to get up early.ppt: en (English)
+2026-03-23 15:36:17.346713: Starting extraction for: Ahsh learns to get up early.ppt
+2026-03-23 15:36:17.347491: Using cached text for: Ahsh learns to get up early.ppt
+2026-03-23 15:36:17.356388: Detected language for Ahsh learns to get up early.ppt: en (English)
+2026-03-23 15:40:57.887063: Starting extraction for: cloud case study .pdf
+2026-03-23 15:40:57.888251: Using cached text for: cloud case study .pdf
+2026-03-23 15:40:58.546329: Detected language for cloud case study .pdf: en (English)
+2026-03-23 15:40:58.553542: Starting extraction for: cloud case study .pdf
+2026-03-23 15:40:58.554012: Using cached text for: cloud case study .pdf
+2026-03-23 15:40:58.566546: Detected language for cloud case study .pdf: en (English)
+2026-03-23 15:41:06.246854: Generating local quiz for (lang: en, text length: 4858)
+2026-03-23 15:43:07.005998: Starting extraction for: cloud case study .pdf
+2026-03-23 15:43:07.007411: Using cached text for: cloud case study .pdf
+2026-03-23 15:43:07.069716: Detected language for cloud case study .pdf: en (English)
+2026-03-23 15:43:07.108237: Starting extraction for: cloud case study .pdf
+2026-03-23 15:43:07.109527: Using cached text for: cloud case study .pdf
+2026-03-23 15:43:07.143065: Detected language for cloud case study .pdf: en (English)
+2026-03-23 15:43:18.491802: Starting extraction for: Ahsh learns to get up early.ppt
+2026-03-23 15:43:18.493624: Using cached text for: Ahsh learns to get up early.ppt
+2026-03-23 15:43:18.506900: Detected language for Ahsh learns to get up early.ppt: en (English)
+2026-03-23 15:43:18.771674: Starting extraction for: Ahsh learns to get up early.ppt
+2026-03-23 15:43:18.772678: Using cached text for: Ahsh learns to get up early.ppt
+2026-03-23 15:43:18.784931: Detected language for Ahsh learns to get up early.ppt: en (English)
+2026-03-23 15:43:20.369621: Generating local quiz for (lang: en, text length: 2053)
+2026-03-23 15:44:52.493643: Starting extraction for: cloud case study .pdf
+2026-03-23 15:44:52.494513: Using cached text for: cloud case study .pdf
+2026-03-23 15:44:52.513833: Detected language for cloud case study .pdf: en (English)
+2026-03-23 15:44:52.526354: Starting extraction for: cloud case study .pdf
+2026-03-23 15:44:52.527281: Using cached text for: cloud case study .pdf
+2026-03-23 15:44:52.547711: Detected language for cloud case study .pdf: en (English)
+2026-03-23 15:46:21.724551: Generating local quiz for (lang: en, text length: 4858)
+2026-03-23 15:48:30.882623: Starting extraction for: cloud case study .pdf
+2026-03-23 15:48:30.883789: Using cached text for: cloud case study .pdf
+2026-03-23 15:48:31.498721: Detected language for cloud case study .pdf: en (English)
+2026-03-23 15:48:31.506963: Starting extraction for: cloud case study .pdf
+2026-03-23 15:48:31.507707: Using cached text for: cloud case study .pdf
+2026-03-23 15:48:31.522899: Detected language for cloud case study .pdf: en (English)
+2026-03-23 15:48:37.289465: Starting extraction for: Ahsh learns to get up early.ppt
+2026-03-23 15:48:37.327377: Using cached text for: Ahsh learns to get up early.ppt
+2026-03-23 15:48:37.444489: Detected language for Ahsh learns to get up early.ppt: en (English)
+2026-03-23 15:48:39.240600: Starting extraction for: Ahsh learns to get up early.ppt
+2026-03-23 15:48:39.257992: Using cached text for: Ahsh learns to get up early.ppt
+2026-03-23 15:48:39.273169: Detected language for Ahsh learns to get up early.ppt: en (English)
+2026-03-23 15:48:41.346943: Generating local quiz for (lang: en, text length: 2053)
+2026-03-23 15:49:53.197740: Starting extraction for: Ahsh learns to get up early.ppt
+2026-03-23 15:49:53.200606: Using cached text for: Ahsh learns to get up early.ppt
+2026-03-23 15:49:53.212647: Detected language for Ahsh learns to get up early.ppt: en (English)
+2026-03-23 15:49:53.223890: Starting extraction for: Ahsh learns to get up early.ppt
+2026-03-23 15:49:53.224488: Using cached text for: Ahsh learns to get up early.ppt
+2026-03-23 15:49:53.238569: Detected language for Ahsh learns to get up early.ppt: en (English)
+2026-03-23 15:49:55.298868: Generating local quiz for (lang: en, text length: 2053)
+2026-03-23 15:50:57.027594: Starting extraction for: cloud case study .pdf
+2026-03-23 15:50:57.028681: Using cached text for: cloud case study .pdf
+2026-03-23 15:50:57.044744: Detected language for cloud case study .pdf: en (English)
+2026-03-23 15:50:57.052201: Starting extraction for: cloud case study .pdf
+2026-03-23 15:50:57.053030: Using cached text for: cloud case study .pdf
+2026-03-23 15:50:57.072240: Detected language for cloud case study .pdf: en (English)
+2026-03-23 15:51:02.955866: Starting extraction for: Ahsh learns to get up early.ppt
+2026-03-23 15:51:02.957155: Using cached text for: Ahsh learns to get up early.ppt
+2026-03-23 15:51:02.987565: Detected language for Ahsh learns to get up early.ppt: en (English)
+2026-03-23 15:51:03.040643: Starting extraction for: Ahsh learns to get up early.ppt
+2026-03-23 15:51:03.041487: Using cached text for: Ahsh learns to get up early.ppt
+2026-03-23 15:51:03.077132: Detected language for Ahsh learns to get up early.ppt: en (English)
+2026-03-23 15:51:04.393165: Generating local quiz for (lang: en, text length: 2053)
+2026-03-23 15:52:42.728744: Starting extraction for: Ahsh learns to get up early.ppt
+2026-03-23 15:52:42.730388: Using cached text for: Ahsh learns to get up early.ppt
+2026-03-23 15:52:42.741797: Detected language for Ahsh learns to get up early.ppt: en (English)
+2026-03-23 15:52:42.753063: Starting extraction for: Ahsh learns to get up early.ppt
+2026-03-23 15:52:42.754751: Using cached text for: Ahsh learns to get up early.ppt
+2026-03-23 15:52:42.768786: Detected language for Ahsh learns to get up early.ppt: en (English)
+2026-03-23 15:52:47.963162: Generating local quiz for (lang: en, text length: 2053)
+2026-03-23 15:53:39.491268: Starting extraction for: Ahsh learns to get up early.ppt
+2026-03-23 15:53:39.491548: Using cached text for: Ahsh learns to get up early.ppt
+2026-03-23 15:53:39.494563: Detected language for Ahsh learns to get up early.ppt: en (English)
+2026-03-23 15:53:39.498375: Starting extraction for: Ahsh learns to get up early.ppt
+2026-03-23 15:53:39.498575: Using cached text for: Ahsh learns to get up early.ppt
+2026-03-23 15:53:39.502467: Detected language for Ahsh learns to get up early.ppt: en (English)
+2026-03-23 15:53:52.477231: Generating local quiz for (lang: en, text length: 2053)
+2026-03-23 15:54:51.485700: Starting extraction for: Ahsh learns to get up early.ppt
+2026-03-23 15:54:51.486288: Using cached text for: Ahsh learns to get up early.ppt
+2026-03-23 15:54:51.497280: Detected language for Ahsh learns to get up early.ppt: en (English)
+2026-03-23 15:54:51.508148: Starting extraction for: Ahsh learns to get up early.ppt
+2026-03-23 15:54:51.510113: Using cached text for: Ahsh learns to get up early.ppt
+2026-03-23 15:54:51.524150: Detected language for Ahsh learns to get up early.ppt: en (English)
+2026-03-23 15:56:14.790252: Generating local quiz for (lang: en, text length: 2053)
+2026-03-23 16:00:51.189068: Starting extraction for: Ahsh learns to get up early.ppt
+2026-03-23 16:00:51.189314: Using cached text for: Ahsh learns to get up early.ppt
+2026-03-23 16:00:51.423894: Detected language for Ahsh learns to get up early.ppt: en (English)
+2026-03-23 16:00:51.474216: Starting extraction for: Ahsh learns to get up early.ppt
+2026-03-23 16:00:51.474647: Using cached text for: Ahsh learns to get up early.ppt
+2026-03-23 16:00:51.477393: Detected language for Ahsh learns to get up early.ppt: en (English)
+2026-03-23 16:03:23.903893: Generating local quiz for (lang: en, text length: 2053)
+2026-03-23 16:06:52.705241: Starting extraction for: Ahsh learns to get up early.ppt
+2026-03-23 16:06:52.706670: Using cached text for: Ahsh learns to get up early.ppt
+2026-03-23 16:06:53.382831: Detected language for Ahsh learns to get up early.ppt: en (English)
+2026-03-23 16:32:26.726293: File deletion error: [WinError 32] The process cannot access the file because it is being used by another process: 'uploads\\20260323_145822_cloud_case_study_.docx'
+2026-03-23 16:32:30.628606: File deletion error: [WinError 32] The process cannot access the file because it is being used by another process: 'uploads\\20260323_145822_cloud_case_study_.docx'
+2026-03-23 16:32:39.085271: Starting extraction for: 20260323_145933_cloud_case_study_.docx
+2026-03-23 16:32:39.092850: File: 20260323_145933_cloud_case_study_.docx - Unable to read this file. Error: Invalid file format
+2026-03-23 16:32:39.769030: Detected language for 20260323_145933_cloud_case_study_.docx: en (English)
+2026-03-23 16:32:45.826595: File deletion error: [WinError 32] The process cannot access the file because it is being used by another process: 'uploads\\20260323_145933_cloud_case_study_.docx'
+2026-03-23 16:32:51.202520: File deletion error: [WinError 32] The process cannot access the file because it is being used by another process: 'uploads\\20260323_145933_cloud_case_study_.docx'
+2026-03-23 16:32:59.095326: Starting extraction for: 20260323_145933_cloud_case_study_.docx
+2026-03-23 16:32:59.098920: File: 20260323_145933_cloud_case_study_.docx - Unable to read this file. Error: Invalid file format
+2026-03-23 16:32:59.106197: Detected language for 20260323_145933_cloud_case_study_.docx: en (English)
+2026-03-23 16:32:59.803536: File deletion error: [WinError 32] The process cannot access the file because it is being used by another process: 'uploads\\20260323_145822_cloud_case_study_.docx'
+2026-03-23 16:33:02.230380: File deletion error: [WinError 32] The process cannot access the file because it is being used by another process: 'uploads\\20260323_145933_cloud_case_study_.docx'
+2026-03-23 16:33:09.786496: File deletion error: [WinError 32] The process cannot access the file because it is being used by another process: 'uploads\\20260323_145933_cloud_case_study_.docx'
+2026-03-23 16:33:18.710810: File deletion error: [WinError 32] The process cannot access the file because it is being used by another process: 'uploads\\cloud case study .docx'
+2026-03-23 16:33:28.286391: File deletion error: [WinError 32] The process cannot access the file because it is being used by another process: 'uploads\\20260323_145822_cloud_case_study_.docx'
+2026-03-23 16:33:34.736873: File deletion error: [WinError 32] The process cannot access the file because it is being used by another process: 'uploads\\20260323_145933_cloud_case_study_.docx'
+2026-03-23 16:33:47.474568: File deletion error: [WinError 32] The process cannot access the file because it is being used by another process: 'uploads\\20260323_145822_cloud_case_study_.docx'
+2026-03-23 16:34:08.211543: File deletion error: [WinError 32] The process cannot access the file because it is being used by another process: 'uploads\\20260323_145822_cloud_case_study_.docx'
+2026-03-23 16:34:11.950212: File deletion error: [WinError 32] The process cannot access the file because it is being used by another process: 'uploads\\20260323_145933_cloud_case_study_.docx'
+2026-03-23 16:34:17.712037: File deletion error: [WinError 32] The process cannot access the file because it is being used by another process: 'uploads\\20260323_145933_cloud_case_study_.docx'
+2026-03-23 16:34:22.271818: File deletion error: [WinError 32] The process cannot access the file because it is being used by another process: 'uploads\\20260323_145933_cloud_case_study_.docx'
+2026-03-23 16:34:26.445614: Starting extraction for: cloud case study .pdf
+2026-03-23 16:34:26.446915: Using cached text for: cloud case study .pdf
+2026-03-23 16:34:26.464429: Detected language for cloud case study .pdf: en (English)
+2026-03-23 16:34:26.482173: Starting extraction for: cloud case study .pdf
+2026-03-23 16:34:26.484663: Using cached text for: cloud case study .pdf
+2026-03-23 16:34:26.504397: Detected language for cloud case study .pdf: en (English)
+2026-03-23 16:34:37.320154: Valid GEMINI_API_KEY not found in environment (found placeholder or empty).
+2026-03-23 16:34:48.518469: Valid GEMINI_API_KEY not found in environment (found placeholder or empty).
+2026-03-23 16:36:28.188787: Starting extraction for: cloud case study .pdf
+2026-03-23 16:36:28.189359: Using cached text for: cloud case study .pdf
+2026-03-23 16:36:28.203462: Detected language for cloud case study .pdf: en (English)
+2026-03-23 16:36:28.224472: Starting extraction for: cloud case study .pdf
+2026-03-23 16:36:28.224972: Using cached text for: cloud case study .pdf
+2026-03-23 16:36:28.235925: Detected language for cloud case study .pdf: en (English)
+2026-03-23 16:37:17.637998: Valid GEMINI_API_KEY not found in environment (found placeholder or empty).
+2026-03-23 16:39:05.992591: Starting extraction for: Ahsh learns to get up early.ppt
+2026-03-23 16:39:05.993863: Using cached text for: Ahsh learns to get up early.ppt
+2026-03-23 16:39:06.637337: Detected language for Ahsh learns to get up early.ppt: en (English)
+2026-03-23 16:39:06.745166: Starting extraction for: Ahsh learns to get up early.ppt
+2026-03-23 16:39:06.746533: Using cached text for: Ahsh learns to get up early.ppt
+2026-03-23 16:39:06.757128: Detected language for Ahsh learns to get up early.ppt: en (English)
+2026-03-23 16:39:15.484679: Valid GEMINI_API_KEY not found in environment (found placeholder or empty).
+2026-03-23 16:39:15.484773: Valid GEMINI_API_KEY not found in environment (found placeholder or empty).
+2026-03-23 16:39:28.883306: Starting extraction for: Ahsh learns to get up early.ppt
+2026-03-23 16:39:28.884281: Using cached text for: Ahsh learns to get up early.ppt
+2026-03-23 16:39:28.897179: Detected language for Ahsh learns to get up early.ppt: en (English)
+2026-03-23 16:39:28.907492: Starting extraction for: Ahsh learns to get up early.ppt
+2026-03-23 16:39:28.908844: Using cached text for: Ahsh learns to get up early.ppt
+2026-03-23 16:39:28.921277: Detected language for Ahsh learns to get up early.ppt: en (English)
+2026-03-23 16:39:32.026878: Valid GEMINI_API_KEY not found in environment (found placeholder or empty).
+2026-03-23 16:39:37.070676: Valid GEMINI_API_KEY not found in environment (found placeholder or empty).
+2026-03-23 16:39:41.672540: Valid GEMINI_API_KEY not found in environment (found placeholder or empty).
+2026-03-23 16:39:45.632134: Valid GEMINI_API_KEY not found in environment (found placeholder or empty).
+2026-03-23 16:39:50.928589: Valid GEMINI_API_KEY not found in environment (found placeholder or empty).
+2026-03-23 16:41:16.217585: Meaning lookup triggered for word: 'Asha' in file: Ahsh learns to get up early.ppt (lang: en)
+2026-03-23 16:41:16.218223: Calling get_meaning for 'Asha'...
+2026-03-23 16:41:16.218776: Dictionary lookup: 'Asha' (Target: en)
+2026-03-23 16:41:16.241972: Meaning lookup triggered for word: 'Asha' in file: Ahsh learns to get up early.ppt (lang: en)
+2026-03-23 16:41:16.242346: Calling get_meaning for 'Asha'...
+2026-03-23 16:41:16.242692: Dictionary lookup: 'Asha' (Target: en)
+2026-03-23 16:41:18.436740: Trying AI fallback for 'Asha'...
+2026-03-23 16:41:18.638953: Trying AI fallback for 'Asha'...
+2026-03-23 16:41:31.233491: get_meaning returned successfully for 'Asha'
+2026-03-23 16:41:31.234213: Returning JSON meaning for 'Asha'
+2026-03-23 16:41:31.258148: get_meaning returned successfully for 'Asha'
+2026-03-23 16:41:31.258853: Returning JSON meaning for 'Asha'
+2026-03-23 16:46:00.497386: Starting extraction for: Ahsh learns to get up early.ppt
+2026-03-23 16:46:00.497669: Using cached text for: Ahsh learns to get up early.ppt
+2026-03-23 16:46:00.501173: Detected language for Ahsh learns to get up early.ppt: en (English)
+2026-03-23 16:49:02.734636: Failed to convert D:\AI_Book_Reader\dummy_test.docx to PDF via Office COM: (-2146824090, None, ('Command failed', 'Microsoft Word', 'wdmain11.chm', 36966, None))
+2026-03-23 16:50:24.868741: File deletion error: [WinError 32] The process cannot access the file because it is being used by another process: 'uploads\\cloud case study .docx'
+2026-03-23 16:50:51.768402: File deletion error: [WinError 32] The process cannot access the file because it is being used by another process: 'uploads\\20260323_145822_cloud_case_study_.docx'
+2026-03-23 16:50:57.259571: File deletion error: [WinError 32] The process cannot access the file because it is being used by another process: 'uploads\\20260323_145822_cloud_case_study_.docx'
+2026-03-23 16:52:07.290757: Starting extraction for: cloud case study .pdf
+2026-03-23 16:52:07.291302: Using cached text for: cloud case study .pdf
+2026-03-23 16:52:07.306519: Detected language for cloud case study .pdf: en (English)
+2026-03-23 16:52:07.315005: Starting extraction for: cloud case study .pdf
+2026-03-23 16:52:07.316188: Using cached text for: cloud case study .pdf
+2026-03-23 16:52:07.334279: Detected language for cloud case study .pdf: en (English)
+2026-03-23 16:53:45.437110: Starting extraction for: cloud case study .pdf
+2026-03-23 16:53:45.438774: Using cached text for: cloud case study .pdf
+2026-03-23 16:53:45.468241: Detected language for cloud case study .pdf: en (English)
+2026-03-23 16:53:45.479756: Starting extraction for: cloud case study .pdf
+2026-03-23 16:53:45.481302: Using cached text for: cloud case study .pdf
+2026-03-23 16:53:45.498387: Detected language for cloud case study .pdf: en (English)
+2026-03-23 16:54:37.567670: Starting extraction for: Fairytale-Mulan.pdf
+2026-03-23 16:54:37.568244: Using cached text for: Fairytale-Mulan.pdf
+2026-03-23 16:54:37.578240: Detected language for Fairytale-Mulan.pdf: en (English)
+2026-03-23 16:54:37.586766: Starting extraction for: Fairytale-Mulan.pdf
+2026-03-23 16:54:37.587141: Using cached text for: Fairytale-Mulan.pdf
+2026-03-23 16:54:37.600586: Detected language for Fairytale-Mulan.pdf: en (English)
+2026-03-23 16:54:48.916068: Valid GEMINI_API_KEY not found in environment (found placeholder or empty).
+2026-03-23 16:54:57.377411: Valid GEMINI_API_KEY not found in environment (found placeholder or empty).
+2026-03-23 16:55:26.472798: Valid GEMINI_API_KEY not found in environment (found placeholder or empty).
+2026-03-23 16:55:42.571065: Valid GEMINI_API_KEY not found in environment (found placeholder or empty).
+2026-03-23 16:56:12.359498: Valid GEMINI_API_KEY not found in environment (found placeholder or empty).
+2026-03-23 16:56:23.509383: Starting extraction for: Fairytale-Mulan.pdf
+2026-03-23 16:56:23.511804: Using cached text for: Fairytale-Mulan.pdf
+2026-03-23 16:56:23.526245: Preparing translation for Fairytale-Mulan.pdf to ta
+2026-03-23 16:56:31.068031: Translating chunk 10/73 (Target: ta)
+2026-03-23 16:56:41.080262: Translating chunk 20/73 (Target: ta)
+2026-03-23 16:56:51.600178: Translating chunk 30/73 (Target: ta)
+2026-03-23 16:57:02.224992: Translating chunk 40/73 (Target: ta)
+2026-03-23 16:57:12.266420: Translating chunk 50/73 (Target: ta)
+2026-03-23 16:57:18.399096: Translating chunk 60/73 (Target: ta)
+2026-03-23 16:57:24.003816: Translating chunk 70/73 (Target: ta)
+2026-03-23 16:57:26.623153: Starting extraction for: Fairytale-Mulan.pdf
+2026-03-23 16:57:26.623701: Using cached text for: Fairytale-Mulan.pdf
+2026-03-23 16:57:26.630036: Detected language for Fairytale-Mulan.pdf: en (English)
+2026-03-23 16:57:26.630368: Using cached translation for Fairytale-Mulan.pdf (ta)
+2026-03-23 16:59:57.181397: Valid GEMINI_API_KEY not found in environment (found placeholder or empty).
+2026-03-23 17:00:14.363073: Valid GEMINI_API_KEY not found in environment (found placeholder or empty).
+2026-03-23 17:00:19.679349: Valid GEMINI_API_KEY not found in environment (found placeholder or empty).
+2026-03-23 17:06:54.931775: Valid GEMINI_API_KEY not found in environment (found placeholder or empty).
+2026-03-23 17:06:56.705348: Valid GEMINI_API_KEY not found in environment (found placeholder or empty).
+2026-03-23 17:07:24.908660: Valid GEMINI_API_KEY not found in environment (found placeholder or empty).
+2026-03-23 17:07:46.888028: Starting extraction for: Fairytale-Mulan.pdf
+2026-03-23 17:07:46.888645: Using cached text for: Fairytale-Mulan.pdf
+2026-03-23 17:07:47.360323: Detected language for Fairytale-Mulan.pdf: en (English)
+2026-03-23 17:08:08.273005: Valid GEMINI_API_KEY not found in environment (found placeholder or empty).
+2026-03-23 17:08:15.013889: Valid GEMINI_API_KEY not found in environment (found placeholder or empty).
+2026-03-23 17:08:58.925488: Valid GEMINI_API_KEY not found in environment (found placeholder or empty).

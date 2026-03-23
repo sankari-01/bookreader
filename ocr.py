@@ -41,8 +41,12 @@ def extract_text(path):
                 img = Image.open(io.BytesIO(img_data))
                 page_text = pytesseract.image_to_string(img)
             
+            # Always add marker to maintain page alignment
+            text += f"\n--- Page {i+1} ---\n"
             if page_text:
-                text += f"\n--- Page {i+1} ---\n" + page_text + "\n"
+                text += page_text + "\n"
+            else:
+                text += "[Empty Page]\n"
         
         doc.close()
         log_error(f"Extraction completed for: {path}")
@@ -59,7 +63,9 @@ def extract_text(path):
                 pix = page.get_pixmap(matrix=fitz.Matrix(2, 2))
                 img_data = pix.tobytes("png")
                 img = Image.open(io.BytesIO(img_data))
-                text += pytesseract.image_to_string(img) + "\n"
+                text += f"\n--- Page {page_index+1} ---\n"
+                page_text = pytesseract.image_to_string(img)
+                text += (page_text if page_text else "[Empty Page]") + "\n"
             doc.close()
         except Exception as e_ocr:
             log_error(f"Emergency OCR also failed: {e_ocr}")

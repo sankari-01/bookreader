@@ -6,103 +6,100 @@ from deep_translator import GoogleTranslator
 def get_meaning(word, context=None, target_lang='en'):
     """
     Fetches the dictionary definition for the given word or phrase.
-    Supports splitting squashed words (e.g., AshaLearns).
-    Uses AI (BART/Summarizer) as a fallback for non-English words or when API fails.
+    Supports multi-lingual lookup via automatic translation to English for API lookup,
+    and fallback to AI explanation if API fails.
     """
     if not word:
         return "Please provide a word."
     
     word = word.strip()
     target_lang = target_lang.lower().strip()
-    log_error(f"Starting meaning lookup for: '{word}' (Target Lang: {target_lang})")
+    log_error(f"Dictionary lookup: '{word}' (Target: {target_lang})")
     
-    # 1. Identify words to lookup
-    looks_squashed = any(c.isupper() for c in word[1:]) if len(word) > 2 else False
-    
-    if looks_squashed:
+    # 1. Clean and identify word
+    # Split squashed words if needed (e.g. CamelCase)
+    if any(c.isupper() for c in word[1:]) and len(word) > 2:
         import re
         words_to_lookup = re.findall('[A-Z][^A-Z]*|[a-z]+', word)
     else:
-        words_to_lookup = [word] # Try the whole phrase first
+        words_to_lookup = [word]
 
     meanings = []
     
-    # Try dictionary API for each component if it's English
     for w in words_to_lookup:
-        clean_word = ''.join(e for e in w if e.isalnum())
-        if not clean_word or len(clean_word) < 2:
-            continue
+        # Remove punctuation for cleaner lookup
+        clean_word = ''.join(e for e in w if e.isalnum() or e in ["'", "-", " "]).strip()
+        if not clean_word: continue
             
         try:
-            # Check if word is likely non-English and translate it first
-            lookup_word = clean_word.lower()
+            # 2. Convert to English for standard API lookup
+            lookup_word = clean_word
+            is_non_english = False
             try:
-                # Use GoogleTranslator to get English version for dictionary lookup
-                translated_for_lookup = GoogleTranslator(source='auto', target='en').translate(lookup_word)
-                if translated_for_lookup and translated_for_lookup.lower() != lookup_word:
-                    log_error(f"Translated '{lookup_word}' to '{translated_for_lookup}' for dictionary lookup.")
-                    lookup_word = translated_for_lookup.lower()
+                # Detect and translate to English for reliable dictionary lookup
+                translator = GoogleTranslator(source='auto', target='en')
+                translated = translator.translate(clean_word)
+                if translated and translated.lower() != clean_word.lower():
+                    lookup_word = translated
+                    is_non_english = True
+                    log_error(f"Lookup translated '{clean_word}' -> '{lookup_word}'")
             except Exception as e:
-                log_error(f"Translation-for-lookup failed: {e}")
+                log_error(f"Dictionary translation error: {e}")
 
-            url = f"https://api.dictionaryapi.dev/api/v2/entries/en/{lookup_word}"
-            response = requests.get(url, timeout=3)
+            # 3. Try Free Dictionary API
+            url = f"https://api.dictionaryapi.dev/api/v2/entries/en/{lookup_word.lower()}"
+            response = requests.get(url, timeout=4)
             if response.ok:
                 data = response.json()
-                definition = data[0]['meanings'][0]['definitions'][0]['definition']
+                # Get the first definition
+                first_entry = data[0]
+                first_meaning = first_entry['meanings'][0]
+                definition = first_meaning['definitions'][0]['definition']
+                part_of_speech = first_meaning.get('partOfSpeech', '')
                 
-                # Granular Back-Translation: Translate ONLY the definition if target_lang is not English
+                # Format: [Part] Definition
+                result_text = f"<i>({part_of_speech})</i> {definition}" if part_of_speech else definition
+                
+                # Translate back to target language if needed
                 if target_lang != 'en':
                     try:
-                        translated_def = GoogleTranslator(source='en', target=target_lang).translate(definition)
-                        if translated_def:
-                            definition = translated_def
-                    except Exception as e:
-                        log_error(f"Back-translation failed for definition: {e}")
-
-                # Format the result nicely
-                display_word = f"{clean_word} ({lookup_word})" if lookup_word != clean_word.lower() else clean_word
-                meanings.append(f"<b>{display_word}:</b> {definition}" if len(words_to_lookup) > 1 else definition)
-                log_error(f"Dictionary API success for '{lookup_word}'")
+                        result_text = GoogleTranslator(source='en', target=target_lang).translate(result_text)
+                    except: pass
+                
+                display_title = f"{w} ({lookup_word})" if is_non_english else w
+                meanings.append(f"<b>{display_title}:</b> {result_text}")
                 continue
-        except:
-            pass
+        except Exception as e:
+            log_error(f"API Lookup failed for '{w}': {e}")
             
-        # Fallback to AI Explanation if Dictionary API fails or word is likely non-English
-        if context:
-            log_error(f"Dictionary API failed for '{clean_word}', trying AI fallback...")
-            ai_meaning = generate_explanation(w, context)
-            if ai_meaning:
-                # Translate AI output if needed
-                if target_lang != 'en':
-                    try:
-                        translated_ai = GoogleTranslator(source='auto', target=target_lang).translate(ai_meaning)
-                        if translated_ai:
-                            ai_meaning = translated_ai
-                    except:
-                        pass
-                
-                meanings.append(f"<b>{w}:</b> {ai_meaning}" if len(words_to_lookup) > 1 else ai_meaning)
-                log_error(f"AI fallback success for '{w}'")
-                continue
+        # 4. Fallback to AI Explanation
+        log_error(f"Trying AI fallback for '{w}'...")
+        ai_meaning = generate_explanation(w, context if context else f"Explain the meaning of the word '{w}'.")
+            
+        if ai_meaning:
+            # Translate AI output if target is not English
+            if target_lang != 'en':
+                try:
+                    ai_meaning = GoogleTranslator(source='auto', target=target_lang).translate(ai_meaning)
+                except: pass
+            meanings.append(f"<b>{w}:</b> {ai_meaning}")
+            continue
 
     if meanings:
-        result = "<br><br>".join(meanings)
-        # Final label translation if needed
+        # Final result formatting
+        final_html = "<br><br>".join(meanings)
+        # Translate the header "Meaning"
         label = "Meaning"
         if target_lang != 'en':
             try:
                 label = GoogleTranslator(source='en', target=target_lang).translate(label)
-            except:
-                pass
-        return f"<b>{label}:</b><br>{result}"
+            except: pass
+        return f"<div class='dictionary-entry'><strong>{label}:</strong><br>{final_html}</div>"
     
-    # Final Emergency Fallback
-    error_msg = f"Sorry, I couldn't find a definitive definition or explanation for '{word}'."
+    # Final Fallback
+    error_msg = f"Sorry, I couldn't find a definitive meaning for '{word}'."
     if target_lang != 'en':
         try:
             error_msg = GoogleTranslator(source='en', target=target_lang).translate(error_msg)
-        except:
-            pass
-    log_error(f"FAILED to find meaning for '{word}'.")
+        except: pass
     return error_msg
