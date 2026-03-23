@@ -5545,3 +5545,260 @@ PermissionError: [Errno 13] Permission denied: 'uploads\\cloud case study .docx'
 2026-03-23 17:08:08.273005: Valid GEMINI_API_KEY not found in environment (found placeholder or empty).
 2026-03-23 17:08:15.013889: Valid GEMINI_API_KEY not found in environment (found placeholder or empty).
 2026-03-23 17:08:58.925488: Valid GEMINI_API_KEY not found in environment (found placeholder or empty).
+2026-03-23 17:17:32.689698: Starting extraction for: Fairytale-Mulan.pdf
+2026-03-23 17:17:32.689919: Using cached text for: Fairytale-Mulan.pdf
+2026-03-23 17:17:32.922354: Detected language for Fairytale-Mulan.pdf: en (English)
+2026-03-23 17:18:11.636332: Starting extraction for: cloud case study .pdf
+2026-03-23 17:18:11.637948: Using cached text for: cloud case study .pdf
+2026-03-23 17:18:11.671979: Detected language for cloud case study .pdf: en (English)
+2026-03-23 17:18:11.701458: Starting extraction for: cloud case study .pdf
+2026-03-23 17:18:11.702338: Using cached text for: cloud case study .pdf
+2026-03-23 17:18:11.734451: Detected language for cloud case study .pdf: en (English)
+2026-03-23 17:20:06.704109: Starting extraction for: cloud case study .pdf
+2026-03-23 17:20:06.727693: Using cached text for: cloud case study .pdf
+2026-03-23 17:20:07.024185: Detected language for cloud case study .pdf: en (English)
+2026-03-23 17:20:07.259886: Starting extraction for: cloud case study .pdf
+2026-03-23 17:20:07.260948: Using cached text for: cloud case study .pdf
+2026-03-23 17:20:07.533137: Detected language for cloud case study .pdf: en (English)
+2026-03-23 17:20:37.837454: Starting extraction for: cloud case study .pdf
+2026-03-23 17:20:37.838026: Using cached text for: cloud case study .pdf
+2026-03-23 17:20:37.856801: Detected language for cloud case study .pdf: en (English)
+2026-03-23 17:20:37.908110: Starting extraction for: cloud case study .pdf
+2026-03-23 17:20:37.909552: Using cached text for: cloud case study .pdf
+2026-03-23 17:20:37.934104: Detected language for cloud case study .pdf: en (English)
+2026-03-23 17:22:22.754081: Starting extraction for: cloud case study .pdf
+2026-03-23 17:22:22.755706: Using cached text for: cloud case study .pdf
+2026-03-23 17:22:22.797910: Detected language for cloud case study .pdf: en (English)
+2026-03-23 17:22:22.833382: Starting extraction for: cloud case study .pdf
+2026-03-23 17:22:22.847621: Using cached text for: cloud case study .pdf
+2026-03-23 17:22:22.879681: Detected language for cloud case study .pdf: en (English)
+2026-03-23 17:23:02.546351: Starting extraction for: cloud case study .pdf
+2026-03-23 17:23:02.547476: Using cached text for: cloud case study .pdf
+2026-03-23 17:23:02.555165: Detected language for cloud case study .pdf: en (English)
+2026-03-23 17:23:02.566741: Starting extraction for: cloud case study .pdf
+2026-03-23 17:23:02.567888: Using cached text for: cloud case study .pdf
+2026-03-23 17:23:02.575892: Detected language for cloud case study .pdf: en (English)
+2026-03-23 17:24:31.927009: Starting extraction for: cloud case study .pdf
+2026-03-23 17:24:31.930461: Using cached text for: cloud case study .pdf
+2026-03-23 17:24:31.943586: Detected language for cloud case study .pdf: en (English)
+2026-03-23 17:24:31.964987: Starting extraction for: cloud case study .pdf
+2026-03-23 17:24:31.966670: Using cached text for: cloud case study .pdf
+2026-03-23 17:24:31.993252: Detected language for cloud case study .pdf: en (English)
+2026-03-23 17:25:14.876128: Starting extraction for: cloud case study .pdf
+2026-03-23 17:25:14.879391: Using cached text for: cloud case study .pdf
+2026-03-23 17:25:14.896985: Detected language for cloud case study .pdf: en (English)
+2026-03-23 17:25:14.905685: Starting extraction for: cloud case study .pdf
+2026-03-23 17:25:14.907095: Using cached text for: cloud case study .pdf
+2026-03-23 17:25:14.924362: Detected language for cloud case study .pdf: en (English)
+2026-03-23 17:25:15.524380: Starting extraction for: cloud case study .pdf
+2026-03-23 17:25:15.526655: Using cached text for: cloud case study .pdf
+2026-03-23 17:25:15.547332: Detected language for cloud case study .pdf: en (English)
+2026-03-23 17:25:15.557448: Starting extraction for: cloud case study .pdf
+2026-03-23 17:25:15.558099: Using cached text for: cloud case study .pdf
+2026-03-23 17:25:15.573042: Detected language for cloud case study .pdf: en (English)
+2026-03-23 17:31:55.499484: Starting extraction for: cloud case study .pdf
+2026-03-23 17:31:55.499752: Using cached text for: cloud case study .pdf
+2026-03-23 17:31:55.509559: Detected language for cloud case study .pdf: en (English)
+2026-03-23 17:31:55.515958: Starting extraction for: cloud case study .pdf
+2026-03-23 17:31:55.516410: Using cached text for: cloud case study .pdf
+2026-03-23 17:31:55.521482: Detected language for cloud case study .pdf: en (English)
+2026-03-23 17:34:09.441728: Starting extraction for: cloud case study .pdf
+2026-03-23 17:34:09.443033: Using cached text for: cloud case study .pdf
+2026-03-23 17:34:09.459961: Detected language for cloud case study .pdf: en (English)
+2026-03-23 17:34:09.467262: Starting extraction for: cloud case study .pdf
+2026-03-23 17:34:09.467818: Using cached text for: cloud case study .pdf
+2026-03-23 17:34:09.485990: Detected language for cloud case study .pdf: en (English)
+2026-03-23 17:34:37.881616: Starting extraction for: cloud case study .pdf
+2026-03-23 17:34:37.883867: Using cached text for: cloud case study .pdf
+2026-03-23 17:34:37.907096: Detected language for cloud case study .pdf: en (English)
+2026-03-23 17:34:37.926908: Starting extraction for: cloud case study .pdf
+2026-03-23 17:34:37.927928: Using cached text for: cloud case study .pdf
+2026-03-23 17:34:37.957604: Detected language for cloud case study .pdf: en (English)
+2026-03-23 17:34:46.265350: Starting extraction for: cloud case study .pdf
+2026-03-23 17:34:46.267032: Using cached text for: cloud case study .pdf
+2026-03-23 17:34:46.287104: Detected language for cloud case study .pdf: en (English)
+2026-03-23 17:34:46.303345: Starting extraction for: cloud case study .pdf
+2026-03-23 17:34:46.304846: Using cached text for: cloud case study .pdf
+2026-03-23 17:34:46.327583: Detected language for cloud case study .pdf: en (English)
+2026-03-23 17:38:32.498298: Starting extraction for: cloud case study .pdf
+2026-03-23 17:38:32.498746: Using cached text for: cloud case study .pdf
+2026-03-23 17:38:32.509921: Detected language for cloud case study .pdf: en (English)
+2026-03-23 17:38:32.517607: Starting extraction for: cloud case study .pdf
+2026-03-23 17:38:32.518034: Using cached text for: cloud case study .pdf
+2026-03-23 17:38:32.528531: Detected language for cloud case study .pdf: en (English)
+2026-03-23 17:38:55.701116: Starting extraction for: cloud case study .pdf
+2026-03-23 17:38:55.701553: Using cached text for: cloud case study .pdf
+2026-03-23 17:38:55.709063: Detected language for cloud case study .pdf: en (English)
+2026-03-23 17:38:55.715705: Starting extraction for: cloud case study .pdf
+2026-03-23 17:38:55.716083: Using cached text for: cloud case study .pdf
+2026-03-23 17:38:55.726892: Detected language for cloud case study .pdf: en (English)
+2026-03-23 17:41:09.307759: Starting extraction for: cloud case study .pdf
+2026-03-23 17:41:09.309870: Using cached text for: cloud case study .pdf
+2026-03-23 17:41:09.325582: Detected language for cloud case study .pdf: en (English)
+2026-03-23 17:41:09.337728: Starting extraction for: cloud case study .pdf
+2026-03-23 17:41:09.338334: Using cached text for: cloud case study .pdf
+2026-03-23 17:41:09.351293: Detected language for cloud case study .pdf: en (English)
+2026-03-23 17:44:29.202650: Starting extraction for: cloud case study .pdf
+2026-03-23 17:44:29.203910: Using cached text for: cloud case study .pdf
+2026-03-23 17:44:29.216116: Detected language for cloud case study .pdf: en (English)
+2026-03-23 17:44:29.226456: Starting extraction for: cloud case study .pdf
+2026-03-23 17:44:29.226855: Using cached text for: cloud case study .pdf
+2026-03-23 17:44:29.238267: Detected language for cloud case study .pdf: en (English)
+2026-03-23 17:44:29.504240: Starting extraction for: cloud case study .pdf
+2026-03-23 17:44:29.504672: Using cached text for: cloud case study .pdf
+2026-03-23 17:44:29.515635: Detected language for cloud case study .pdf: en (English)
+2026-03-23 17:44:29.521382: Starting extraction for: cloud case study .pdf
+2026-03-23 17:44:29.521858: Using cached text for: cloud case study .pdf
+2026-03-23 17:44:29.532434: Detected language for cloud case study .pdf: en (English)
+2026-03-23 17:44:59.719851: Starting extraction for: cloud case study .pdf
+2026-03-23 17:44:59.721772: Using cached text for: cloud case study .pdf
+2026-03-23 17:44:59.780196: Detected language for cloud case study .pdf: en (English)
+2026-03-23 17:44:59.804879: Starting extraction for: cloud case study .pdf
+2026-03-23 17:44:59.805357: Using cached text for: cloud case study .pdf
+2026-03-23 17:44:59.839008: Detected language for cloud case study .pdf: en (English)
+2026-03-23 17:45:59.357894: Starting extraction for: cloud case study .pdf
+2026-03-23 17:45:59.362654: Using cached text for: cloud case study .pdf
+2026-03-23 17:45:59.400721: Detected language for cloud case study .pdf: en (English)
+2026-03-23 17:45:59.428451: Starting extraction for: cloud case study .pdf
+2026-03-23 17:45:59.430772: Using cached text for: cloud case study .pdf
+2026-03-23 17:45:59.509953: Detected language for cloud case study .pdf: en (English)
+2026-03-23 17:46:34.685522: Starting extraction for: cloud case study .pdf
+2026-03-23 17:46:34.686062: Using cached text for: cloud case study .pdf
+2026-03-23 17:46:34.710631: Detected language for cloud case study .pdf: en (English)
+2026-03-23 17:46:34.717779: Starting extraction for: cloud case study .pdf
+2026-03-23 17:46:34.721491: Using cached text for: cloud case study .pdf
+2026-03-23 17:46:34.743876: Detected language for cloud case study .pdf: en (English)
+2026-03-23 17:47:47.682037: Starting extraction for: cloud case study .pdf
+2026-03-23 17:47:47.682762: Using cached text for: cloud case study .pdf
+2026-03-23 17:47:47.694731: Detected language for cloud case study .pdf: en (English)
+2026-03-23 17:47:47.702493: Starting extraction for: cloud case study .pdf
+2026-03-23 17:47:47.703016: Using cached text for: cloud case study .pdf
+2026-03-23 17:47:47.721284: Detected language for cloud case study .pdf: en (English)
+2026-03-23 17:48:54.789420: Starting extraction for: cloud case study .pdf
+2026-03-23 17:48:54.793833: Using cached text for: cloud case study .pdf
+2026-03-23 17:48:54.814746: Detected language for cloud case study .pdf: en (English)
+2026-03-23 17:48:54.823678: Starting extraction for: cloud case study .pdf
+2026-03-23 17:48:54.825634: Using cached text for: cloud case study .pdf
+2026-03-23 17:48:54.843331: Detected language for cloud case study .pdf: en (English)
+2026-03-23 17:59:32.346600: Starting extraction for: cloud case study .pdf
+2026-03-23 17:59:32.350479: Using cached text for: cloud case study .pdf
+2026-03-23 17:59:33.786386: Detected language for cloud case study .pdf: en (English)
+2026-03-23 17:59:33.811041: Starting extraction for: cloud case study .pdf
+2026-03-23 17:59:33.812320: Using cached text for: cloud case study .pdf
+2026-03-23 17:59:33.828725: Detected language for cloud case study .pdf: en (English)
+2026-03-23 18:04:07.835287: Starting extraction for: cloud case study .pdf
+2026-03-23 18:04:07.841930: Using cached text for: cloud case study .pdf
+2026-03-23 18:04:07.882703: Detected language for cloud case study .pdf: en (English)
+2026-03-23 18:04:07.922831: Starting extraction for: cloud case study .pdf
+2026-03-23 18:04:07.923681: Using cached text for: cloud case study .pdf
+2026-03-23 18:04:07.946852: Detected language for cloud case study .pdf: en (English)
+2026-03-23 18:07:09.562070: Starting extraction for: cloud case study .pdf
+2026-03-23 18:07:09.565313: Using cached text for: cloud case study .pdf
+2026-03-23 18:07:09.595055: Detected language for cloud case study .pdf: en (English)
+2026-03-23 18:07:09.617335: Starting extraction for: cloud case study .pdf
+2026-03-23 18:07:09.619153: Using cached text for: cloud case study .pdf
+2026-03-23 18:07:09.651445: Detected language for cloud case study .pdf: en (English)
+2026-03-23 18:09:02.650962: Starting extraction for: cloud case study .pdf
+2026-03-23 18:09:02.652084: Using cached text for: cloud case study .pdf
+2026-03-23 18:09:02.690243: Detected language for cloud case study .pdf: en (English)
+2026-03-23 18:09:02.706741: Starting extraction for: cloud case study .pdf
+2026-03-23 18:09:02.707577: Using cached text for: cloud case study .pdf
+2026-03-23 18:09:02.730630: Detected language for cloud case study .pdf: en (English)
+2026-03-23 18:10:15.080946: Starting extraction for: cloud case study .pdf
+2026-03-23 18:10:15.081473: Using cached text for: cloud case study .pdf
+2026-03-23 18:10:15.097885: Detected language for cloud case study .pdf: en (English)
+2026-03-23 18:10:15.104289: Starting extraction for: cloud case study .pdf
+2026-03-23 18:10:15.104695: Using cached text for: cloud case study .pdf
+2026-03-23 18:10:15.119068: Detected language for cloud case study .pdf: en (English)
+2026-03-23 18:11:49.128199: Starting extraction for: cloud case study .pdf
+2026-03-23 18:11:49.129785: Using cached text for: cloud case study .pdf
+2026-03-23 18:11:49.144944: Detected language for cloud case study .pdf: en (English)
+2026-03-23 18:11:49.164356: Starting extraction for: cloud case study .pdf
+2026-03-23 18:11:49.164687: Using cached text for: cloud case study .pdf
+2026-03-23 18:11:49.175087: Detected language for cloud case study .pdf: en (English)
+2026-03-23 18:12:05.787315: Starting extraction for: cloud case study .pdf
+2026-03-23 18:12:05.787733: Using cached text for: cloud case study .pdf
+2026-03-23 18:12:05.800700: Detected language for cloud case study .pdf: en (English)
+2026-03-23 18:12:05.809682: Starting extraction for: cloud case study .pdf
+2026-03-23 18:12:05.818227: Using cached text for: cloud case study .pdf
+2026-03-23 18:12:05.830808: Detected language for cloud case study .pdf: en (English)
+2026-03-23 18:12:13.645424: Starting extraction for: cloud case study .pdf
+2026-03-23 18:12:13.647410: Using cached text for: cloud case study .pdf
+2026-03-23 18:12:13.661822: Detected language for cloud case study .pdf: en (English)
+2026-03-23 18:12:13.672744: Starting extraction for: cloud case study .pdf
+2026-03-23 18:12:13.673112: Using cached text for: cloud case study .pdf
+2026-03-23 18:12:13.691367: Detected language for cloud case study .pdf: en (English)
+2026-03-23 18:13:38.973164: Starting extraction for: cloud case study .pdf
+2026-03-23 18:13:38.974470: Using cached text for: cloud case study .pdf
+2026-03-23 18:55:06.502213: Starting extraction for: cloud case study .pdf
+2026-03-23 18:55:06.502965: Using cached text for: cloud case study .pdf
+2026-03-23 18:55:06.527904: Detected language for cloud case study .pdf: en (English)
+2026-03-23 18:56:33.641401: Starting extraction for: cloud case study .pdf
+2026-03-23 18:56:33.641876: Using cached text for: cloud case study .pdf
+2026-03-23 18:56:33.660217: Detected language for cloud case study .pdf: en (English)
+2026-03-23 18:56:33.669833: Starting extraction for: cloud case study .pdf
+2026-03-23 18:56:33.671842: Using cached text for: cloud case study .pdf
+2026-03-23 18:56:33.686522: Detected language for cloud case study .pdf: en (English)
+2026-03-23 18:58:02.805460: Starting extraction for: cloud case study .pdf
+2026-03-23 18:58:02.805954: Using cached text for: cloud case study .pdf
+2026-03-23 18:58:02.819046: Detected language for cloud case study .pdf: en (English)
+2026-03-23 18:58:02.824995: Starting extraction for: cloud case study .pdf
+2026-03-23 18:58:02.825337: Using cached text for: cloud case study .pdf
+2026-03-23 18:58:02.835009: Detected language for cloud case study .pdf: en (English)
+2026-03-23 19:00:55.681033: Starting extraction for: cloud case study .pdf
+2026-03-23 19:00:55.681976: Using cached text for: cloud case study .pdf
+2026-03-23 19:00:55.710849: Detected language for cloud case study .pdf: en (English)
+2026-03-23 19:00:55.718502: Starting extraction for: cloud case study .pdf
+2026-03-23 19:00:55.718992: Using cached text for: cloud case study .pdf
+2026-03-23 19:00:55.734857: Detected language for cloud case study .pdf: en (English)
+2026-03-23 19:02:41.606067: Starting extraction for: cloud case study .pdf
+2026-03-23 19:02:41.606554: Using cached text for: cloud case study .pdf
+2026-03-23 19:02:43.471396: Detected language for cloud case study .pdf: en (English)
+2026-03-23 19:02:43.544267: Starting extraction for: cloud case study .pdf
+2026-03-23 19:02:43.548245: Using cached text for: cloud case study .pdf
+2026-03-23 19:02:43.583235: Detected language for cloud case study .pdf: en (English)
+2026-03-23 19:28:59.422741: Starting extraction for: cloud case study .pdf
+2026-03-23 19:28:59.430900: Using cached text for: cloud case study .pdf
+2026-03-23 19:29:00.659761: Detected language for cloud case study .pdf: en (English)
+2026-03-23 19:29:00.667413: Starting extraction for: cloud case study .pdf
+2026-03-23 19:29:00.667916: Using cached text for: cloud case study .pdf
+2026-03-23 19:29:00.681506: Detected language for cloud case study .pdf: en (English)
+2026-03-23 19:36:22.447756: Starting extraction for: cloud case study .pdf
+2026-03-23 19:36:22.448539: Using cached text for: cloud case study .pdf
+2026-03-23 19:36:22.459034: Detected language for cloud case study .pdf: en (English)
+2026-03-23 19:36:22.466728: Starting extraction for: cloud case study .pdf
+2026-03-23 19:36:22.469787: Using cached text for: cloud case study .pdf
+2026-03-23 19:36:22.515214: Detected language for cloud case study .pdf: en (English)
+2026-03-23 20:03:36.282000: Quiz generation requested for: cloud case study .pdf (lang: en)
+2026-03-23 20:03:36.283001: Checking cache path: text_cache\cloud case study .pdf.txt
+2026-03-23 20:03:36.283553: No cache found, extracting from source...
+2026-03-23 20:03:36.284401: Extraction error: No module named 'utils.pdf_utils'
+2026-03-23 20:03:36.284855: Text extraction failed completely.
+2026-03-23 20:45:22.523162: Starting extraction for: cloud case study .pdf
+2026-03-23 20:45:22.528564: Using cached text for: cloud case study .pdf
+2026-03-23 20:45:24.212833: Detected language for cloud case study .pdf: en (English)
+2026-03-23 20:45:24.248796: Starting extraction for: cloud case study .pdf
+2026-03-23 20:45:24.250454: Using cached text for: cloud case study .pdf
+2026-03-23 20:45:24.323987: Detected language for cloud case study .pdf: en (English)
+2026-03-23 21:04:49.464823: Starting extraction for: cloud case study .pdf
+2026-03-23 21:04:49.465440: Using cached text for: cloud case study .pdf
+2026-03-23 21:04:50.868127: Detected language for cloud case study .pdf: en (English)
+2026-03-23 21:04:50.954304: Starting extraction for: cloud case study .pdf
+2026-03-23 21:04:50.954755: Using cached text for: cloud case study .pdf
+2026-03-23 21:04:50.990819: Detected language for cloud case study .pdf: en (English)
+2026-03-23 21:06:40.176754: Starting extraction for: cloud case study .pdf
+2026-03-23 21:06:40.178290: Using cached text for: cloud case study .pdf
+2026-03-23 21:06:40.194911: Detected language for cloud case study .pdf: en (English)
+2026-03-23 21:06:40.202262: Starting extraction for: cloud case study .pdf
+2026-03-23 21:06:40.202865: Using cached text for: cloud case study .pdf
+2026-03-23 21:06:40.219056: Detected language for cloud case study .pdf: en (English)
+2026-03-23 21:11:16.411198: Starting extraction for: cloud case study .pdf
+2026-03-23 21:11:16.415304: Using cached text for: cloud case study .pdf
+2026-03-23 21:11:17.137283: Detected language for cloud case study .pdf: en (English)
+2026-03-23 21:11:17.147271: Starting extraction for: cloud case study .pdf
+2026-03-23 21:11:17.148734: Using cached text for: cloud case study .pdf
+2026-03-23 21:11:17.164610: Detected language for cloud case study .pdf: en (English)
+2026-03-23 21:11:18.654305: Starting extraction for: cloud case study .pdf
+2026-03-23 21:11:18.655793: Using cached text for: cloud case study .pdf
+2026-03-23 21:11:32.786916: Valid GEMINI_API_KEY not found in environment (found placeholder or empty).
+2026-03-23 21:11:32.791220: Using Free Basic Service for quiz generation (Rule-based fallback)

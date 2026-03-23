@@ -798,5 +798,140 @@ def meaning():
     """
 
 
+@app.route("/api/generate_quiz", methods=["POST"])
+def generate_quiz():
+    filename = request.form.get("filename", "").strip()
+    lang = request.form.get("lang", "en").strip()
+    if not filename:
+        return jsonify({"error": "No file specified."})
+    
+    # Get text content (use the robust internal function)
+    path = os.path.join(UPLOAD_FOLDER, filename)
+    
+    if not os.path.exists(path):
+         return jsonify({"error": f"Book file not found: {filename}"})
+
+    try:
+        text, _, _ = extract_text_from_file(path, filename)
+    except Exception as e:
+        log_error(f"Internal extraction error: {e}")
+        text = ""
+
+    if not text or len(text) < 100:
+        return jsonify({"error": "Could not extract enough text from book to generate a quiz."})
+
+    # Prepare prompt for Gemini
+    sample_text = text[:10000] + "\n...\n" + text[len(text)//2 : len(text)//2 + 10000]
+    
+    prompt = f"""
+    Based ONLY on the following book content, generate 10 high-quality Multiple Choice Questions (MCQs).
+    Language: {lang}
+    
+    Requirements:
+    1. Each question must have exactly 4 options.
+    2. Mark the correct answer index (0, 1, 2, or 3).
+    3. Provide a brief explanation for why the answer is correct.
+    4. Ensure questions are challenging but fair, covering key plot points or facts.
+    5. Return ONLY a valid JSON array of objects.
+    
+    JSON Format:
+    [
+      {{
+        "question": "What is the main theme of the first chapter?",
+        "options": ["Option A", "Option B", "Option C", "Option D"],
+        "answer": 0,
+        "explanation": "Chapter 1 introduces... hence Option A."
+      }},
+      ...
+    ]
+    
+    Book Content (Sample):
+    {sample_text}
+    """
+    
+    try:
+        from utils.gemini_assistant import GeminiAssistant
+        has_gemini = GeminiAssistant.configure()
+        
+        if has_gemini:
+            response = GeminiAssistant.ask(prompt)
+            if response and "AI Error" not in response and "Gemini returned an empty response" not in response:
+                # Clean response string to ensure it's pure JSON
+                import json
+                clean_json = response.strip()
+                if "```json" in clean_json:
+                    clean_json = clean_json.split("```json")[1].split("```")[0].strip()
+                elif "```" in clean_json:
+                    clean_json = clean_json.split("```")[1].split("```")[0].strip()
+                    
+                try:
+                    questions = json.loads(clean_json)
+                    return jsonify({"questions": questions})
+                except json.JSONDecodeError:
+                    log_error(f"Failed to parse Gemini JSON: {clean_json}")
+        
+        # If Gemini failed or was not configured, use the "Free Service" (Rule-based Fallback)
+        log_error("Using Free Basic Service for quiz generation (Rule-based fallback)")
+        free_questions = []
+        import re
+        # Basic logic: find sentences with keywords or numbers
+        sentences = re.split(r'[.!?]\s+', text)
+        for s in sentences:
+            if len(free_questions) >= 10: break
+            # Find a sentence with a number or a capitalized word
+            if re.search(r'\d+', s) or len(s.split()) > 15:
+                # Create a simple "What is mentioned here?" question
+                q_text = s.strip()
+                if len(q_text) > 100: q_text = q_text[:97] + "..."
+                
+                # Mock options (for "Free Service" demo)
+                options = ["True", "False", "Not mentioned", "None of the above"]
+                free_questions.append({
+                    "question": f"According to the text: \"{q_text}\" - Is this statement correct?",
+                    "options": options,
+                    "answer": 0,
+                    "explanation": "This was directly extracted from the book's content."
+                })
+        
+        if not free_questions:
+            return jsonify({"error": "Book content is too short to generate even a basic quiz. Please try a different book."})
+            
+        return jsonify({
+            "questions": free_questions,
+            "message": "AI Service currently unavailable. Using basic free generation instead."
+        })
+    except Exception as e:
+        log_error(f"Quiz generation error: {e}")
+        return jsonify({"error": f"Failed to generate quiz: {str(e)}"})
+
+@app.route("/api/save_quiz_score", methods=["POST"])
+def save_quiz_score():
+    filename = request.form.get("filename", "").strip()
+    score = request.form.get("score", "0")
+    total = request.form.get("total", "10")
+    
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute(
+            "INSERT INTO quiz_history (filename, score, total) VALUES (%s, %s, %s)",
+            (filename, score, total)
+        )
+        conn.commit()
+        conn.close()
+        return jsonify({"success": True})
+    except Exception as e:
+        log_error(f"Save quiz score error: {e}")
+        return jsonify({"error": str(e)})
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    # Ensure tables exist (Simplified check)
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("CREATE TABLE IF NOT EXISTS quiz_history (id INT AUTO_INCREMENT PRIMARY KEY, filename VARCHAR(255), score INT, total INT, timestamp DATETIME DEFAULT CURRENT_TIMESTAMP)")
+        conn.commit()
+        conn.close()
+    except: pass
+    
+    app.run(debug=True, port=int(os.environ.get("PORT", 5000)))

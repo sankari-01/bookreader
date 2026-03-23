@@ -6,7 +6,9 @@ import VoiceController from '../components/VoiceController';
 import {
   ChevronLeft, ChevronRight, Book, Highlighter, Search,
   X as CloseIcon, User, Volume2, Globe, Command, Keyboard, Play, Languages,
-  FileText, Info, MessageSquare, BookOpen, Mic, MicOff, Download, Trash2
+  FileText, Info, MessageSquare, BookOpen, Mic, MicOff, Download, Trash2,
+  HelpCircle, CheckCircle2, AlertCircle, Timer, Award, ChevronRight as ChevronRightIcon,
+  RotateCcw
 } from 'lucide-react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
@@ -66,6 +68,14 @@ const ReaderPage = () => {
   const [showLangMenu, setShowLangMenu] = useState(false);
   const [analyzingPage, setAnalyzingPage] = useState(0);
   const [showHighlights, setShowHighlights] = useState(false);
+  const [showQuiz, setShowQuiz] = useState(false);
+  const [quizQuestions, setQuizQuestions] = useState([]);
+  const [currentQuizIndex, setCurrentQuizIndex] = useState(0);
+  const [quizAnswers, setQuizAnswers] = useState({});
+  const [quizFinished, setQuizFinished] = useState(false);
+  const [quizTimer, setQuizTimer] = useState(600); // 10 minutes
+  const [quizLoading, setQuizLoading] = useState(false);
+  const [quizMessage, setQuizMessage] = useState('');
   const [voiceActive, setVoiceActive] = useState(false);
   const [isReadMode, setIsReadMode] = useState(false);
   const [userHighlights, setUserHighlights] = useState(() => {
@@ -134,7 +144,47 @@ const ReaderPage = () => {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isNarrating, isPlaying, pages.length, currentPage, numPages, data, isReadMode, voiceActive, showText, showSearch]);
+  }, [filename, currentLang]);
+
+  const applyHighlightsToElement = (element) => {
+    if (!element) return;
+    const terms = [];
+    if (searchTerm && searchTerm.trim()) terms.push({ text: searchTerm.trim(), type: 'search' });
+    userHighlights.forEach(uh => { if (uh && uh.trim()) terms.push({ text: uh.trim(), type: 'user' }); });
+    if (terms.length === 0) return;
+
+    const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, null, false);
+    const nodes = [];
+    let node;
+    while (node = walker.nextNode()) nodes.push(node);
+
+    nodes.forEach(textNode => {
+      const content = textNode.nodeValue;
+      if (!content || content.trim().length === 0) return;
+      
+      let newHtml = content;
+      let hasMatch = false;
+
+      const sortedTerms = [...terms].sort((a, b) => b.text.length - a.text.length);
+
+      sortedTerms.forEach(term => {
+        const escaped = term.text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const regex = new RegExp(`(${escaped})(?![^<]*>)`, 'gi');
+        if (regex.test(newHtml)) {
+          hasMatch = true;
+          const className = term.type === 'search' ? 'search-highlight' : 'user-highlight';
+          newHtml = newHtml.replace(regex, (match) => `<mark class="${className}" style="color: transparent !important; background-color: ${term.type === 'search' ? 'rgba(255, 218, 106, 0.4)' : 'rgba(255, 224, 102, 0.6)'} !important;">${match}</mark>`);
+        }
+      });
+
+      if (hasMatch) {
+        const span = document.createElement('span');
+        span.className = 'highlight-container';
+        span.innerHTML = newHtml;
+        if (textNode.parentNode) textNode.parentNode.replaceChild(span, textNode);
+      }
+    });
+  };
 
   const isInitialMount = useRef(true);
   useEffect(() => {
@@ -660,48 +710,6 @@ const ReaderPage = () => {
     };
   }, [filename, currentLang]);
 
-  const applyHighlightsToElement = (element) => {
-    if (!element) return;
-    const terms = [];
-    if (searchTerm && searchTerm.trim()) terms.push({ text: searchTerm.trim(), type: 'search' });
-    userHighlights.forEach(uh => { if (uh && uh.trim()) terms.push({ text: uh.trim(), type: 'user' }); });
-    if (terms.length === 0) return;
-
-    // Use a TreeWalker to find all text nodes
-    const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, null, false);
-    const nodes = [];
-    let node;
-    while (node = walker.nextNode()) nodes.push(node);
-
-    nodes.forEach(textNode => {
-      const content = textNode.nodeValue;
-      if (!content || content.trim().length === 0) return;
-      
-      let newHtml = content;
-      let hasMatch = false;
-
-      // Sort terms by length descending to match longest first
-      const sortedTerms = [...terms].sort((a, b) => b.text.length - a.text.length);
-
-      sortedTerms.forEach(term => {
-        const escaped = term.text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        // Match only if not already inside a tag
-        const regex = new RegExp(`(${escaped})(?![^<]*>)`, 'gi');
-        if (regex.test(newHtml)) {
-          hasMatch = true;
-          const className = term.type === 'search' ? 'search-highlight' : 'user-highlight';
-          newHtml = newHtml.replace(regex, (match) => `<mark class="${className}" style="color: transparent !important; background-color: ${term.type === 'search' ? 'rgba(255, 218, 106, 0.4)' : 'rgba(255, 224, 102, 0.6)'} !important;">${match}</mark>`);
-        }
-      });
-
-      if (hasMatch) {
-        const span = document.createElement('span');
-        span.className = 'highlight-container';
-        span.innerHTML = newHtml;
-        if (textNode.parentNode) textNode.parentNode.replaceChild(span, textNode);
-      }
-    });
-  };
 
   // Handle Highlighting in PDF Text Layer
   useEffect(() => {
@@ -722,6 +730,34 @@ const ReaderPage = () => {
     });
   }, [searchTerm, userHighlights, data?.is_pdf]);
 
+  const handleFinishQuiz = async () => {
+    setQuizFinished(true);
+    const score = quizQuestions.reduce((acc, q, idx) => acc + (quizAnswers[idx] === q.answer ? 1 : 0), 0);
+    try {
+      await fetch('/api/save_quiz_score', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ filename, score, total: quizQuestions.length })
+      });
+    } catch (e) { console.warn("Could not save score:", e); }
+  };
+
+  useEffect(() => {
+    let interval;
+    if (showQuiz && !quizFinished && !quizLoading && quizTimer > 0) {
+      interval = setInterval(() => {
+        setQuizTimer(prev => {
+          if (prev <= 1) {
+            handleFinishQuiz();
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [showQuiz, quizFinished, quizLoading, quizTimer]);
+
   if (loading) return (
     <div className="loading-overlay active">
       <div className="magic-book-container"><div className="magic-book"></div></div>
@@ -731,6 +767,51 @@ const ReaderPage = () => {
 
   if (!data) return <div style={{ color: 'white', padding: '100px', textAlign: 'center' }}>Error loading book: {filename}</div>;
 
+  const handleStartQuiz = async () => {
+    setShowQuiz(true);
+    if (quizQuestions.length === 0) {
+      setQuizLoading(true);
+      setQuizMessage('');
+      try {
+        const resp = await fetch('/api/generate_quiz', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams({ filename, lang: currentLang })
+        });
+        const result = await resp.json();
+        if (result.questions) {
+          setQuizQuestions(result.questions);
+          if (result.message) setQuizMessage(result.message);
+          setQuizTimer(600);
+        } else if (result.error) {
+          alert(result.error);
+          setShowQuiz(false);
+        } else {
+          alert("Failed to generate quiz. Unknown error.");
+          setShowQuiz(false);
+        }
+      } catch (e) { 
+        console.error("Quiz fetch failed:", e);
+        alert("Could not reach the AI Service. Please check if your backend is running."); 
+        setShowQuiz(false);
+      } finally {
+        setQuizLoading(false);
+      }
+    }
+  };
+
+  const handleQuizAnswer = (questionIdx, optionIdx) => {
+    if (quizFinished) return;
+    setQuizAnswers(prev => ({ ...prev, [questionIdx]: optionIdx }));
+  };
+
+
+
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
   const handleToolClick = (tabId) => { setActiveTab(tabId); setShowPanel(true); };
 
   const highlightText = (text, highlight) => {
@@ -873,6 +954,10 @@ const ReaderPage = () => {
           </div>
           <span className="header-icon-label">My Marks</span>
         </div>
+        <div className="header-icon-container" title="Take a Quiz" onClick={() => handleStartQuiz()}>
+          <div className="header-icon"><HelpCircle size={18} color="#faedcd" /></div>
+          <span className="header-icon-label">Quiz</span>
+        </div>
       </Header>
 
       {showSearch && (
@@ -975,9 +1060,11 @@ const ReaderPage = () => {
                                   width={Math.min(window.innerWidth * 0.8, 800)} 
                                   renderAnnotationLayer={true} 
                                   renderTextLayer={true} 
-                                  onRenderTextLayerSuccess={(e) => {
+                                  onRenderTextLayerSuccess={() => {
                                     const layer = document.querySelector(`[data-page-number="${pageNum}"] .react-pdf__Page__textContent`);
-                                    applyHighlightsToElement(layer);
+                                    if (layer && typeof applyHighlightsToElement === 'function') {
+                                      applyHighlightsToElement(layer);
+                                    }
                                   }}
                                   loading={<div style={{ height: '800px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.1)' }}>Loading...</div>} 
                                 />
@@ -1170,6 +1257,144 @@ const ReaderPage = () => {
       )}
 
       <VoiceController isActive={voiceActive} setIsActive={setVoiceActive} onCommand={handleVoiceCommand} languages={allLanguages} />
+
+      {showQuiz && (
+        <div className="quiz-modal-overlay">
+          <div className="quiz-modal-content">
+            <div className="quiz-header">
+              <div className="quiz-title-group">
+                <div className="quiz-icon-badge"><HelpCircle size={28} color="#ffffff" /></div>
+                <div>
+                  <h2 className="quiz-main-title">AI Knowledge Check</h2>
+                  <p className="quiz-subtitle">{filename}</p>
+                </div>
+              </div>
+              <div className="quiz-header-controls">
+                {!quizFinished && !quizLoading && (
+                  <div className="quiz-timer-badge">
+                    <Timer size={18} />
+                    <span>{formatTime(quizTimer)}</span>
+                  </div>
+                )}
+                <button className="quiz-close-btn" onClick={() => { setShowQuiz(false); if(quizFinished) { setQuizQuestions([]); setQuizAnswers({}); setQuizFinished(false); } }}><CloseIcon size={24} /></button>
+              </div>
+            </div>
+
+            <div className="quiz-body">
+              {quizLoading ? (
+                <div className="quiz-loading-state">
+                  <div className="quiz-magic-loader">
+                    <div className="loader-circle"></div>
+                    <HelpCircle size={40} className="loader-icon-bounce" />
+                  </div>
+                  <h3>Generating Your Quiz...</h3>
+                  <p>Gemini is analyzing the book to create relevant questions.</p>
+                  {quizMessage && <div className="quiz-status-notice free-mode">{quizMessage}</div>}
+                </div>
+              ) : quizFinished ? (
+                <div className="quiz-results-container">
+                  <div className="quiz-results-card">
+                    <Award size={64} color="#d4a373" className="award-icon" />
+                    <h2>Quiz Completed!</h2>
+                    <div className="score-display">
+                      <span className="score-num">{quizQuestions.reduce((acc, q, idx) => acc + (quizAnswers[idx] === q.answer ? 1 : 0), 0)}</span>
+                      <span className="score-total">/ {quizQuestions.length}</span>
+                    </div>
+                    <p className="score-message">
+                      {quizQuestions.reduce((acc, q, idx) => acc + (quizAnswers[idx] === q.answer ? 1 : 0), 0) > 7 ? "Excellent! You have a great grasp of the content." : "Good effort! Keep reading to improve your score."}
+                    </p>
+                    <div style={{ display: 'flex', gap: '15px', marginTop: '30px' }}>
+                      <button className="quiz-btn-primary" onClick={() => { setQuizFinished(false); setQuizAnswers({}); setCurrentQuizIndex(0); setQuizTimer(600); }}><RotateCcw size={18} /> Restart Quiz</button>
+                      <button className="quiz-btn-secondary" onClick={() => { setShowQuiz(false); setQuizQuestions([]); setQuizAnswers({}); setQuizFinished(false); }}>Close</button>
+                    </div>
+                  </div>
+
+                  <div className="quiz-review-section">
+                    <h3 className="review-title">Review Answers</h3>
+                    <div className="review-list">
+                      {quizQuestions.map((q, idx) => (
+                        <div key={idx} className={`review-item ${quizAnswers[idx] === q.answer ? 'correct' : 'wrong'}`}>
+                          <div className="review-q-num">Q{idx + 1}</div>
+                          <div className="review-content">
+                            <p className="review-question">{q.question}</p>
+                            <div className="review-labels">
+                              <span className="your-ans">Your Answer: {q.options[quizAnswers[idx]] || 'None'}</span>
+                              {quizAnswers[idx] !== q.answer && <span className="correct-ans">Correct: {q.options[q.answer]}</span>}
+                            </div>
+                            <p className="review-explanation"><strong>Explanation:</strong> {q.explanation}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="quiz-question-container">
+                  {quizMessage && (
+                    <div className="quiz-status-banner fade-in">
+                      <AlertCircle size={16} />
+                      <span>{quizMessage}</span>
+                    </div>
+                  )}
+                  <div className="quiz-progress-wrapper">
+                    <div className="quiz-progress-info">
+                      <span>Question <strong>{currentQuizIndex + 1}</strong> of {quizQuestions.length}</span>
+                      <span>{Math.round(((currentQuizIndex + 1) / quizQuestions.length) * 100)}% Complete</span>
+                    </div>
+                    <div className="quiz-progress-bar-bg">
+                      <div className="quiz-progress-bar-fill" style={{ width: `${((currentQuizIndex + 1) / quizQuestions.length) * 100}%` }}></div>
+                    </div>
+                  </div>
+
+                  <div className="question-card pulse-in">
+                    <h3 className="question-text">{quizQuestions[currentQuizIndex]?.question}</h3>
+                    <div className="options-grid">
+                      {quizQuestions[currentQuizIndex]?.options.map((option, idx) => (
+                        <button 
+                          key={idx} 
+                          className={`option-button ${quizAnswers[currentQuizIndex] === idx ? 'selected' : ''}`}
+                          onClick={() => handleQuizAnswer(currentQuizIndex, idx)}
+                        >
+                          <div className="option-letter">{String.fromCharCode(65 + idx)}</div>
+                          <div className="option-label">{option}</div>
+                          {quizAnswers[currentQuizIndex] === idx && <CheckCircle2 size={20} className="check-icon" />}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="quiz-navigation">
+                    <button 
+                      className="quiz-nav-btn" 
+                      onClick={() => setCurrentQuizIndex(prev => Math.max(0, prev - 1))}
+                      disabled={currentQuizIndex === 0}
+                    >
+                      Previous
+                    </button>
+                    {currentQuizIndex === quizQuestions.length - 1 ? (
+                      <button 
+                        className="quiz-finish-btn" 
+                        onClick={handleFinishQuiz}
+                        disabled={quizAnswers[currentQuizIndex] === undefined}
+                      >
+                        Finish Quiz
+                      </button>
+                    ) : (
+                      <button 
+                        className="quiz-nav-btn primary" 
+                        onClick={() => setCurrentQuizIndex(prev => prev + 1)}
+                        disabled={quizAnswers[currentQuizIndex] === undefined}
+                      >
+                        Next <ChevronRightIcon size={18} />
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
