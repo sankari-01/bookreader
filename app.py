@@ -48,7 +48,7 @@ UPLOAD_FOLDER = "uploads"
 TEXT_CACHE_DIR = "text_cache"
 TRANSLATION_CACHE_DIR = "translation_cache"
 
-for folder in [UPLOAD_FOLDER, TEXT_CACHE_DIR, TRANSLATION_CACHE_DIR]:
+for folder in [UPLOAD_FOLDER, TEXT_CACHE_DIR, TRANSLATION_CACHE_DIR, os.path.join("static", "extracted_images")]:
     if not os.path.exists(folder):
         os.makedirs(folder)
 
@@ -179,11 +179,20 @@ def generate_html_preview(path, filename, lang='en'):
         return "".join(translated_parts)
 
     try:
-        if lower_name.endswith(".docx"):
-            with open(path, "rb") as docx_file:
-                result = mammoth.convert_to_html(docx_file)
-                # Now we translate the HTML but keep the tags!
-                html = f'<div class="docx-preview">{translate_html_preserving_tags(result.value)}</div>'
+        if lower_name.endswith((".docx", ".doc")):
+            if lower_name.endswith(".docx"):
+                with open(path, "rb") as docx_file:
+                    result = mammoth.convert_to_html(docx_file)
+                    html = f'<div class="docx-preview">{translate_html_preserving_tags(result.value)}</div>'
+            else:
+                # Basic DOC support (extract text and wrap in pre)
+                try:
+                    import subprocess
+                    # If antiword is installed, we could use it. Otherwise, fallback to text.
+                    with open(path, "r", encoding="utf-8", errors="ignore") as f:
+                        html = f'<pre class="doc-preview">{translate_if_needed(f.read())}</pre>'
+                except:
+                    html = '<div class="error-preview">Detailed preview not available for legacy .doc files.</div>'
         
         elif lower_name.endswith(".pptx"):
             prs = Presentation(path)
@@ -297,13 +306,23 @@ def extract_text_from_file(path, filename):
                     text += "\n"
 
         elif lower_name.endswith((".docx", ".doc")):
-            if lower_name.endswith(".doc"):
-                from utils.office_to_pdf import convert_to_pdf
-                pdf_path = convert_to_pdf(path)
-                if pdf_path and os.path.exists(pdf_path):
-                    text = ocr.extract_text(pdf_path)
+            # Convert to PDF for best formatting preservation
+            from utils.office_to_pdf import convert_to_pdf
+            pdf_path = convert_to_pdf(path)
+            if pdf_path and os.path.exists(pdf_path):
+                text = ocr.extract_text(pdf_path)
+            else:
+                # Fallback to direct extraction if conversion fails
+                if lower_name.endswith(".docx"):
+                    doc = Document(path)
+                    text = "\n".join([paragraph.text for paragraph in doc.paragraphs])
                 else:
-                    text = "Failed to convert DOC to PDF for text extraction."
+                    text = "Failed to convert Word document to readable format."
+
+        elif lower_name.endswith((".epub", ".mobi")):
+            if lower_name.endswith(".epub"):
+                book = ebooklib.epub.read_epub(path)
+                item_no = 1
                 for item in book.get_items():
                     if item.get_type() == ebooklib.ITEM_DOCUMENT:
                         soup = BeautifulSoup(item.get_content(), 'html.parser')
@@ -385,7 +404,18 @@ def get_page_count(path, filename):
         elif lower_name.endswith(".pptx"):
             prs = Presentation(path)
             return str(len(prs.slides))
-        elif lower_name.endswith((".docx", ".txt", ".png", ".jpg", ".jpeg", ".mp4", ".avi", ".mkv")):
+        elif lower_name.endswith((".docx", ".doc")):
+            # PREVENT HANGING: Do not run live COM conversion just for a page count.
+            # Only check if the converted PDF already exists alongside it.
+            base, _ = os.path.splitext(path)
+            pdf_path = base + '.pdf'
+            if os.path.exists(pdf_path):
+                reader = PyPDF2.PdfReader(pdf_path)
+                return str(len(reader.pages))
+            return "N/A"
+        elif lower_name.endswith((".png", ".jpg", ".jpeg", ".gif", ".webp")):
+            return "1"
+        elif lower_name.endswith((".txt", ".mp4", ".avi", ".mkv")):
             return "N/A"
         else:
             return "-"
@@ -429,6 +459,17 @@ def upload():
     return jsonify({"success": True, "filename": filename})
 
 
+@app.route("/api/debug")
+def debug_env():
+    import os
+    return jsonify({
+        "cwd": os.getcwd(),
+        "upload_folder": UPLOAD_FOLDER,
+        "abs_upload_folder": os.path.abspath(UPLOAD_FOLDER),
+        "exists": os.path.exists(UPLOAD_FOLDER),
+        "listdir": os.listdir(UPLOAD_FOLDER) if os.path.exists(UPLOAD_FOLDER) else "N/A"
+    })
+
 @app.route("/api/files")
 def files():
     file_info = []
@@ -437,7 +478,7 @@ def files():
     try:
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
-        cursor.execute("SELECT id, filename, upload_time, pages FROM uploaded_books ORDER BY upload_time DESC")
+        cursor.execute("SELECT id, filename, upload_time, pages, last_opened, last_closed FROM uploaded_books ORDER BY upload_time DESC")
         
         for row in cursor.fetchall():
             path = os.path.join(UPLOAD_FOLDER, row['filename'])
@@ -448,41 +489,77 @@ def files():
                 day_str = dt.strftime("%A") if dt else "-"
                 time_str = dt.strftime("%I:%M %p") if dt else "-"
                 
+                last_opened = row['last_opened']
+                last_closed = row['last_closed']
+                
                 file_info.append({
                     "id": row['id'],
                     "filename": row['filename'],
                     "date": date_str,
                     "day": day_str,
                     "time": time_str,
-                    "pages": row['pages'] or "-"
+                    "pages": row['pages'] or "-",
+                    "last_opened": last_opened.strftime("%d-%m-%Y %I:%M %p") if last_opened else "Never",
+                    "last_closed": last_closed.strftime("%d-%m-%Y %I:%M %p") if last_closed else "Never"
                 })
         conn.close()
     except Exception as e:
         log_error(f"DB Error on fetch files: {e}")
         db_error = True
 
-    if db_error or not file_info:
-        for filename in os.listdir(UPLOAD_FOLDER):
-            path = os.path.join(UPLOAD_FOLDER, filename)
-            if os.path.isfile(path):
-                if not any(f['filename'] == filename for f in file_info):
-                    try:
-                        mtime = os.path.getmtime(path)
-                        dt = datetime.fromtimestamp(mtime)
-                    except Exception:
-                        dt = datetime.now()
-                    
-                    file_info.append({
-                        "id": "FS",
-                        "filename": filename,
-                        "date": dt.strftime("%d-%m-%Y"),
-                        "day": dt.strftime("%A"),
-                        "time": dt.strftime("%I:%M %p"),
-                        "pages": get_page_count(path, filename)
-                    })
-        file_info.sort(key=lambda x: os.path.getmtime(os.path.join(UPLOAD_FOLDER, x['filename'])) if os.path.exists(os.path.join(UPLOAD_FOLDER, x['filename'])) else 0, reverse=True)
+    # Always sync with filesystem to ensure no files are missed (even if DB is incomplete)
+    existing_filenames = {f['filename'] for f in file_info}
+    for filename in os.listdir(UPLOAD_FOLDER):
+        # Ignore temporary OS/Word lock files
+        if filename.startswith('.') or filename.startswith('~$'):
+            continue
+            
+        path = os.path.join(UPLOAD_FOLDER, filename)
+        if os.path.isfile(path) and filename not in existing_filenames:
+            try:
+                mtime = os.path.getmtime(path)
+                dt = datetime.fromtimestamp(mtime)
+            except Exception:
+                dt = datetime.now()
+            
+            file_info.append({
+                "id": "FS",
+                "filename": filename,
+                "date": dt.strftime("%d-%m-%Y"),
+                "day": dt.strftime("%A"),
+                "time": dt.strftime("%I:%M %p"),
+                "pages": get_page_count(path, filename),
+                "last_opened": "Never",
+                "last_closed": "Never"
+            })
+    
+    # Sort everything by modification time (most recent first)
+    file_info.sort(key=lambda x: os.path.getmtime(os.path.join(UPLOAD_FOLDER, x['filename'])) if os.path.exists(os.path.join(UPLOAD_FOLDER, x['filename'])) else 0, reverse=True)
 
     return jsonify({"files": file_info, "db_error": db_error})
+
+@app.route("/api/book/timestamp", methods=["POST"])
+def update_book_timestamp():
+    filename = request.form.get("filename", "").strip()
+    ts_type = request.form.get("type", "").strip() # 'opened' or 'closed'
+    
+    if not filename or ts_type not in ['opened', 'closed']:
+        return jsonify({"error": "Invalid request"}), 400
+        
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        now = datetime.now()
+        
+        column = "last_opened" if ts_type == "opened" else "last_closed"
+        cursor.execute(f"UPDATE uploaded_books SET {column} = %s WHERE filename = %s", (now, filename))
+        
+        conn.commit()
+        conn.close()
+        return jsonify({"success": True, "timestamp": now.strftime("%Y-%m-%d %H:%M:%S")})
+    except Exception as e:
+        log_error(f"Error updating timestamp for {filename}: {e}")
+        return jsonify({"error": str(e)}), 500
 
 @app.route("/api/delete/<path:filename>", methods=["POST"])
 def delete_book(filename):
@@ -519,7 +596,8 @@ def read_book(filename):
     if not os.path.exists(path):
         return jsonify({"error": "File not found"}), 404
 
-    text, is_image, is_video = extract_text_from_file(path, filename)
+    original_text, is_image, is_video = extract_text_from_file(path, filename)
+    text = original_text
     
     # Language code to name mapping
     LANG_MAP = {
@@ -587,10 +665,18 @@ def read_book(filename):
     elif is_txt:
         office_html = generate_html_preview(path, filename, lang=lang)
 
+    # Detect images (PDF only for now for speed)
+    has_images = ocr.count_images(path) if is_pdf else False
+
+    # Get total page count
+    num_pages = get_page_count(path, filename)
+
     return jsonify({
         "filename": filename,
         "preview_filename": preview_filename,
         "text": text,
+        "original_text": original_text,
+        "pages": int(num_pages) if str(num_pages).isdigit() else 1,
         "is_image": is_image,
         "is_pdf": is_pdf,
         "is_video": is_video,
@@ -598,8 +684,31 @@ def read_book(filename):
         "office_html": office_html,
         "lang": lang,
         "detected_lang": detect_lang,
-        "detected_lang_name": detect_lang_name
+        "detected_lang_name": detect_lang_name,
+        "has_images": has_images
     })
+
+@app.route("/api/extract_images", methods=["POST"])
+def extract_images():
+    filename = request.form.get("filename", "").strip()
+    if not filename: return jsonify({"error": "No file specified"}), 400
+    
+    path = os.path.join(UPLOAD_FOLDER, filename)
+    if not os.path.exists(path): return jsonify({"error": "File not found"}), 404
+    
+    # Check if it's an office file that was converted to PDF
+    is_pdf = filename.lower().endswith(".pdf")
+    if not is_pdf:
+        from utils.office_to_pdf import convert_to_pdf
+        path = convert_to_pdf(path) or path
+        is_pdf = path.lower().endswith(".pdf")
+
+    if is_pdf:
+        output_dir = os.path.join("static", "extracted_images")
+        results = ocr.extract_images_from_pdf(path, output_dir)
+        return jsonify({"images": results})
+    
+    return jsonify({"images": [], "message": "Image extraction only supported for PDF and Office documents."})
 
 @app.route("/api/prepare_translation", methods=["POST"])
 def prepare_translation():
@@ -746,15 +855,16 @@ def speak():
 
     rate = request.form.get("rate", "+0%").strip()
     gender = request.form.get("gender", "f").strip()
+    is_song = request.form.get("is_song", "false") == "true"
 
     if not text:
         return jsonify({"error": "No text available to convert into audio."})
     else:
-        # Enable expressive (theatrical) mode if it's more than a few words
-        # (usually indicating a story/incident rather than a single word meaning)
-        is_expressive = len(text.split()) > 3
+        # Respect the expressive parameter from request, failing back to automatic check
+        expressive_req = request.form.get("expressive", "true").lower() == "true"
+        is_expressive = expressive_req and len(text.split()) > 3
         
-        audio_file, vtt_file = text_to_speech(text, lang, rate=rate, gender=gender, expressive=is_expressive)
+        audio_file, vtt_file = text_to_speech(text, lang, rate=rate, gender=gender, expressive=is_expressive, is_song=is_song)
         
         if not audio_file:
              return jsonify({"error": vtt_file or "Speech generation failed"})
@@ -870,27 +980,92 @@ def generate_quiz():
                 except json.JSONDecodeError:
                     log_error(f"Failed to parse Gemini JSON: {clean_json}")
         
-        # If Gemini failed or was not configured, use the "Free Service" (Rule-based Fallback)
-        log_error("Using Free Basic Service for quiz generation (Rule-based fallback)")
+        # If Gemini failed or was not configured, use the "Free Service" (Heuristic Fallback)
+        log_error("Using Free Basic Service for quiz generation (Heuristic fallback)")
         free_questions = []
         import re
-        # Basic logic: find sentences with keywords or numbers
-        sentences = re.split(r'[.!?]\s+', text)
+        
+        # Clean text of internal markers for professional display (Harden regex)
+        clean_text = re.sub(r'(?i)\s*--- (?:Page|Slide) \d+ ---\s*', ' ', text)
+        
+        # Heuristic: find sentences that denote "importance" or "significance"
+        impact_keywords = ['important', 'main', 'key', 'impact', 'result', 'benefit', 'consequence', 'goal', 'feature', 'significant', 'primary', 'enables', 'provides', 'represents']
+        
+        sentences = re.split(r'[.!?]\s+', clean_text)
+        high_value_sentences = []
+        normal_sentences = []
+        
         for s in sentences:
+            s_stripped = s.strip()
+            if not s_stripped or len(s_stripped.split()) < 12: continue
+            
+            # Check for impact keywords
+            score = sum(1 for kw in impact_keywords if re.search(r'\b' + kw + r'\b', s_stripped, re.IGNORECASE))
+            if score > 0:
+                high_value_sentences.append((s_stripped, score))
+            else:
+                normal_sentences.append(s_stripped)
+        
+        # Sort high-value by impact score
+        high_value_sentences.sort(key=lambda x: x[1], reverse=True)
+        
+        # Combine lists to ensure we have enough for 10 questions
+        # Prioritize high-value, then normal sentences
+        candidate_sentences = [s for s, score in high_value_sentences] + normal_sentences
+        import random
+        
+        # We need a pool of sentences for distractors
+        distractor_pool = [s.strip() for s in sentences if len(s.strip().split()) > 8]
+        
+        for s in candidate_sentences:
             if len(free_questions) >= 10: break
-            # Find a sentence with a number or a capitalized word
-            if re.search(r'\d+', s) or len(s.split()) > 15:
-                # Create a simple "What is mentioned here?" question
-                q_text = s.strip()
-                if len(q_text) > 100: q_text = q_text[:97] + "..."
+            
+            # Identify a potential subject
+            verbs = r'\b(is|are|was|were|means|refers to|enables|provides|represents|impacts|allows|helps)\b'
+            match = re.search(verbs, s, re.IGNORECASE)
+            
+            if match or len(free_questions) >= 5:
+                # Subject Extraction
+                if match:
+                    subject_part = s[:match.start()].strip()
+                    words = subject_part.split()
+                    subject = f"'{subject_part}'" if 0 < len(words) <= 6 else "the topic detailed"
+                else:
+                    words = s.split()
+                    subject = f"'{' '.join(words[:4])}...'" if len(words) > 4 else "the subject mentioned"
                 
-                # Mock options (for "Free Service" demo)
-                options = ["True", "False", "Not mentioned", "None of the above"]
+                # Correct Option
+                correct_opt = s
+                if len(correct_opt) > 160: correct_opt = correct_opt[:157] + "..."
+                
+                # Dynamic Distractors from other parts of the text
+                others = [d for d in distractor_pool if d != s and len(d.split()) > 10]
+                if len(others) >= 3:
+                    chosen_distractors = random.sample(others, 3)
+                else:
+                    # Fallback distractors if text is too short
+                    chosen_distractors = [
+                        "This detail is not explicitly mentioned in the primary documentation.",
+                        "The information provided suggests a contrary interpretation or legacy view.",
+                        "Insufficient contextual data is available to support this specific observation."
+                    ]
+                
+                # Clean and Truncate Distractors
+                final_distractors = []
+                for d in chosen_distractors:
+                    if len(d) > 160: d = d[:157] + "..."
+                    final_distractors.append(d)
+                
+                # Assemble and Shuffle
+                options = [correct_opt] + final_distractors
+                random.shuffle(options)
+                ans_idx = options.index(correct_opt)
+                
                 free_questions.append({
-                    "question": f"According to the text: \"{q_text}\" - Is this statement correct?",
+                    "question": f"Based on the provided documentation, what is a primary significance or impact of {subject}?",
                     "options": options,
-                    "answer": 0,
-                    "explanation": "This was directly extracted from the book's content."
+                    "answer": ans_idx,
+                    "explanation": f"The source text emphasizes: \"{s}\""
                 })
         
         if not free_questions:
@@ -923,6 +1098,205 @@ def save_quiz_score():
     except Exception as e:
         log_error(f"Save quiz score error: {e}")
         return jsonify({"error": str(e)})
+
+@app.route("/api/recommendations")
+def get_recommendations():
+    # Curated recommendations for different categories across multiple languages
+    recommendations = {
+        "Story": {
+            "English": [
+                {"title": "The Alchemist", "author": "Paulo Coelho", "desc": "A journey of self-discovery and following one's destiny."},
+                {"title": "Alice in Wonderland", "author": "Lewis Carroll", "desc": "A whimsical journey through a fantastical world."},
+                {"title": "The Little Prince", "author": "Antoine de Saint-Exupéry", "desc": "A profound tale about life and human nature."}
+            ],
+            "Tamil": [
+                {"title": "Panchatantra Stories", "author": "Vishnu Sharma", "desc": "Ancient Indian animal fables with moral lessons."},
+                {"title": "Siruvar Kathaigal", "author": "Various", "desc": "Captivating short stories for cognitive and moral growth."},
+                {"title": "Tenali Raman Tales", "author": "Traditional", "desc": "Witty and humorous stories of the legendary courtier."}
+            ],
+            "Hindi": [
+                {"title": "Panchatantra", "author": "Vishnu Sharma", "desc": "Educational and moral fables for all ages."},
+                {"title": "Akbar-Birbal", "author": "Traditional", "desc": "Stories of wisdom and quick wit."},
+                {"title": "Vikram-Betal", "author": "Traditional", "desc": "Mystical tales of King Vikram and the ghost Betal."}
+            ]
+        },
+        "Novels": {
+            "English": [
+                {"title": "1984", "author": "George Orwell", "desc": "A dystopian look at a totalitarian future society."},
+                {"title": "Pride and Prejudice", "author": "Jane Austen", "desc": "A classic romance exploring manners and social standing."},
+                {"title": "The Great Gatsby", "author": "F. Scott Fitzgerald", "desc": "A tale of the American Dream in the Roaring Twenties."}
+            ],
+            "Tamil": [
+                {"title": "Ponniyin Selvan", "author": "Kalki", "desc": "Epic historical novel about the Chola Empire."},
+                {"title": "Sivagamiyin Sabatham", "author": "Kalki", "desc": "A historical masterpiece set in the Pallava kingdom."},
+                {"title": "Parthiban Kanavu", "author": "Kalki", "desc": "A gripping tale of a king seeking independence."}
+            ],
+            "Hindi": [
+                {"title": "Godaan", "author": "Premchand", "desc": "A powerful commentary on socio-economic struggles in rural India."},
+                {"title": "Gaban", "author": "Premchand", "desc": "An exploration of social pressure and personal integrity."},
+                {"title": "Gunahon Ka Devta", "author": "Dharamvir Bharati", "desc": "An iconic emotional and tragic love story."}
+            ]
+        },
+        "Inspirational": {
+            "English": [
+                {"title": "Wings of Fire", "author": "A.P.J. Abdul Kalam", "desc": "The autobiography of the Missile Man of India."},
+                {"title": "Think and Grow Rich", "author": "Napoleon Hill", "desc": "Principles for achieving success and wealth."},
+                {"title": "Man's Search for Meaning", "author": "Viktor Frankl", "desc": "Finding purpose even in the darkest circumstances."}
+            ],
+            "Tamil": [
+                {"title": "Agni Siragugal", "author": "A.P.J. Abdul Kalam", "desc": "Tamil version of the inspiring Wings of Fire."},
+                {"title": "Arthamulla Indhu Madham", "author": "Kannadasan", "desc": "Philosophical insights into life and spirituality."},
+                {"title": "Thirukkural", "author": "Thiruvalluvar", "desc": "Ancient Tamil ethics and wisdom in couplets."}
+            ],
+            "Hindi": [
+                {"title": "Agni Ki Udaan", "author": "A.P.J. Abdul Kalam", "desc": "Inspiring life journey of the former President."},
+                {"title": "Jeet Aapki", "author": "Shiv Khera", "desc": "Practical steps to achieve positive attitude and success."},
+                {"title": "Madhushala", "author": "Harivansh Rai Bachchan", "desc": "Philosophical poetry about the essence of life's path."}
+            ]
+        },
+        "Comedy": {
+            "English": [
+                {"title": "The Hitchhiker's Guide to the Galaxy", "author": "Douglas Adams", "desc": "A hilarious cosmic journey across the universe."},
+                {"title": "Catch-22", "author": "Joseph Heller", "desc": "Satirical look at the absurdity of war and bureaucracy."},
+                {"title": "Three Men in a Boat", "author": "Jerome K. Jerome", "desc": "A humorous account of a boating holiday on the Thames."}
+            ],
+            "Tamil": [
+                {"title": "Washingtonil Thirumanam", "author": "Savvi", "desc": "A classic humorous look at NRI life experiences."},
+                {"title": "Thuppariyum Sambu", "author": "Devan", "desc": "The comical adventures of an accidental detective."},
+                {"title": "Mudra Rakshasam", "author": "Cho Ramaswamy", "desc": "Sharp political satire and wit."}
+            ],
+            "Hindi": [
+                {"title": "Raag Darbari", "author": "Shrilal Shukla", "desc": "Satirical masterpiece on rural politics and life."},
+                {"title": "Mungerilal Ke Haseen Sapne", "author": "Manohar Shyam Joshi", "desc": "Funny tales of a common man's daydreams."},
+                {"title": "Chitchor", "author": "Various", "desc": "Lighthearted stories of romance and misunderstandings."}
+            ]
+        }
+    }
+    return jsonify(recommendations)
+    
+@app.route("/api/predict_questions", methods=["POST"])
+def predict_questions():
+    filename = request.form.get("filename", "").strip()
+    lang = request.form.get("lang", "en").strip()
+    
+    if not filename:
+        return jsonify({"error": "No file specified."}), 400
+        
+    path = os.path.join(UPLOAD_FOLDER, filename)
+    if not os.path.exists(path):
+        return jsonify({"error": "File not found."}), 404
+        
+    try:
+        text, _, _ = extract_text_from_file(path, filename)
+    except Exception as e:
+        log_error(f"Extraction error for prediction: {e}")
+        return jsonify({"error": "Could not extract text."}), 500
+        
+    if not text or len(text) < 100:
+        return jsonify({"error": "Book content too short for prediction."}), 400
+
+    # Prepare prompt for Gemini
+    sample_text = text[:15000] # Use a bit more for prediction if possible
+    
+    prompt = f"""
+    Analyze the following book content and generate exactly 5 'Short Answer Questions' and 3 'Long Answer Questions' for an exam.
+    Target Language: {lang}
+    
+    Requirements:
+    1. Focus on the MOST important concepts, repeated themes, and key facts.
+    2. Short Answer Questions: Each answer MUST be EXACTLY 4 lines long. Use line breaks ("\n") to separate lines.
+    3. Long Answer Questions: Each answer MUST be EXACTLY 8 lines long. Use line breaks ("\n") to separate lines.
+    4. For EACH answer, use **bold text** (e.g., **Key Term**) for the most important keywords or phrases to highlight them.
+    5. For EACH question, provide:
+       - The question text
+       - A clear, structured answer/explanation (adhering strictly to the line count rule)
+       - Difficulty level: "Easy", "Medium", or "Hard"
+       - A boolean "is_important" (set to true for the top 2-3 most critical overall questions)
+    6. Return ONLY a valid JSON object in this format:
+    {{
+      "short_questions": [
+        {{ "question": "...", "answer": "...", "difficulty": "...", "is_important": true }},
+        ...
+      ],
+      "long_questions": [
+        {{ "question": "...", "answer": "...", "difficulty": "...", "is_important": false }},
+        ...
+      ]
+    }}
+    
+    Book Content (Sample):
+    {sample_text}
+    """
+
+    try:
+        from utils.gemini_assistant import GeminiAssistant
+        has_gemini = GeminiAssistant.configure()
+        
+        if has_gemini:
+            response = GeminiAssistant.ask(prompt)
+            if response and "AI Error" not in response and "Gemini returned an empty response" not in response:
+                clean_json = response.strip()
+                if "```json" in clean_json:
+                    clean_json = clean_json.split("```json")[1].split("```")[0].strip()
+                elif "```" in clean_json:
+                    clean_json = clean_json.split("```")[1].split("```")[0].strip()
+                
+                try:
+                    data = json.loads(clean_json)
+                    return jsonify(data)
+                except Exception as je:
+                    log_error(f"JSON Parse Error in prediction: {je}")
+    except Exception as e:
+        log_error(f"Gemini Prediction Error: {e}")
+
+    # Fallback / Simulated Logic (Heuristic)
+    log_error("Using heuristic fallback for Smart Prediction")
+    import re
+    import random
+    
+    clean_text = re.sub(r'(?i)\s*--- (?:Page|Slide) \d+ ---\s*', ' ', text)
+    sentences = [s.strip() for s in re.split(r'[.!?]\s+', clean_text) if len(s.strip().split()) > 10]
+    
+    if not sentences:
+        return jsonify({"error": "Insufficient content for prediction."}), 400
+
+    # Find "important" sentences
+    keywords = ['important', 'key', 'main', 'significance', 'result', 'defined', 'because', 'therefore', 'consequently']
+    important_sentences = []
+    for s in sentences:
+        score = sum(1 for kw in keywords if kw in s.lower())
+        if score > 0:
+            important_sentences.append((s, score))
+    
+    important_sentences.sort(key=lambda x: x[1], reverse=True)
+    candidates = [s for s, score in important_sentences[:15]]
+    if not candidates: candidates = sentences[:10]
+    
+    short_qs = []
+    for i, s in enumerate(random.sample(candidates, min(len(candidates), 5))):
+        words = s.split()
+        short_qs.append({
+            "question": f"What is the significance of the concept mentioned as: '{' '.join(words[:6])}...'?",
+            "answer": f"The book states: '{s}'.\nThis concept is crucial for understanding the primary subject matter.\nIt highlights key details that are fundamental to the chapter's progression.\nOverall, this point serves as a foundation for further analysis of the text.",
+            "difficulty": random.choice(["Easy", "Medium"]),
+            "is_important": i < 2
+        })
+        
+    long_qs = []
+    for i, s in enumerate(random.sample(candidates, min(len(candidates), 3))):
+        words = s.split()
+        long_qs.append({
+            "question": f"Explain in detail the following point from the text: '{' '.join(words[:8])}...'",
+            "answer": f"Based on the text: '{s}'.\nThis concept plays a vital role in the overall theme presented in this section.\nFurthermore, it provides a unique perspective on the historical or factual context.\nIt allows readers to connect various independent facts into a cohesive narrative structure.\nMoreover, the author emphasizes this specific idea to underline the central purpose of the study.\nBy examining this detail, one can derive a deeper meaning of the intended message.\nIt effectively encapsulates the main objectives while offering substantial evidence for its claims.\nUltimately, this analysis provides an 8-line comprehensive look as requested for long answers.",
+            "difficulty": "Hard",
+            "is_important": i == 0
+        })
+        
+    return jsonify({
+        "short_questions": short_qs,
+        "long_questions": long_qs,
+        "message": "AI Service currently unavailable. Using basic prediction instead."
+    })
 
 if __name__ == "__main__":
     # Ensure tables exist (Simplified check)

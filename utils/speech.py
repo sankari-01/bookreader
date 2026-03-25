@@ -23,7 +23,7 @@ VOICE_MAP = {
     'bn': {'f': 'bn-IN-TanishaNeural', 'm': 'bn-IN-BashkarNeural'}
 }
 
-def text_to_speech(text, lang='en', rate='+0%', gender='f', expressive=True):
+def text_to_speech(text, lang='en', rate='+0%', gender='f', expressive=True, is_song=False):
     """
     Synchronous wrapper for edge-tts generation.
     Returns (audio_filename, vtt_filename) stored in the static folder.
@@ -32,8 +32,8 @@ def text_to_speech(text, lang='en', rate='+0%', gender='f', expressive=True):
     if not text:
         return None, "No text provided"
         
-    # Generate unique filenames based on text content, lang, rate, gender, and expressive flag
-    text_hash = hashlib.md5(f"{text}_{rate}_{gender}_{expressive}".encode('utf-8')).hexdigest()
+    # Generate unique filenames based on text content, lang, rate, gender, expressive flag, and is_song
+    text_hash = hashlib.md5(f"{text}_{rate}_{gender}_{expressive}_{is_song}".encode('utf-8')).hexdigest()
     audio_filename = f"speech_{text_hash}_{lang}.mp3"
     vtt_filename = f"speech_{text_hash}_{lang}.vtt"
     
@@ -52,12 +52,19 @@ def text_to_speech(text, lang='en', rate='+0%', gender='f', expressive=True):
     voice = voice_options.get(gender, voice_options['f'])
     
     final_text = text
-    if expressive:
+    if is_song:
+        from utils.narration_expander import NarrationExpander
+        expanded = NarrationExpander.turn_into_song(text, lang)
+        if expanded and "<" in expanded:
+            final_text = f"<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xmlns:mstts='https://www.w3.org/2001/mstts' xml:lang='{lang}'>{expanded}</speak>"
+        else:
+            final_text = expanded
+    elif expressive:
         from utils.narration_expander import NarrationExpander
         expanded = NarrationExpander.theatricalize(text, lang)
         if expanded and "<" in expanded:
             # Wrap in SSML
-            final_text = f"<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xml:lang='{lang}'>{expanded}</speak>"
+            final_text = f"<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xmlns:mstts='https://www.w3.org/2001/mstts' xml:lang='{lang}'>{expanded}</speak>"
     
     try:
         asyncio.run(_generate_speech(final_text, voice, audio_path, vtt_path, rate))
@@ -75,9 +82,7 @@ def text_to_speech(text, lang='en', rate='+0%', gender='f', expressive=True):
 async def _generate_speech(text, voice, audio_path, vtt_path, rate='+0%'):
     is_ssml = text.strip().startswith("<speak")
     if is_ssml:
-        communicate = edge_tts.Communicate(text, voice, rate=rate) # Wait, edge-tts actually detects SSML automatically in the 'text' param but sometimes needs a specific wrapper. In newer versions, passing it as 'text' is fine if it starts with <speak.
-        # However, to be extra safe and follow some documentation:
-        # communicate = edge_tts.Communicate(text, voice, rate=rate) is correct for most cases.
+        communicate = edge_tts.Communicate(text, voice)
     else:
         communicate = edge_tts.Communicate(text, voice, rate=rate)
     # edge-tts supports generating VTT subtitles directly
@@ -91,4 +96,6 @@ async def _generate_speech(text, voice, audio_path, vtt_path, rate='+0%'):
                 subs.feed(chunk)
                 
     with open(vtt_path, "w", encoding="utf-8") as f:
-        f.write(subs.generate())
+        srt_content = subs.get_srt()
+        vtt_content = "WEBVTT\n\n" + srt_content.replace(',', '.')
+        f.write(vtt_content)

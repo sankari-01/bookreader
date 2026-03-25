@@ -81,6 +81,8 @@ const FilesPage = () => {
                   <th>Day</th>
                   <th>Time</th>
                   <th>Pages</th>
+                  <th>Last Opened</th>
+                  <th>Last Closed</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -97,6 +99,8 @@ const FilesPage = () => {
                     <td>{file.day}</td>
                     <td>{file.time}</td>
                     <td>{file.pages}</td>
+                    <td style={{ fontSize: '0.8rem', color: '#6d4c41' }}>{file.last_opened}</td>
+                    <td style={{ fontSize: '0.8rem', color: '#6d4c41' }}>{file.last_closed}</td>
                     <td style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
                       <Link to={`/read/${file.filename}`}>
                         <button style={{ padding: '6px 12px', background: '#d4a373', margin: 0 }}>
@@ -114,7 +118,7 @@ const FilesPage = () => {
                 ))}
                 {files.length === 0 && (
                   <tr>
-                    <td colSpan="6" style={{ padding: '40px' }}>Your library is empty. Upload a book to get started!</td>
+                    <td colSpan="8" style={{ padding: '40px' }}>Your library is empty. Upload a book to get started!</td>
                   </tr>
                 )}
               </tbody>

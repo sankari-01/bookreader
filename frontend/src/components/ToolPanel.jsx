@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, MessageSquare, Info, Languages, Book, BookOpen, Play, Pause, RefreshCcw } from 'lucide-react';
+import { X, MessageSquare, Info, Languages, Book, BookOpen, Play, Pause, RefreshCcw, Music } from 'lucide-react';
 
 const ToolPanel = ({
   active, onClose, filename, text, lang, detectedLang, detectedLangName, externalTab, onLanguageChange, initialWord, initialSummary, isFetchingSummary,
   isNarrating, isPlaying, narratingPage, togglePlayback, onStopNarration, onStartNarration, onRestartNarration,
   currentViewPage,
   narrationSpeed, onSpeedChange,
-  narrationGender, onGenderChange
+  narrationGender, onGenderChange,
+  isSongMode, onSongModeChange
 }) => {
   const [activeTab, setActiveTab] = useState('summary');
   const [loading, setLoading] = useState(false);
@@ -363,6 +364,13 @@ const ToolPanel = ({
                           ))}
                         </div>
                       </div>
+                      <div style={{ marginTop: '15px' }}>
+                        <p style={{ margin: '0 0 5px 0', fontSize: '0.75rem', fontWeight: '600', color: '#8b7355', textAlign: 'left' }}>Style</p>
+                        <button onClick={() => onSongModeChange(!isSongMode)}
+                          style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #e07a5f', background: isSongMode ? '#e07a5f' : 'transparent', color: isSongMode ? 'white' : '#e07a5f', fontSize: '0.8rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', transition: 'all 0.2s' }}>
+                          <Music size={14} /> {isSongMode ? "Kids Rhyme Mode (On)" : "Kids Rhyme Mode (Off)"}
+                        </button>
+                      </div>
                     </div>
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -399,6 +407,13 @@ const ToolPanel = ({
                               style={{ padding: '4px 6px', borderRadius: '4px', border: 'none', background: narrationSpeed === s ? '#8b7355' : '#f4f1de', color: narrationSpeed === s ? 'white' : 'inherit', fontSize: '0.7rem' }}>{s}</button>
                           ))}
                         </div>
+                      </div>
+                      <div style={{ marginTop: '15px' }}>
+                        <p style={{ margin: '0 0 5px 0', fontSize: '0.75rem', fontWeight: '600', color: '#8b7355', textAlign: 'left' }}>Style</p>
+                        <button onClick={() => onSongModeChange(!isSongMode)}
+                          style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #e07a5f', background: isSongMode ? '#e07a5f' : 'transparent', color: isSongMode ? 'white' : '#e07a5f', fontSize: '0.8rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', transition: 'all 0.2s' }}>
+                          <Music size={14} /> {isSongMode ? "Kids Rhyme Mode (On)" : "Kids Rhyme Mode (Off)"}
+                        </button>
                       </div>
                     </div>
 

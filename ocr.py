@@ -72,3 +72,85 @@ def extract_text(path):
             text = f"Error: Could not read file content. ({e})"
 
     return text
+
+def count_images(path):
+    """Returns True if the PDF contains any images."""
+    if not path.endswith(".pdf"):
+        return False
+    try:
+        doc = fitz.open(path)
+        has_images = False
+        for page in doc:
+            if len(page.get_images()) > 0:
+                has_images = True
+                break
+        doc.close()
+        return has_images
+    except:
+        return False
+
+def extract_images_from_pdf(path, output_dir):
+    """Extracts images from PDF and returns a list of (image_url, ocr_explanation)."""
+    results = []
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+        
+    try:
+        doc = fitz.open(path)
+        img_count = 0
+        
+        for i in range(len(doc)):
+            page = doc.load_page(i)
+            image_list = page.get_images(full=True)
+            
+            for img_index, img in enumerate(image_list):
+                xref = img[0]
+                base_image = doc.extract_image(xref)
+                image_bytes = base_image["image"]
+                ext = base_image["ext"]
+                
+                # Use a specific filename per book
+                safe_name = "".join([c if c.isalnum() else "_" for c in os.path.basename(path)])
+                img_filename = f"img_{safe_name}_{i+1}_{img_index}.{ext}"
+                img_path = os.path.join(output_dir, img_filename)
+                
+                if not os.path.exists(img_path):
+                    with open(img_path, "wb") as f:
+                        f.write(image_bytes)
+                
+                # Perform OCR/AI Explanation
+                try:
+                    pil_img = Image.open(io.BytesIO(image_bytes))
+                    
+                    # Try Gemini AI first for 40-word explanation
+                    from utils.gemini_assistant import GeminiAssistant
+                    ai_prompt = (
+                        "You are an expert visual analyst. Describe this image in exactly 40 words. "
+                        "Do not just list objects; instead, explain the *context*, *purpose*, and *significance* "
+                        "of this visual within a professional document. Focus on what it communicates to the reader."
+                    )
+                    explanation = GeminiAssistant.describe_image(pil_img, ai_prompt)
+                    
+                    if not explanation or "AI Configuration missing" in explanation or "AI Description Error" in explanation:
+                        # Fallback to local Free AI Explainer (Pattern-based)
+                        ocr_text = pytesseract.image_to_string(pil_img).strip()
+                        from utils.free_ai import FreeImageExplainer
+                        explanation = FreeImageExplainer.explain(ocr_text)
+                        
+                except Exception as e:
+                    explanation = f"Free explanatory analysis could not be performed for this image. ({str(e)})"
+                
+                results.append({
+                    "url": f"/static/extracted_images/{img_filename}",
+                    "explanation": explanation,
+                    "page": i + 1
+                })
+                img_count += 1
+                if img_count >= 25: break # Cap for performance
+            if img_count >= 25: break
+            
+        doc.close()
+    except Exception as e:
+        log_error(f"Image extraction error: {e}")
+        
+    return results

@@ -60,3 +60,17 @@ class GeminiAssistant:
         except Exception as e:
             log_error(f"Gemini AI Error: {e}")
             return f"AI Error: {str(e)}"
+
+    @classmethod
+    def describe_image(cls, pil_image, prompt="Describe this image in about 40 words, focusing on its context and significance."):
+        if not cls.configure():
+            return "AI Configuration missing. (Local OCR only)"
+        try:
+            # Gemini 1.5-flash handles PIL images directly in the list
+            response = cls._model.generate_content([prompt, pil_image])
+            if response and response.text:
+                return response.text.strip()
+            return "Model returned empty description."
+        except Exception as e:
+            log_error(f"Gemini Image Description Error: {e}")
+            return f"AI Description Error: {str(e)}"

@@ -8,7 +8,7 @@ import {
   X as CloseIcon, User, Volume2, Globe, Command, Keyboard, Play, Languages,
   FileText, Info, MessageSquare, BookOpen, Mic, MicOff, Download, Trash2,
   HelpCircle, CheckCircle2, AlertCircle, Timer, Award, ChevronRight as ChevronRightIcon,
-  RotateCcw
+  RotateCcw, FileImage, Loader2, Brain, Columns2, LayoutGrid, ZoomIn, ZoomOut, Square
 } from 'lucide-react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
@@ -47,6 +47,7 @@ const ReaderPage = () => {
 
   const [showText, setShowText] = useState(false);
   const [pages, setPages] = useState([]);
+  const [originalPages, setOriginalPages] = useState([]);
 
   const [numPages, setNumPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
@@ -85,6 +86,98 @@ const ReaderPage = () => {
     } catch (e) { return []; }
   });
 
+  const [showImagesModal, setShowImagesModal] = useState(false);
+  const [extractedImages, setExtractedImages] = useState([]);
+  const [imagesLoading, setImagesLoading] = useState(false);
+
+  const [showPredictionModal, setShowPredictionModal] = useState(false);
+  const [predictionData, setPredictionData] = useState(null);
+  const [predictionLoading, setPredictionLoading] = useState(false);
+  const [predictionActiveTab, setPredictionActiveTab] = useState('short');
+  const [showAnswers, setShowAnswers] = useState({});
+  const [viewMode, setViewMode] = useState('single'); // 'single', 'double', 'thumbnails'
+  const [zoomLevel, setZoomLevel] = useState(100);
+
+  const handleExtractImages = async () => {
+    setShowImagesModal(true);
+    if (extractedImages.length > 0) return;
+    
+    setImagesLoading(true);
+    try {
+      const resp = await fetch('/api/extract_images', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ filename })
+      });
+      const result = await resp.json();
+      if (result.images) {
+        setExtractedImages(result.images);
+      }
+    } catch (e) {
+      console.error("Image extraction failed:", e);
+    } finally {
+      setImagesLoading(false);
+    }
+  };
+
+  const handleStartPrediction = async () => {
+    setShowPredictionModal(true);
+    if (predictionData) return;
+    
+    setPredictionLoading(true);
+    try {
+      const resp = await fetch('/api/predict_questions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ filename, lang: currentLang })
+      });
+      const result = await resp.json();
+      if (result.short_questions || result.long_questions) {
+        setPredictionData(result);
+      } else if (result.error) {
+        alert(result.error);
+        setShowPredictionModal(false);
+      }
+    } catch (e) {
+      console.error("Prediction failed:", e);
+      alert("Could not reach the AI Service.");
+      setShowPredictionModal(false);
+    } finally {
+      setPredictionLoading(false);
+    }
+  };
+
+  const updateTimestamp = async (type) => {
+    try {
+      await fetch('/api/book/timestamp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ filename, type })
+      });
+    } catch (e) {
+      console.error(`Failed to update ${type} timestamp:`, e);
+    }
+  };
+
+  useEffect(() => {
+    if (filename) {
+      updateTimestamp('opened');
+    }
+    
+    const handleUnload = () => {
+      const formData = new FormData();
+      formData.append('filename', filename);
+      formData.append('type', 'closed');
+      navigator.sendBeacon('/api/book/timestamp', formData);
+    };
+
+    window.addEventListener('beforeunload', handleUnload);
+    return () => {
+      updateTimestamp('closed');
+      window.removeEventListener('beforeunload', handleUnload);
+    };
+  }, [filename]);
+
   useEffect(() => {
     localStorage.setItem(`highlights_${filename}`, JSON.stringify(userHighlights));
   }, [userHighlights, filename]);
@@ -92,11 +185,15 @@ const ReaderPage = () => {
   // Narration States
   const [isPlaying, setIsPlaying] = useState(false);
   const [isNarrating, setIsNarrating] = useState(false);
+  const [isNarrationLoading, setIsNarrationLoading] = useState(false);
   const [narratingPage, setNarratingPage] = useState(1);
   const [audioUrl, setAudioUrl] = useState(null);
   const [narrationSpeed, setNarrationSpeed] = useState('1.0x'); 
   const [narrationGender, setNarrationGender] = useState('f');
+  const [isSongMode, setIsSongMode] = useState(false);
   const [showShortcuts, setShowShortcuts] = useState(false);
+  const [activeCues, setActiveCues] = useState([]);
+  const [activeCueIndex, setActiveCueIndex] = useState(-1);
 
   // Refs for stable narration across renders
   const isAutoScrollingRef = useRef(false);
@@ -131,14 +228,18 @@ const ReaderPage = () => {
         const key = e.key.toLowerCase();
         if (key === 's') { e.preventDefault(); handleToolClick('summary'); }
         else if (key === 'a') { e.preventDefault(); handleToolClick('ask'); }
-        else if (key === 'r') { e.preventDefault(); handleToolClick('speak'); startNarration(); }
+        else if (key === 'r') { e.preventDefault(); handleToolClick('speak'); if (!isNarrating) startNarration(); }
         else if (key === 'm') { e.preventDefault(); handleToolClick('meaning'); }
         else if (key === 't') { e.preventDefault(); handleReadTranslationClick(); }
         else if (key === 'f') { e.preventDefault(); setIsReadMode(!isReadMode); }
         else if (key === 'v') { e.preventDefault(); setVoiceActive(!voiceActive); }
         else if (key === 'x') { e.preventDefault(); setShowText(!showText); }
         else if (key === '/') { e.preventDefault(); setShowSearch(!showSearch); }
-        else if (key === 'h') { e.preventDefault(); setShowShortcuts(prev => !prev); }
+        else if (key === 'k') { e.preventDefault(); setShowHighlights(true); }
+        else if (key === 'q') { e.preventDefault(); handleStartQuiz(); }
+        else if (key === 'p') { e.preventDefault(); handleStartPrediction(); }
+        else if (key === 'i') { e.preventDefault(); if (data?.has_images) handleExtractImages(); }
+        else if (key === 'h') { e.preventDefault(); /* Global help or toggle labels? */ }
       }
     };
 
@@ -369,6 +470,7 @@ const ReaderPage = () => {
     isNarratingRef.current = false;
     setIsNarrating(false);
     setIsPlaying(false);
+    setIsNarrationLoading(false);
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current.src = '';
@@ -380,8 +482,24 @@ const ReaderPage = () => {
     setTimeout(() => { startNarration(1); }, 100);
   };
 
+  const parseVTT = (vttText) => {
+    const cues = [];
+    const blocks = vttText.split(/\n\n+/);
+    blocks.forEach(block => {
+      const match = block.match(/(\d{2}:\d{2}:\d{2}\.\d{3}) --> (\d{2}:\d{2}:\d{2}\.\d{3})\n(.*)/s);
+      if (match) {
+        const startRaw = match[1].split(':');
+        const startSec = (parseInt(startRaw[0]) * 3600) + (parseInt(startRaw[1]) * 60) + parseFloat(startRaw[2]);
+        const endRaw = match[2].split(':');
+        const endSec = (parseInt(endRaw[0]) * 3600) + (parseInt(endRaw[1]) * 60) + parseFloat(endRaw[2]);
+        cues.push({ start: startSec, end: endSec, word: match[3].trim() });
+      }
+    });
+    return cues;
+  };
+
   const startNarration = async (startPage = null) => {
-    if (isNarrating) {
+    if (isNarratingRef.current && startPage === null) {
       stopNarration();
       return;
     }
@@ -421,7 +539,7 @@ const ReaderPage = () => {
         const resp = await fetch('/api/speak', {
           method: 'POST',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
-          body: new URLSearchParams({ text: nextText, filename, lang: currentLang, rate, gender: narrationGender })
+          body: new URLSearchParams({ text: nextText, filename, lang: data?.detected_lang || currentLang, rate, gender: narrationGender, is_song: isSongMode, expressive: 'false' })
         });
         const result = await resp.json();
         if (result.audio_url) {
@@ -441,9 +559,8 @@ const ReaderPage = () => {
     if (data?.is_pdf) scrollToPdfPage(pageNum);
     else scrollToTextPage(pageNum);
 
-    const totalPages = pages.length;
-    const pageText = pages[pageNum - 1];
-
+    const totalPages = originalPages.length || pages.length;
+    const pageText = (originalPages.length > 0 ? originalPages[pageNum - 1] : pages[pageNum - 1]);
     if (!pageText || pageText.trim() === "" || pageText.includes('[Empty Page]')) {
       if (isNarratingRef.current && pageNum < totalPages) {
         const next = pageNum + 1;
@@ -455,6 +572,7 @@ const ReaderPage = () => {
     }
 
     try {
+      setIsNarrationLoading(true);
       let result;
       if (preFetchPromiseRef.current) {
         const preFetched = await preFetchPromiseRef.current;
@@ -471,18 +589,44 @@ const ReaderPage = () => {
         const resp = await fetch('/api/speak', {
           method: 'POST',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
-          body: new URLSearchParams({ text: pageText, filename, lang: currentLang, rate, gender: narrationGender })
+          body: new URLSearchParams({ text: pageText, filename, lang: data?.detected_lang || currentLang, rate, gender: narrationGender, is_song: isSongMode, expressive: 'false' })
         });
         result = await resp.json();
       }
 
+      setIsNarrationLoading(false);
+
       if (result.audio_url && isNarratingRef.current) {
+        // Handle VTT synchronization
+        if (result.vtt_url) {
+          try {
+            const vttResp = await fetch(result.vtt_url);
+            const vttText = await vttResp.text();
+            const cues = parseVTT(vttText);
+            setActiveCues(cues);
+          } catch (e) {
+            console.warn("VTT loading error:", e);
+            setActiveCues([]);
+          }
+        } else {
+          setActiveCues([]);
+        }
+
         if (!audioRef.current) audioRef.current = new Audio();
         audioRef.current.src = result.audio_url;
         setAudioUrl(result.audio_url);
+        
+        audioRef.current.ontimeupdate = () => {
+          const currentTime = audioRef.current.currentTime;
+          const idx = activeCues.findIndex(cue => currentTime >= cue.start && currentTime <= cue.end);
+          if (idx !== -1) setActiveCueIndex(idx);
+        };
+
         audioRef.current.onplay = () => { setIsPlaying(true); preFetchNextPage(pageNum + 1); };
         audioRef.current.onended = () => {
-          if (isNarratingRef.current && narratingPageRef.current < pages.length) {
+          setActiveCueIndex(-1);
+          setActiveCues([]);
+          if (isNarratingRef.current && narratingPageRef.current < (originalPages.length || pages.length)) {
             const next = narratingPageRef.current + 1;
             setNarratingPage(next);
             narratingPageRef.current = next;
@@ -490,8 +634,15 @@ const ReaderPage = () => {
           } else { stopNarration(); }
         };
         await audioRef.current.play();
+      } else {
+        setIsNarrationLoading(false);
+        stopNarration();
       }
-    } catch (err) { console.error("Narration error:", err); stopNarration(); }
+    } catch (err) {
+      console.error("Narration error:", err);
+      setIsNarrationLoading(false);
+      stopNarration();
+    }
   };
 
   const togglePlayback = () => {
@@ -564,6 +715,14 @@ const ReaderPage = () => {
     if (data && data.text) {
       const parsed = parsePages(data.text);
       setPages(parsed);
+      
+      if (data.original_text) {
+        const origParsed = parsePages(data.original_text);
+        setOriginalPages(origParsed);
+      } else {
+        setOriginalPages(parsed);
+      }
+
       if (!data.is_pdf && parsed.length > 0) {
         setNumPages(parsed.length);
         setCurrentPage(1);
@@ -580,7 +739,7 @@ const ReaderPage = () => {
       const resp = await fetch('/api/speak', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
-        body: new URLSearchParams({ text: selection.text, filename, lang: currentLang, rate, gender: narrationGender })
+        body: new URLSearchParams({ text: selection.text, filename, lang: currentLang, rate, gender: narrationGender, is_song: isSongMode, expressive: 'false' })
       });
       const result = await resp.json();
       if (result.audio_url) {
@@ -635,7 +794,7 @@ const ReaderPage = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const resp = await fetch(`/api/read/${filename}?lang=${currentLang}`);
+      const resp = await fetch(`/api/read/${encodeURIComponent(filename)}?lang=${currentLang}`);
       const result = await resp.json();
       setData(result);
       if (!hasAutoSetLang && result.detected_lang && result.detected_lang !== currentLang && currentLang === 'en') {
@@ -646,7 +805,8 @@ const ReaderPage = () => {
         const parsed = parsePages(result.text);
         setPages(parsed);
         setNumPages(parsed.length);
-        if (result.is_pdf && result.count) setNumPages(result.count);
+        if (result.pages) setNumPages(result.pages);
+        else if (result.count) setNumPages(result.count);
       }
     } catch (err) { console.error(err); }
     finally { setLoading(false); }
@@ -765,7 +925,7 @@ const ReaderPage = () => {
     </div>
   );
 
-  if (!data) return <div style={{ color: 'white', padding: '100px', textAlign: 'center' }}>Error loading book: {filename}</div>;
+  if (!data) return <div style={{ color: '#4a342e', padding: '100px', textAlign: 'center', fontSize: '1.2rem', fontWeight: 'bold' }}>Error loading book: {filename}<br/>(Please ensure the backend is running)</div>;
 
   const handleStartQuiz = async () => {
     setShowQuiz(true);
@@ -814,8 +974,36 @@ const ReaderPage = () => {
   };
   const handleToolClick = (tabId) => { setActiveTab(tabId); setShowPanel(true); };
 
-  const highlightText = (text, highlight) => {
+  const highlightText = (text, highlight, activeWordIndex = -1) => {
     if (!text) return text;
+    
+    // Layer 1: Word-level splitting for narration
+    // We only split by words if activeWordIndex is active to keep performance up.
+    if (activeWordIndex !== -1) {
+      // Split into space-separated words, but keep the space
+      const parts = text.split(/(\s+)/);
+      let wordCounter = 0;
+      return (
+        <>
+          {parts.map((part, i) => {
+            const isWord = /\S/.test(part);
+            if (isWord) {
+              const currentIdx = wordCounter++;
+              if (currentIdx === activeWordIndex) {
+                return <span key={i} className="active-narrate-word">{part}</span>;
+              }
+              // Still apply simple search highlighting for other words
+              if (highlight && part.toLowerCase().includes(highlight.toLowerCase())) {
+                return <mark key={i} className="search-highlight">{part}</mark>;
+              }
+              return part;
+            }
+            return part;
+          })}
+        </>
+      );
+    }
+
     let result = [{ content: text, isHighlight: false, type: null }];
     
     const splitParts = (searchTerm, type) => {
@@ -894,31 +1082,72 @@ const ReaderPage = () => {
           borderRadius: '2px'
         }} />
       ))}
-      <Header showBack={true} hideNav={true}>
-        <div className="header-icon-container" title="Extracted Text (X)" onClick={() => setShowText(!showText)}>
-          <div className="header-icon"><FileText size={18} color="#faedcd" /></div>
-          <kbd className="shortcut-key-label">X</kbd>
-          <span className="header-icon-label">Text</span>
-        </div>
-        <div className="header-icon-container" title="Summarize (S)" onClick={() => handleToolClick('summary')}>
-          <div className="header-icon"><Info size={18} color="#faedcd" /></div>
-          <kbd className="shortcut-key-label">S</kbd>
-          <span className="header-icon-label">Summary</span>
-        </div>
-        <div className="header-icon-container" title="Ask AI (A)" onClick={() => handleToolClick('ask')}>
-          <div className="header-icon"><MessageSquare size={18} color="#faedcd" /></div>
-          <kbd className="shortcut-key-label">A</kbd>
-          <span className="header-icon-label">Ask AI</span>
-        </div>
+      <Header 
+        subtitle={data?.filename} 
+        originalLang={data?.detected_lang || 'en'} 
+        showBack={true} 
+        moreTools={
+          <>
+            <div className="header-icon-container" title="Extracted Text (X)" onClick={() => setShowText(!showText)}>
+              <div className="header-icon"><FileText size={18} color="#faedcd" /></div>
+              <kbd className="shortcut-key-label">X</kbd>
+              <span className="header-icon-label">Text</span>
+            </div>
+            <div className="header-icon-container" title="Ask AI (A)" onClick={() => handleToolClick('ask')}>
+              <div className="header-icon"><MessageSquare size={18} color="#faedcd" /></div>
+              <kbd className="shortcut-key-label">A</kbd>
+              <span className="header-icon-label">Ask AI</span>
+            </div>
+            <div className="header-icon-container" title="Meaning (M)" onClick={() => handleToolClick('meaning')}>
+              <div className="header-icon"><Book size={18} color="#faedcd" /></div>
+              <kbd className="shortcut-key-label">M</kbd>
+              <span className="header-icon-label">Meaning</span>
+            </div>
+            <div className={`header-icon-container ${isReadMode ? 'active-focus' : ''}`} title="Focus Mode (F)" onClick={() => setIsReadMode(!isReadMode)}>
+              <div className="header-icon"><Highlighter size={18} color={isReadMode ? "#ffffff" : "#faedcd"} style={{ transform: 'rotate(45deg)' }} /></div>
+              <kbd className="shortcut-key-label">F</kbd>
+              <span className="header-icon-label">Focus</span>
+            </div>
+            <div className="header-icon-container" title="See Highlights" onClick={() => setShowHighlights(true)}>
+              <div className="header-icon" style={{ position: 'relative' }}>
+                <Highlighter size={18} color="#faedcd" />
+                {userHighlights.length > 0 && <span className="highlight-badge">{userHighlights.length}</span>}
+              </div>
+              <kbd className="shortcut-key-label">K</kbd>
+              <span className="header-icon-label">My Marks</span>
+            </div>
+            <div className="header-icon-container" title="Take a Quiz" onClick={() => handleStartQuiz()}>
+              <div className="header-icon"><HelpCircle size={18} color="#faedcd" /></div>
+              <kbd className="shortcut-key-label">Q</kbd>
+              <span className="header-icon-label">Quiz</span>
+            </div>
+            <div className="header-icon-container" title="Predicted Questions (P)" onClick={handleStartPrediction}>
+              <div className="header-icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Brain size={18} color="#faedcd" />
+                <span style={{ fontSize: '10px', position: 'absolute', bottom: '-2px', right: '-2px' }}>❓</span>
+              </div>
+              <kbd className="shortcut-key-label">P</kbd>
+              <span className="header-icon-label">Questions</span>
+            </div>
+            {data?.has_images && (
+              <div className="header-icon-container" title="Extract Images & Explanations" onClick={handleExtractImages}>
+                <div className="header-icon"><FileImage size={18} color="#faedcd" /></div>
+                <kbd className="shortcut-key-label">I</kbd>
+                <span className="header-icon-label">Images</span>
+              </div>
+            )}
+          </>
+        }
+      >
         <div className="header-icon-container" title="Read Aloud (R)" onClick={() => { handleToolClick('speak'); if (!isNarrating) startNarration(); }}>
           <div className="header-icon"><BookOpen size={18} color="#faedcd" /></div>
           <kbd className="shortcut-key-label">R</kbd>
           <span className="header-icon-label">Read</span>
         </div>
-        <div className="header-icon-container" title="Meaning (M)" onClick={() => handleToolClick('meaning')}>
-          <div className="header-icon"><Book size={18} color="#faedcd" /></div>
-          <kbd className="shortcut-key-label">M</kbd>
-          <span className="header-icon-label">Meaning</span>
+        <div className="header-icon-container" title="Summary (S)" onClick={() => handleToolClick('summary')}>
+          <div className="header-icon"><Info size={18} color="#faedcd" /></div>
+          <kbd className="shortcut-key-label">S</kbd>
+          <span className="header-icon-label">Summary</span>
         </div>
         <div className={`header-icon-container ${showOverlay ? 'active-translation' : ''}`} title="Translation (T)" onClick={() => handleReadTranslationClick()}>
           <div className="header-icon"><Languages size={18} color="#faedcd" /></div>
@@ -933,30 +1162,6 @@ const ReaderPage = () => {
           </div>
           <kbd className="shortcut-key-label">/</kbd>
           <span className="header-icon-label">Search</span>
-        </div>
-        <div className={`header-icon-container ${voiceActive ? 'active-voice' : ''}`} title="Voice Control (V)" onClick={() => setVoiceActive(!voiceActive)}>
-          <div className="header-icon">
-            {voiceActive ? <Mic size={18} color="#e07a5f" /> : <MicOff size={18} color="#faedcd" />}
-            {voiceActive && <div className="voice-icon-pulse"></div>}
-          </div>
-          <kbd className="shortcut-key-label">V</kbd>
-          <span className="header-icon-label">Voice</span>
-        </div>
-        <div className={`header-icon-container ${isReadMode ? 'active-focus' : ''}`} title="Focus Mode (F)" onClick={() => setIsReadMode(!isReadMode)}>
-          <div className="header-icon"><Highlighter size={18} color={isReadMode ? "#ffffff" : "#faedcd"} style={{ transform: 'rotate(45deg)' }} /></div>
-          <kbd className="shortcut-key-label">F</kbd>
-          <span className="header-icon-label">Focus</span>
-        </div>
-        <div className="header-icon-container" title="See Highlights" onClick={() => setShowHighlights(true)}>
-          <div className="header-icon" style={{ position: 'relative' }}>
-            <Highlighter size={18} color="#faedcd" />
-            {userHighlights.length > 0 && <span className="highlight-badge">{userHighlights.length}</span>}
-          </div>
-          <span className="header-icon-label">My Marks</span>
-        </div>
-        <div className="header-icon-container" title="Take a Quiz" onClick={() => handleStartQuiz()}>
-          <div className="header-icon"><HelpCircle size={18} color="#faedcd" /></div>
-          <span className="header-icon-label">Quiz</span>
         </div>
       </Header>
 
@@ -1020,19 +1225,19 @@ const ReaderPage = () => {
           onSpeedChange={setNarrationSpeed}
           narrationGender={narrationGender}
           onGenderChange={setNarrationGender}
+          isSongMode={isSongMode}
+          onSongModeChange={setIsSongMode}
         />
 
         <div style={{ flex: 1, display: 'flex', padding: '10px', gap: '10px', position: 'relative' }}>
-          <div className="side-decoration-left">
-            <div className="mini-book-wrapper">
-              <div className="magic-glow"></div>
-              <div className="mini-book">
-                <div className="mini-page"></div>
-                <div className="mini-page"></div>
-                <div className="mini-page"></div>
-              </div>
+
+          {isNarrationLoading && (
+            <div style={{ position: 'fixed', bottom: '40px', left: '50%', transform: 'translateX(-50%)', background: '#e07a5f', color: '#fff', padding: '12px 24px', borderRadius: '30px', boxShadow: '0 4px 15px rgba(0,0,0,0.2)', display: 'flex', alignItems: 'center', gap: '12px', zIndex: 1000, animation: 'fadeIn 0.3s ease' }}>
+              <div style={{ width: '18px', height: '18px', border: '3px solid rgba(255,255,255,0.3)', borderTopColor: '#fff', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
+              <span style={{ fontSize: '0.95rem', fontWeight: '600', letterSpacing: '0.5px' }}>Preparing Audio...</span>
+              <style>{`@keyframes spin { 100% { transform: rotate(360deg); } }`}</style>
             </div>
-          </div>
+          )}
 
           <div className={`original-file-viewer ${currentLang.toLowerCase() !== (data?.detected_lang || 'en').toLowerCase() ? 'translating' : ''}`} style={{ flex: 1, display: 'flex', background: 'transparent', borderRadius: '12px', position: 'relative' }}>
             <div className="viewer-content">
@@ -1042,87 +1247,127 @@ const ReaderPage = () => {
                     <div className="error-preview">Failed to load PDF locally.</div>
                   ) : (
                     <Document
-                      file={`/uploads/${data.preview_filename}`}
+                      file={`/uploads/${encodeURIComponent(data.preview_filename || filename)}`}
                       onLoadSuccess={onDocumentLoadSuccess}
                       onLoadError={() => setPdfError(true)}
                       loading={<div style={{ padding: '20px' }}>Loading PDF...</div>}
-                      className="pdf-document"
+                      className={`pdf-document ${viewMode === 'double' ? 'double-view' : ''}`}
                     >
-                      {Array.from(new Array(numPages || 0), (el, index) => {
-                        const pageNum = index + 1;
-                        const isVisible = (numPages <= 40) || (Math.abs(pageNum - currentPage) <= 5);
-                        return (
-                          <div key={`page_${pageNum}`} data-page-number={pageNum} style={{ position: 'relative', minHeight: isVisible ? 'auto' : '820px', width: '100%', display: 'flex', justifyContent: 'center', padding: '20px 0', background: 'transparent' }}>
-                            {isVisible ? (
-                              <>
-                                <Page 
-                                  pageNumber={pageNum} 
-                                  width={Math.min(window.innerWidth * 0.8, 800)} 
-                                  renderAnnotationLayer={true} 
-                                  renderTextLayer={true} 
-                                  onRenderTextLayerSuccess={() => {
-                                    const layer = document.querySelector(`[data-page-number="${pageNum}"] .react-pdf__Page__textContent`);
-                                    if (layer && typeof applyHighlightsToElement === 'function') {
-                                      applyHighlightsToElement(layer);
-                                    }
-                                  }}
-                                  loading={<div style={{ height: '800px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.1)' }}>Loading...</div>} 
-                                />
-                                {showOverlay && pages[index] && (
-                                  <div className="page-translation-overlay">
-                                    <div className="page-translation-card">{highlightText(pages[index], searchTerm)}</div>
+                      <div className="zoom-wrapper" style={{ transform: `scale(${zoomLevel / 100})`, transformOrigin: 'top center', width: '100%', transition: 'transform 0.2s ease-out' }}>
+                        {viewMode === 'double' ? (
+                          Array.from(new Array(Math.ceil(numPages / 2)), (_, i) => {
+                            const p1 = i * 2 + 1;
+                            const p2 = i * 2 + 2;
+                            return (
+                              <div key={`pair_${i}`} className="pdf-page-pair" style={{ display: 'flex', justifyContent: 'center', gap: '20px', padding: '20px 0' }}>
+                                {[p1, p2].map(pageNum => pageNum <= numPages && (
+                                  <div key={`page_${pageNum}`} data-page-number={pageNum} className="pdf-page-container" style={{ position: 'relative' }}>
+                                    <Page 
+                                      pageNumber={pageNum} 
+                                      width={Math.min(window.innerWidth * 0.45, 600)} 
+                                      renderAnnotationLayer={true} 
+                                      renderTextLayer={true}
+                                      onRenderTextLayerSuccess={() => {
+                                        const layer = document.querySelector(`[data-page-number="${pageNum}"] .react-pdf__Page__textContent`);
+                                        if (layer && typeof applyHighlightsToElement === 'function') applyHighlightsToElement(layer);
+                                      }}
+                                    />
+                                    {showOverlay && pages[pageNum-1] && (
+                                      <div className="page-translation-overlay"><div className="page-translation-card">{highlightText(pages[pageNum-1], searchTerm, narratingPage === pageNum ? activeCueIndex : -1)}</div></div>
+                                    )}
                                   </div>
-                                )}
-                              </>
-                            ) : (
-                              <div style={{ height: '800px', width: '80%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#999', background: 'rgba(255,255,255,0.05)', borderRadius: '12px', border: '2px dashed rgba(0,0,0,0.1)' }}>
-                                <div style={{ textAlign: 'center' }}><div className="magic-book-tiny"></div><p>Magic Gathering Content...</p></div>
+                                ))}
                               </div>
-                            )}
-                          </div>
-                        );
-                      })}
+                            );
+                          })
+                        ) : (
+                          Array.from(new Array(numPages || 0), (el, index) => {
+                            const pageNum = index + 1;
+                            const isVisible = (numPages <= 40) || (Math.abs(pageNum - currentPage) <= 5);
+                            return (
+                              <div key={`page_${pageNum}`} data-page-number={pageNum} className="pdf-page-container" style={{ position: 'relative', minHeight: isVisible ? 'auto' : '820px', width: '100%', display: 'flex', justifyContent: 'center', padding: '20px 0' }}>
+                                {isVisible ? (
+                                  <>
+                                    <Page 
+                                      pageNumber={pageNum} 
+                                      width={Math.min(window.innerWidth * 0.8, 800)} 
+                                      renderAnnotationLayer={true} 
+                                      renderTextLayer={true} 
+                                      onRenderTextLayerSuccess={() => {
+                                        const layer = document.querySelector(`[data-page-number="${pageNum}"] .react-pdf__Page__textContent`);
+                                        if (layer && typeof applyHighlightsToElement === 'function') applyHighlightsToElement(layer);
+                                      }}
+                                    />
+                                    {showOverlay && pages[index] && (
+                                      <div className="page-translation-overlay"><div className="page-translation-card">{highlightText(pages[index], searchTerm, narratingPage === index + 1 ? activeCueIndex : -1)}</div></div>
+                                    )}
+                                  </>
+                                ) : (
+                                  <div className="page-placeholder"><div className="magic-book-tiny"></div><p>Magic Gathering Content...</p></div>
+                                )}
+                              </div>
+                            );
+                          })
+                        )}
+                      </div>
                     </Document>
                   )}
-                </div>
-              ) : (!data.is_pdf && !data.is_image && !data.is_video && pages.length > 0) ? (
-                <div style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                  <div ref={viewerRef} className={`react-pdf-page book-text-page ${narratingPage === currentPage ? 'narrating' : ''}`} onClick={() => startNarration(currentPage)} style={{ cursor: 'pointer' }}>
-                    <div className="book-text-content">{highlightText(pages[currentPage - 1], searchTerm)}</div>
-                  </div>
-                  {showOverlay && pages[currentPage - 1] && (
-                    <div className="page-translation-overlay"><div className="page-translation-card">{highlightText(pages[currentPage - 1], searchTerm)}</div></div>
-                  )}
-                  <div className="pdf-navigation" style={{ marginTop: '20px' }}>
-                    <button className="nav-btn" disabled={currentPage <= 1} onClick={() => setCurrentPage(prev => prev - 1)}><ChevronLeft size={20} /> Previous</button>
-                    <span className="page-info">Page {currentPage} of {numPages}</span>
-                    <button className="nav-btn" disabled={currentPage >= numPages} onClick={() => setCurrentPage(prev => prev + 1)}>Next <ChevronRight size={20} /></button>
-                  </div>
                 </div>
               ) : data.is_office ? (
                 <div style={{ position: 'relative' }}>
                   <div dangerouslySetInnerHTML={{ __html: highlightHtml(data.office_html, searchTerm) }} className="office-viewer" />
                   {showOverlay && data.text && (
-                    <div className="page-translation-overlay" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}><div className="page-translation-card">{highlightText(data.text, searchTerm)}</div></div>
+                    <div className="page-translation-overlay" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}><div className="page-translation-card">{highlightText(data.text, searchTerm, isNarrating ? activeCueIndex : -1)}</div></div>
                   )}
                 </div>
               ) : data.is_image ? (
-                <div style={{ position: 'relative', display: 'inline-block' }}>
-                  <img src={`/uploads/${data.filename}`} alt="Book Page" style={{ objectFit: 'contain' }} />
-                  {(showOverlay || searchTerm) && data.text && (
-                    <div className="page-translation-overlay" style={{ background: searchTerm && !showOverlay ? 'transparent' : 'rgba(255, 255, 255, 0.7)' }}>
-                      <div className="page-translation-card" style={{ boxShadow: searchTerm && !showOverlay ? 'none' : '' }}>
-                        {highlightText(data.text, searchTerm)}
+                <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center', background: 'rgba(0,0,0,0.05)', padding: '40px 0' }}>
+                  <div className="image-page-container" style={{ position: 'relative', backgroundColor: '#ffffff', boxShadow: '0 10px 30px rgba(0,0,0,0.15)', borderRadius: '4px', maxWidth: '800px', width: '90%', display: 'flex', justifyContent: 'center' }}>
+                    <img src={`/uploads/${encodeURIComponent(data.filename)}`} alt="Book Page" style={{ maxWidth: '100%', height: 'auto', display: 'block' }} />
+                    {(showOverlay || searchTerm) && data.text && (
+                      <div className="page-translation-overlay" style={{ background: searchTerm && !showOverlay ? 'transparent' : 'rgba(255, 255, 255, 0.7)' }}>
+                        <div className="page-translation-card" style={{ boxShadow: searchTerm && !showOverlay ? 'none' : '' }}>
+                          {highlightText(data.text, searchTerm, isNarrating ? activeCueIndex : -1)}
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
+                  </div>
+                  <div className="pdf-navigation" style={{ marginTop: '20px' }}>
+                    <span className="page-info">Page 1 of 1</span>
+                  </div>
                 </div>
-              ) : data.is_video ? ( <video src={`/uploads/${data.filename}`} controls /> ) : null}
+              ) : data.is_video ? ( 
+                <video src={`/uploads/${encodeURIComponent(data.filename)}`} controls style={{ maxWidth: '100%' }} /> 
+              ) : pages.length > 0 ? (
+                <div style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                  <div className={`text-view-container ${viewMode === 'double' ? 'double-mode' : ''}`} style={{ transform: `scale(${zoomLevel / 100})`, transformOrigin: 'top center', transition: 'transform 0.2s' }}>
+                    <div ref={viewerRef} className={`react-pdf-page book-text-page ${narratingPage === currentPage ? 'narrating' : ''}`} onClick={() => startNarration(currentPage)} style={{ cursor: 'pointer' }}>
+                      <div className="book-text-content">{highlightText(pages[currentPage - 1], searchTerm, narratingPage === currentPage ? activeCueIndex : -1)}</div>
+                      {showOverlay && pages[currentPage - 1] && (
+                        <div className="page-translation-overlay"><div className="page-translation-card">{highlightText(pages[currentPage - 1], searchTerm, narratingPage === currentPage ? activeCueIndex : -1)}</div></div>
+                      )}
+                    </div>
+                    {viewMode === 'double' && currentPage < numPages && (
+                      <div className={`react-pdf-page book-text-page ${narratingPage === currentPage + 1 ? 'narrating' : ''}`} onClick={() => startNarration(currentPage + 1)} style={{ cursor: 'pointer' }}>
+                        <div className="book-text-content">{highlightText(pages[currentPage], searchTerm, narratingPage === currentPage + 1 ? activeCueIndex : -1)}</div>
+                        {showOverlay && pages[currentPage] && (
+                          <div className="page-translation-overlay"><div className="page-translation-card">{highlightText(pages[currentPage], searchTerm, narratingPage === currentPage + 1 ? activeCueIndex : -1)}</div></div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                  <div className="pdf-navigation" style={{ marginTop: '20px' }}>
+                    <button className="nav-btn" disabled={currentPage <= 1} onClick={() => setCurrentPage(prev => Math.max(1, prev - (viewMode === 'double' ? 2 : 1)))}><ChevronLeft size={20} /> Previous</button>
+                    <span className="page-info">
+                      {viewMode === 'double' && currentPage < numPages ? `Pages ${currentPage}-${currentPage+1}` : `Page ${currentPage}`} of {numPages}
+                    </span>
+                    <button className="nav-btn" disabled={currentPage >= numPages} onClick={() => setCurrentPage(prev => Math.min(numPages, prev + (viewMode === 'double' ? 2 : 1)))}>Next <ChevronRight size={20} /></button>
+                  </div>
+                </div>
+              ) : null}
             </div>
           </div>
 
-          <div className="side-decoration-right">
-          </div>
         </div>
       </main>
 
@@ -1149,7 +1394,7 @@ const ReaderPage = () => {
               {pages.map((p, i) => (
                 <div key={i} id={`page-${i + 1}`} className={`text-page ${currentPage === i + 1 ? 'active-page' : ''} ${narratingPage === i + 1 ? 'narrating' : ''}`} onClick={() => startNarration(i + 1)} style={{ cursor: 'pointer', padding: '15px', borderRadius: '8px', position: 'relative', borderBottom: '1px solid #eee' }}>
                   <div style={{ fontSize: '0.7rem', color: '#8b7355', marginBottom: '5px' }}>Page {i + 1}</div>
-                  {highlightText(p, searchTerm)}
+                  {highlightText(p, searchTerm, narratingPage === i + 1 ? activeCueIndex : -1)}
                 </div>
               ))}
             </div>
@@ -1229,7 +1474,9 @@ const ReaderPage = () => {
               <div className="shortcut-full-item"><kbd>V</kbd> <span>Toggle Voice Control</span></div>
               <div className="shortcut-full-item"><kbd>X</kbd> <span>Toggle Extracted Text</span></div>
               <div className="shortcut-full-item"><kbd>/</kbd> <span>Open Search</span></div>
-              <div className="shortcut-full-item"><kbd>H</kbd> <span>See My Highlights</span></div>
+              <div className="shortcut-full-item"><kbd>K</kbd> <span>See My Highlights</span></div>
+              <div className="shortcut-full-item"><kbd>Q</kbd> <span>Take a Quiz</span></div>
+              <div className="shortcut-full-item"><kbd>P</kbd> <span>Smart Question Prediction</span></div>
               <div className="shortcut-divider-full"></div>
               <div className="shortcut-full-item"><kbd>Space</kbd> <span>Play / Pause</span></div>
               <div className="shortcut-full-item"><kbd>←</kbd> <kbd>→</kbd> <span>Previous / Next Page</span></div>
@@ -1391,6 +1638,259 @@ const ReaderPage = () => {
                   </div>
                 </div>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showPredictionModal && (
+        <div className="quiz-modal-overlay" style={{ zIndex: 30000 }}>
+          <div className="quiz-modal-content" style={{ maxWidth: '1000px', height: '90vh' }}>
+            <div className="quiz-header" style={{ background: 'linear-gradient(135deg, #4a342e 0%, #6d4c41 100%)' }}>
+              <div className="quiz-title-group">
+                <div className="quiz-icon-badge" style={{ background: '#d4a373' }}><Brain size={28} color="#ffffff" /></div>
+                <div>
+                  <h2 className="quiz-main-title">Predicted Important Questions</h2>
+                  <p className="quiz-subtitle">AI-powered exam preparation for: {filename}</p>
+                </div>
+              </div>
+              <div className="quiz-header-controls">
+                <button className="quiz-close-btn" onClick={() => setShowPredictionModal(false)}><CloseIcon size={24} /></button>
+              </div>
+            </div>
+
+            <div className="quiz-body" style={{ display: 'flex', flexDirection: 'column', height: 'calc(100% - 140px)' }}>
+              <div style={{ display: 'flex', gap: '15px', padding: '20px', borderBottom: '1px solid #eee', background: 'white' }}>
+                <button 
+                  className={`quiz-tab-btn ${predictionActiveTab === 'short' ? 'active' : ''}`}
+                  onClick={() => setPredictionActiveTab('short')}
+                  style={{ 
+                    flex: 1, padding: '12px', borderRadius: '10px', border: 'none', 
+                    background: predictionActiveTab === 'short' ? '#d4a373' : '#f5ebe0',
+                    color: predictionActiveTab === 'short' ? 'white' : '#4a342e',
+                    fontWeight: '600', cursor: 'pointer', transition: 'all 0.3s'
+                  }}
+                >
+                  Short Answer Questions
+                </button>
+                <button 
+                  className={`quiz-tab-btn ${predictionActiveTab === 'long' ? 'active' : ''}`}
+                  onClick={() => setPredictionActiveTab('long')}
+                  style={{ 
+                    flex: 1, padding: '12px', borderRadius: '10px', border: 'none', 
+                    background: predictionActiveTab === 'long' ? '#d4a373' : '#f5ebe0',
+                    color: predictionActiveTab === 'long' ? 'white' : '#4a342e',
+                    fontWeight: '600', cursor: 'pointer', transition: 'all 0.3s'
+                  }}
+                >
+                  Long Answer Questions
+                </button>
+              </div>
+
+              <div style={{ flex: 1, overflowY: 'auto', padding: '25px', background: '#fcfaf7' }}>
+                {predictionLoading ? (
+                  <div className="quiz-loading-state" style={{ padding: '80px 0' }}>
+                    <div className="quiz-magic-loader">
+                      <div className="loader-circle"></div>
+                      <Brain size={40} className="loader-icon-bounce" color="#d4a373" />
+                    </div>
+                    <h3>Analyzing Book Architecture...</h3>
+                    <p>Generating exam-level predicted questions based on key topics.</p>
+                  </div>
+                ) : !predictionData ? (
+                   <div style={{ textAlign: 'center', padding: '60px', opacity: 0.6 }}>
+                    <p>No predictions available yet.</p>
+                  </div>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                    {(predictionActiveTab === 'short' ? predictionData.short_questions : predictionData.long_questions)?.map((q, idx) => (
+                      <div key={idx} className="prediction-card" style={{ 
+                        background: 'white', borderRadius: '16px', padding: '20px', 
+                        border: '1px solid #e9dcc9', boxShadow: '0 4px 6px rgba(0,0,0,0.02)',
+                        transition: 'all 0.3s ease', position: 'relative'
+                      }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
+                          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                            <span style={{ 
+                              background: '#4a342e', color: 'white', width: '28px', height: '28px', 
+                              borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                              fontSize: '0.8rem', fontWeight: 'bold'
+                            }}>{idx + 1}</span>
+                            <div style={{ display: 'flex', gap: '6px' }}>
+                              <span className={`difficulty-badge ${q.difficulty.toLowerCase()}`} style={{
+                                padding: '2px 10px', borderRadius: '20px', fontSize: '0.7rem', fontWeight: '600',
+                                backgroundColor: q.difficulty === 'Easy' ? '#d5f5e3' : q.difficulty === 'Medium' ? '#fdebd0' : '#fadbd8',
+                                color: q.difficulty === 'Easy' ? '#1d8348' : q.difficulty === 'Medium' ? '#b7950b' : '#943126'
+                              }}>{q.difficulty}</span>
+                              {q.is_important && <span style={{ padding: '4px 12px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 'bold', background: '#f1c40f', color: '#4a342e', display: 'flex', alignItems: 'center', gap: '6px', boxShadow: '0 2px 4px rgba(241, 196, 15, 0.3)' }}><Award size={14} /> Most Important</span>}
+                            </div>
+                          </div>
+                        </div>
+
+                        <h3 style={{ margin: '0 0 15px 0', fontSize: '1.1rem', color: '#2c3e50', lineHeight: '1.5' }}>{q.question}</h3>
+                        
+                        <div style={{ borderTop: '1px solid #f0f0f0', paddingTop: '15px' }}>
+                          <button 
+                            className="show-ans-toggle"
+                            onClick={() => setShowAnswers(prev => ({ ...prev, [`${predictionActiveTab}_${idx}`]: !prev[`${predictionActiveTab}_${idx}`] }))}
+                            style={{ 
+                              background: 'transparent', border: '1px solid #d4a373', color: '#d4a373',
+                              padding: '6px 15px', borderRadius: '8px', cursor: 'pointer', fontSize: '0.85rem',
+                              fontWeight: '600', display: 'flex', alignItems: 'center', gap: '8px'
+                            }}
+                          >
+                            {showAnswers[`${predictionActiveTab}_${idx}`] ? 'Hide Answer' : 'Show Answer'}
+                          </button>
+
+                          {showAnswers[`${predictionActiveTab}_${idx}`] && (
+                            <div className="answer-content-box" style={{ 
+                              marginTop: '15px', padding: '15px', background: '#fdf7f0', 
+                              borderRadius: '10px', borderLeft: '4px solid #d4a373',
+                              animation: 'slideDown 0.3s ease-out'
+                            }}>
+                              <p style={{ margin: 0, fontSize: '0.95rem', color: '#4a342e', lineHeight: '1.6', whiteSpace: 'pre-wrap' }}>
+                                {q.answer.split(/(\*\*.*?\*\*)/g).map((part, i) => {
+                                  if (part.startsWith('**') && part.endsWith('**')) {
+                                    return <strong key={i} style={{ color: '#000', fontWeight: '800', background: 'rgba(212, 163, 115, 0.1)', padding: '0 2px', borderRadius: '4px' }}>{part.slice(2, -2)}</strong>;
+                                  }
+                                  return part;
+                                })}
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div style={{ padding: '20px', background: 'white', borderTop: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ display: 'flex', gap: '15px' }}>
+                <button 
+                  className="quiz-btn-primary" 
+                  onClick={() => { setShowPredictionModal(false); handleStartQuiz(); }}
+                  style={{ background: '#4a342e', border: 'none' }}
+                >
+                  Start Quiz Mode
+                </button>
+              </div>
+              <button className="home-cta-btn" onClick={() => setShowPredictionModal(false)} style={{ width: 'auto', padding: '0 30px' }}>Close</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showImagesModal && (
+        <div className="quiz-modal-overlay" style={{ zIndex: 2000 }}>
+          <div className="quiz-card" style={{ maxWidth: '900px', maxHeight: '90vh', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+            <div className="quiz-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{ background: '#e07a5f', padding: '8px', borderRadius: '10px' }}><FileImage color="white" size={20} /></div>
+                <h2 style={{ margin: 0, fontSize: '1.4rem' }}>Extracted Images & Content</h2>
+              </div>
+              <button className="close-quiz" onClick={() => setShowImagesModal(false)}><CloseIcon /></button>
+            </div>
+            
+            <div style={{ flex: 1, overflowY: 'auto', padding: '20px', background: '#f8f4f0' }}>
+              {imagesLoading ? (
+                <div style={{ textAlign: 'center', padding: '60px' }}>
+                  <Loader2 className="spin" size={48} color="#e07a5f" />
+                  <p style={{ marginTop: '20px', color: '#4a342e' }}>Scanning document for images and generating explanations...</p>
+                </div>
+              ) : extractedImages.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '60px', opacity: 0.6 }}>
+                  <p>No internal images found in this document.</p>
+                </div>
+              ) : (
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
+                  {extractedImages.map((img, idx) => (
+                    <div key={idx} className="image-extraction-card" style={{ background: 'white', borderRadius: '15px', overflow: 'hidden', border: '1px solid #d4a373', boxShadow: '0 4px 15px rgba(0,0,0,0.05)' }}>
+                      <div style={{ position: 'relative', height: '200px', background: '#eee', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <img src={img.url} alt={`Extracted ${idx}`} style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
+                        <div style={{ position: 'absolute', top: '10px', right: '10px', background: 'rgba(0,0,0,0.6)', color: 'white', padding: '2px 8px', borderRadius: '20px', fontSize: '0.7rem' }}>
+                          Page {img.page}
+                        </div>
+                      </div>
+                      <div style={{ padding: '15px' }}>
+                        <h5 style={{ margin: '0 0 8px 0', fontSize: '0.8rem', color: '#8b7355', textTransform: 'uppercase' }}>Image Explanation</h5>
+                        <p style={{ margin: 0, fontSize: '0.9rem', lineHeight: '1.5', color: '#4a342e' }}>{img.explanation}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+            
+            <div style={{ padding: '15px 20px', borderTop: '1px solid #eee', background: 'white', textAlign: 'right' }}>
+              <button className="home-cta-btn" onClick={() => setShowImagesModal(false)} style={{ width: 'auto', padding: '0 25px' }}>Close Gallery</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Floating Voice Assistant - Professional Pill */}
+      <div 
+        className={`voice-assistant-pill ${voiceActive ? 'active-voice' : ''}`} 
+        onClick={() => setVoiceActive(!voiceActive)}
+        title="Toggle Voice Assistant (V)"
+      >
+        <div className="header-icon">
+          {voiceActive ? <Mic size={20} /> : <MicOff size={20} />}
+        </div>
+        <span className="voice-text">Access icons by text or voice</span>
+      </div>
+      <div className="view-controls-pill">
+        <button 
+          className={`view-btn ${viewMode === 'single' ? 'active' : ''}`} 
+          onClick={() => setViewMode('single')} 
+          title="Single Page View"
+        >
+          <Square size={18} />
+        </button>
+        <button 
+          className={`view-btn ${viewMode === 'double' ? 'active' : ''}`} 
+          onClick={() => setViewMode('double')} 
+          title="Two Page View"
+        >
+          <Columns2 size={18} />
+        </button>
+        <button 
+          className={`view-btn ${viewMode === 'thumbnails' ? 'active' : ''}`} 
+          onClick={() => setViewMode('thumbnails')} 
+          title="Thumbnail View"
+        >
+          <LayoutGrid size={18} />
+        </button>
+        <div className="view-divider"></div>
+        <button className="view-btn" onClick={() => setZoomLevel(prev => Math.max(50, prev - 10))} title="Zoom Out">
+          <ZoomOut size={18} />
+        </button>
+        <span className="zoom-label">{zoomLevel}%</span>
+        <button className="view-btn" onClick={() => setZoomLevel(prev => Math.min(200, prev + 10))} title="Zoom In">
+          <ZoomIn size={18} />
+        </button>
+      </div>
+
+      {viewMode === 'thumbnails' && (
+        <div className="thumbnail-overlay fade-in" onClick={() => setViewMode('single')}>
+          <div className="thumbnail-grid-container" onClick={(e) => e.stopPropagation()}>
+            <div className="thumbnail-header">
+              <h3>All Pages</h3>
+              <button className="close-thumbnails" onClick={() => setViewMode('single')}><CloseIcon size={24} /></button>
+            </div>
+            <div className="thumbnail-grid">
+              {pages.map((p, idx) => (
+                <div key={idx} className="thumbnail-item" onClick={() => { setCurrentPage(idx + 1); setViewMode('single'); if(data?.is_pdf) scrollToPdfPage(idx+1); else scrollToTextPage(idx+1); }}>
+                  <div className="thumbnail-page-box">
+                    <span className="thumb-page-num">{idx + 1}</span>
+                    <div className="thumb-content-preview">
+                       {p.slice(0, 100)}...
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>

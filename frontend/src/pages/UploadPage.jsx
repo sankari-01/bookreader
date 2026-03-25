@@ -39,7 +39,8 @@ const UploadPage = () => {
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
       <Header showBack />
       <main className="container" style={{ maxWidth: '600px', margin: 'auto' }}>
-        <h2>Upload Your Book</h2>
+        <h2 style={{ color: '#4a342e', marginBottom: '10px' }}>Upload Your Book</h2>
+        <p style={{ color: '#6d4c41', marginBottom: '30px' }}>Supports PDF, Word, PPT, Text, and Images (OCR)</p>
 
         <form onSubmit={handleUpload} style={{ marginTop: '30px' }}>
           <div style={{
@@ -54,6 +55,7 @@ const UploadPage = () => {
             <input
               id="fileInput"
               type="file"
+              accept=".pdf,.ppt,.pptx,.doc,.docx,.txt,.png,.jpg,.jpeg"
               style={{ display: 'none' }}
               onChange={(e) => setFile(e.target.files[0])}
             />
