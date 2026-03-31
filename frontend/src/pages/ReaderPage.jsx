@@ -98,6 +98,8 @@ const COMMANDS = [
   { id: 'images', name: 'Images', icon: <FileImage size={16} />, shortcut: 'I' },
   { id: 'text', name: 'Extract Text', icon: <FileText size={16} />, shortcut: 'X' },
   { id: 'notes', name: 'Notes', icon: <Edit3 size={16} />, shortcut: 'N' },
+  { id: 'search', name: 'Search', icon: <Search size={16} />, shortcut: '/' },
+  { id: 'bookmark', name: 'Bookmark', icon: <Bookmark size={16} />, shortcut: 'B' },
 ];
 
 const ReaderPage = () => {
@@ -147,6 +149,7 @@ const ReaderPage = () => {
   const [quizFinished, setQuizFinished] = useState(false);
   const [quizTimer, setQuizTimer] = useState(600); // 10 minutes
   const [quizLoading, setQuizLoading] = useState(false);
+  const [quizMessage, setQuizMessage] = useState('');
   const [userHighlights, setUserHighlights] = useState(() => {
     try {
       const saved = localStorage.getItem(`highlights_${filename}`);
@@ -504,6 +507,7 @@ const ReaderPage = () => {
   };
 
   const selectLanguage = async (newLang) => {
+    setVoiceActive(false);
     setShowLangMenu(false);
     
     if (newLang === 'original' || newLang === (data?.detected_lang || 'en')) {
@@ -559,6 +563,7 @@ const ReaderPage = () => {
     }
   };
   const handleVoiceCommand = (command, value) => {
+    if (command) setVoiceActive(false);
     switch (command) {
       case 'next': {
         const next = Math.min(currentPage + 1, numPages);
@@ -584,6 +589,12 @@ const ReaderPage = () => {
       case 'summary': handleToolClick('summary'); break;
       case 'ask': handleToolClick('ask'); break;
       case 'highlight': handleHighlight(); break;
+      case 'highlights': setShowHighlights(true); break;
+      case 'quiz': handleStartQuiz(); break;
+      case 'questions': handleStartPrediction(); break;
+      case 'images': if (data?.has_images) handleExtractImages(); break;
+      case 'notes': setIsNotebookOpen(prev => !prev); break;
+      case 'bookmark': toggleBookmark(currentPage); break;
       case 'translate':
         if (value) selectLanguage(value);
         else handleReadTranslationClick();
@@ -1121,6 +1132,7 @@ const ReaderPage = () => {
   };
 
   const handleToolClick = (toolId) => {
+    setVoiceActive(false);
     setActiveTab(toolId);
     setShowPanel(true);
     
@@ -1192,23 +1204,33 @@ const ReaderPage = () => {
   };
 
   const handleStartQuiz = async () => {
+    setVoiceActive(false); // Dismiss voice pill when quiz starts
     if (!showQuiz) resetQuiz();
     setShowQuiz(true);
     if (quizQuestions.length > 0) return;
     setQuizLoading(true);
+    setQuizMessage(""); // Clear previous messages
     try {
       const resp = await fetch('/api/generate_quiz', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
         body: new URLSearchParams({ filename, lang: currentLang })
       });
       const result = await resp.json();
-      if (result.questions) {
+      if (result.questions && result.questions.length > 0) {
         setQuizQuestions(result.questions);
         if (result.message) setQuizMessage(result.message);
         setQuizTimer(600);
+      } else if (result.error) {
+        setQuizMessage(result.error);
+        console.error("Quiz API Error:", result.error);
+      } else {
+        setQuizMessage("Unable to generate quiz for this content. Please try again or use a different book.");
       }
-    } catch (e) { console.error("Quiz failed:", e); }
+    } catch (e) { 
+      console.error("Quiz fetch failed:", e);
+      setQuizMessage("Network error: Could not reach the quiz generation service.");
+    }
     finally { setQuizLoading(false); }
   };
 
@@ -1710,7 +1732,8 @@ const ReaderPage = () => {
                 // Suggestions filtering
                 const normalizedVal = val.trim().toLowerCase();
                 const matchedCmds = COMMANDS.filter(c => 
-                  c.name.toLowerCase().includes(normalizedVal)
+                  c.name.toLowerCase().includes(normalizedVal) ||
+                  c.id.toLowerCase().includes(normalizedVal)
                 ).map(c => ({ ...c, type: 'command' }));
 
                 const matchedLangs = allLanguages.filter(l => 
@@ -1718,9 +1741,9 @@ const ReaderPage = () => {
                   l.code.toLowerCase().includes(normalizedVal)
                 ).map(l => ({ ...l, type: 'language' }));
 
-                const combined = []; // Disabled suggestions in search bar as requested
+                const combined = [...matchedCmds, ...matchedLangs].slice(0, 6);
                 setSuggestions(combined);
-                setSuggestionIndex(-1);
+                setSuggestionIndex(combined.length > 0 ? 0 : -1);
 
                 if (pageMatch) {
                   const target = parseInt(pageMatch[1], 10);
@@ -1730,11 +1753,13 @@ const ReaderPage = () => {
                     if (data?.is_pdf) scrollToPdfPage(target);
                     else scrollToTextPage(target);
                   } else { setPageJumpMsg(`Page ${target} out of range`); }
-                } else { 
-                  // If it's a perfect match for a language or command, we can show it in badge
-                  const exactLang = allLanguages.find(l => normalizedVal === l.name.toLowerCase());
-                  if (exactLang) setPageJumpMsg(`Language: ${exactLang.name}`);
-                  else setPageJumpMsg(''); 
+                } else if (!pageMatch) { 
+                  // Auto-execute if exact command match
+                  const exactCmd = COMMANDS.find(c => c.name.toLowerCase() === normalizedVal || c.id === normalizedVal);
+                  const exactLang = allLanguages.find(l => normalizedVal === l.name.toLowerCase() || normalizedVal === l.code.toLowerCase());
+                  if (exactCmd) setPageJumpMsg(`Press ↵ to activate: ${exactCmd.name}`);
+                  else if (exactLang) setPageJumpMsg(`Press ↵ to translate to: ${exactLang.name}`);
+                  else setPageJumpMsg('');
                 }
               }}
               onBlur={() => setTimeout(() => setSuggestions([]), 200)}
@@ -2576,30 +2601,21 @@ const ReaderPage = () => {
         >
           <div className="context-menu-inner">
             <button onClick={handleReadSelection} title="Read Aloud" className="ctx-btn read">
-              <Volume2 size={16} />
-              <span>Read</span>
+              <Volume2 size={18} />
             </button>
             <button onClick={handleExplainSelection} title="AI Explanation" className="ctx-btn explain">
-              <Sparkles size={16} />
-              <span>Explain</span>
+              <Sparkles size={18} />
             </button>
             {selection.isHighlight ? (
               <button onClick={handleUnhighlight} title="Remove Highlight" className="ctx-btn remove">
-                <Trash2 size={16} />
-                <span>Remove</span>
+                <Trash2 size={18} />
               </button>
             ) : (
               <button onClick={handleHighlight} title="Highlight Text" className="ctx-btn highlight">
-                <Highlighter size={16} />
-                <span>Highlight</span>
+                <Highlighter size={18} />
               </button>
             )}
-            <div className="ctx-divider"></div>
-            <button className="close-context" onClick={() => setSelection(null)}>
-              <CloseIcon size={14} />
-            </button>
           </div>
-          <div className="context-menu-arrow"></div>
         </div>
       )}
     </div>

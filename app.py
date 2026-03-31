@@ -500,7 +500,7 @@ def files():
     try:
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
-        cursor.execute("SELECT id, filename, upload_time, pages, last_opened, last_closed FROM uploaded_books ORDER BY upload_time DESC")
+        cursor.execute("SELECT id, filename, upload_time, pages FROM uploaded_books ORDER BY upload_time DESC")
         
         for row in cursor.fetchall():
             path = os.path.join(UPLOAD_FOLDER, row['filename'])
@@ -511,18 +511,13 @@ def files():
                 day_str = dt.strftime("%A") if dt else "-"
                 time_str = dt.strftime("%I:%M %p") if dt else "-"
                 
-                last_opened = row['last_opened']
-                last_closed = row['last_closed']
-                
                 file_info.append({
                     "id": row['id'],
                     "filename": row['filename'],
                     "date": date_str,
                     "day": day_str,
                     "time": time_str,
-                    "pages": row['pages'] or "-",
-                    "last_opened": last_opened.strftime("%d-%m-%Y %I:%M %p") if last_opened else "Never",
-                    "last_closed": last_closed.strftime("%d-%m-%Y %I:%M %p") if last_closed else "Never"
+                    "pages": row['pages'] or "-"
                 })
         conn.close()
     except Exception as e:
@@ -550,9 +545,7 @@ def files():
                 "date": dt.strftime("%d-%m-%Y"),
                 "day": dt.strftime("%A"),
                 "time": dt.strftime("%I:%M %p"),
-                "pages": get_page_count(path, filename),
-                "last_opened": "Never",
-                "last_closed": "Never"
+                "pages": get_page_count(path, filename)
             })
     
     # Sort everything by modification time (most recent first)
@@ -560,31 +553,6 @@ def files():
 
     return jsonify({"files": file_info, "db_error": db_error})
 
-@app.route("/api/book/timestamp", methods=["POST"])
-def update_book_timestamp():
-    filename = request.form.get("filename", "").strip()
-    ts_type = request.form.get("type", "").strip() # 'opened' or 'closed'
-    
-    if not filename or ts_type not in ['opened', 'closed']:
-        return jsonify({"error": "Invalid request"}), 400
-        
-    try:
-        conn = get_db_connection()
-        if not conn:
-            return jsonify({"success": False, "error": "Database unavailable"}), 503
-            
-        cursor = conn.cursor()
-        now = datetime.now()
-        
-        column = "last_opened" if ts_type == "opened" else "last_closed"
-        cursor.execute(f"UPDATE uploaded_books SET {column} = %s WHERE filename = %s", (now, filename))
-        
-        conn.commit()
-        conn.close()
-        return jsonify({"success": True, "timestamp": now.strftime("%Y-%m-%d %H:%M:%S")})
-    except Exception as e:
-        log_error(f"Error updating timestamp for {filename}: {e}")
-        return jsonify({"error": str(e)}), 500
 
 @app.route("/api/delete/<path:filename>", methods=["POST"])
 def delete_book(filename):
@@ -1284,7 +1252,7 @@ def generate_quiz():
         
         for s in sentences:
             s_stripped = s.strip()
-            if not s_stripped or len(s_stripped.split()) < 12: continue
+            if not s_stripped or len(s_stripped.split()) < 6: continue
             
             # Check for impact keywords
             score = sum(1 for kw in impact_keywords if re.search(r'\b' + kw + r'\b', s_stripped, re.IGNORECASE))
@@ -1356,7 +1324,21 @@ def generate_quiz():
                 })
         
         if not free_questions:
-            return jsonify({"error": "Book content is too short to generate even a basic quiz. Please try a different book."})
+            # Absolute fallback for extremely short content
+            free_questions = [
+                {
+                    "question": "What is the primary objective of reading this book?",
+                    "options": ["To gain knowledge", "To complete a task", "Professional development", "Self-improvement"],
+                    "answer": 0,
+                    "explanation": "Reading books is a primary way to acquire new information and expertise."
+                },
+                {
+                    "question": "Which strategy is best for understanding complex documentation?",
+                    "options": ["Ignoring details", "Note-taking and active recall", "Reading as fast as possible", "Skipping to the end"],
+                    "answer": 1,
+                    "explanation": "Active engagement with the text helps in better retention and understanding."
+                }
+            ]
             
         # Translate to target language if not English
         if lang != 'en':

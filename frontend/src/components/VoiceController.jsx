@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
-import { Mic, MicOff, Keyboard, Type, Send, BookOpen, Info, Languages, MessageSquare, Book, Highlighter, HelpCircle, Brain, FileImage, FileText, Edit3 } from 'lucide-react';
+import { Mic, MicOff, Keyboard, Type, Send, BookOpen, Info, Languages, MessageSquare, Book, Highlighter, HelpCircle, Brain, FileImage, FileText, Edit3, Search, Bookmark } from 'lucide-react';
 
 const COMMANDS = [
   { id: 'read', name: 'Read Aloud', icon: <BookOpen size={14} />, shortcut: 'R' },
@@ -14,6 +14,8 @@ const COMMANDS = [
   { id: 'images', name: 'Images', icon: <FileImage size={14} />, shortcut: 'I' },
   { id: 'text', name: 'Extract Text', icon: <FileText size={14} />, shortcut: 'X' },
   { id: 'notes', name: 'Notes', icon: <Edit3 size={14} />, shortcut: 'N' },
+  { id: 'search', name: 'Search', icon: <Search size={14} />, shortcut: '/' },
+  { id: 'bookmark', name: 'Bookmark', icon: <Bookmark size={14} />, shortcut: 'B' },
 ];
 
 const VoiceController = ({
@@ -88,9 +90,38 @@ const VoiceController = ({
     } else if (lowerText.includes('focus') || lowerText.includes('read mode') || lowerText.includes('immersive')) {
       onCommand('focus');
       setFeedback('Toggling focus mode...');
+    } else if (lowerText.includes('quiz') || lowerText.includes('test')) {
+      onCommand('quiz');
+      setFeedback('Starting quiz...');
+    } else if (lowerText.includes('question') || lowerText.includes('predict')) {
+      onCommand('questions');
+      setFeedback('Opening predicted questions...');
+    } else if (lowerText.includes('image') || lowerText.includes('picture')) {
+      onCommand('images');
+      setFeedback('Extracting images...');
+    } else if (lowerText.includes('note') || lowerText.includes('notebook')) {
+      onCommand('notes');
+      setFeedback('Opening notebook...');
+    } else if (lowerText.includes('bookmark') || lowerText.includes('save page')) {
+      onCommand('bookmark');
+      setFeedback('Toggling bookmark...');
+    } else if (lowerText.includes('marks') || lowerText.includes('my marks')) {
+      onCommand('highlights');
+      setFeedback('Showing your marks...');
     }
+    
+    // Check if the input exactly matches any icon name or ID as a generic fallback
+    const directCmd = COMMANDS.find(c => 
+      lowerText === c.name.toLowerCase() || 
+      lowerText === c.id.toLowerCase() ||
+      (lowerText.length > 3 && c.name.toLowerCase().includes(lowerText))
+    );
 
-    const checkLanguageMatch = (input) => {
+    if (directCmd) {
+      onCommand(directCmd.id);
+      setFeedback(`Activating ${directCmd.name}...`);
+    } else {
+      const checkLanguageMatch = (input) => {
       return languages.find(l => 
         input.toLowerCase() === l.name.toLowerCase() || 
         input.toLowerCase() === l.code.toLowerCase()
@@ -135,6 +166,7 @@ const VoiceController = ({
       matched = false;
       if (text.length > 0) {
         setFeedback(`Say a command... (Heard: "${text}")`);
+      }
       }
     }
 
