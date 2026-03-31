@@ -1,40 +1,104 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import Header from '../components/Header';
 import ToolPanel from '../components/ToolPanel';
 import VoiceController from '../components/VoiceController';
+import ErrorBoundary from '../components/ErrorBoundary';
 import {
   ChevronLeft, ChevronRight, Book, Highlighter, Search,
   X as CloseIcon, User, Volume2, Globe, Command, Keyboard, Play, Languages,
-  FileText, Info, MessageSquare, BookOpen, Mic, MicOff, Download, Trash2,
+  FileText, Info, MessageSquare, BookOpen, Mic, MicOff, Download, Trash2, Sparkles,
   HelpCircle, CheckCircle2, AlertCircle, Timer, Award, ChevronRight as ChevronRightIcon,
-  RotateCcw, FileImage, Loader2, Brain, Columns2, LayoutGrid, ZoomIn, ZoomOut, Square
+  RotateCcw, FileImage, Loader2, Brain, Columns2, LayoutGrid, ZoomIn, ZoomOut, Square, Bookmark, List, Edit3
 } from 'lucide-react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
 
-// Set up the PDF.js worker
-pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+// Set up the PDF.js worker using a more robust CDN link compatible with react-pdf v10
+pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
 const parsePages = (text) => {
   if (!text) return [];
   // Split by universal markers that catch any word between --- (including translated ones)
   const markerRegex = /--- [\s\S]+? \d+ ---/gi;
   const parts = text.split(markerRegex);
+  
+  // LOGGING: Useful for debugging narration content issues
+  console.log(`[Parser] Raw split count: ${parts.length}`);
 
-  // Clean each page: trim whitespace
-  const refinedParts = parts.map(p => p.trim());
-
-  // If the book starts with a marker (very common), parts[0] is an empty string before the first split.
-  // We remove this first empty component, but PRESERVE all other empty strings (which represent blank pages).
-  if (refinedParts.length > 0 && refinedParts[0] === "") {
-    refinedParts.shift();
+  if (parts.length > 1) {
+    // Filter out parts that are essentially empty (leading markers or double splits)
+    const validPages = parts.map(p => p.trim()).filter(p => p.length > 0);
+    console.log(`[Parser] Valid pages found: ${validPages.length}`);
+    if (validPages.length > 0) {
+      console.log(`[Parser] First page snapshot: "${validPages[0].substring(0, 100)}..."`);
+    }
+    return validPages;
   }
-
-  console.log(`Parsed ${refinedParts.length} pages from text (length: ${text.length})`);
-  return refinedParts;
+  
+  // If no markers found, return the whole text as Page 1 (Trimmed)
+  const singlePage = [text.trim()].filter(p => p.length > 0);
+  console.log(`[Parser] No markers found. Returning single page.`);
+  return singlePage;
 };
+
+const FloatingZoomControls = ({ zoomLevel, setZoomLevel }) => {
+  return (
+    <div className="floating-zoom-controls">
+      <button 
+        className="zoom-btn" 
+        onClick={() => setZoomLevel(prev => Math.max(50, prev - 10))} 
+        title="Zoom Out"
+      >
+        <ZoomOut size={20} />
+      </button>
+      <span className="zoom-percentage">{zoomLevel}%</span>
+      <button 
+        className="zoom-btn" 
+        onClick={() => setZoomLevel(prev => Math.min(200, prev + 10))} 
+        title="Zoom In"
+      >
+        <ZoomIn size={20} />
+      </button>
+    </div>
+  );
+};
+
+const allLanguages = [
+  { code: 'en', name: 'English' },
+  { code: 'ta', name: 'Tamil' },
+  { code: 'hi', name: 'Hindi' },
+  { code: 'fr', name: 'French' },
+  { code: 'es', name: 'Spanish' },
+  { code: 'de', name: 'German' },
+  { code: 'zh-CN', name: 'Chinese (Simplified)' },
+  { code: 'ja', name: 'Japanese' },
+  { code: 'ru', name: 'Russian' },
+  { code: 'ko', name: 'Korean' },
+  { code: 'te', name: 'Telugu' },
+  { code: 'kn', name: 'Kannada' },
+  { code: 'ml', name: 'Malayalam' },
+  { code: 'mr', name: 'Marathi' },
+  { code: 'gu', name: 'Gujarati' },
+  { code: 'pa', name: 'Punjabi' },
+  { code: 'bn', name: 'Bengali' }
+];
+
+const COMMANDS = [
+  { id: 'read', name: 'Read Aloud', icon: <BookOpen size={16} />, shortcut: 'R' },
+  { id: 'summary', name: 'Summary', icon: <Info size={16} />, shortcut: 'S' },
+  { id: 'translate', name: 'Translation', icon: <Languages size={16} />, shortcut: 'T' },
+  { id: 'ask', name: 'Ask AI', icon: <MessageSquare size={16} />, shortcut: 'A' },
+  { id: 'meaning', name: 'Meaning', icon: <Book size={16} />, shortcut: 'M' },
+  { id: 'focus', name: 'Focus Mode', icon: <Highlighter size={16} />, shortcut: 'F' },
+  { id: 'highlights', name: 'My Marks', icon: <Highlighter size={16} />, shortcut: 'K' },
+  { id: 'quiz', name: 'Quiz', icon: <HelpCircle size={16} />, shortcut: 'Q' },
+  { id: 'questions', name: 'Questions', icon: <Brain size={16} />, shortcut: 'P' },
+  { id: 'images', name: 'Images', icon: <FileImage size={16} />, shortcut: 'I' },
+  { id: 'text', name: 'Extract Text', icon: <FileText size={16} />, shortcut: 'X' },
+  { id: 'notes', name: 'Notes', icon: <Edit3 size={16} />, shortcut: 'N' },
+];
 
 const ReaderPage = () => {
   const { filename } = useParams();
@@ -53,17 +117,24 @@ const ReaderPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pdfError, setPdfError] = useState(false);
   const viewerRef = useRef(null);
+  const officeViewerRef = useRef(null);
 
   const [activeTab, setActiveTab] = useState('summary');
   const [hasAutoSetLang, setHasAutoSetLang] = useState(false);
+  const [isNotebookOpen, setIsNotebookOpen] = useState(false);
+  const [notes, setNotes] = useState('');
 
   // Search States
   const [showSearch, setShowSearch] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const searchBarRef = useRef(null);
+  const searchBtnRef = useRef(null);
   const [pageJumpMsg, setPageJumpMsg] = useState('');
   const [isFetchingSummary, setIsFetchingSummary] = useState(false);
   const [summaryData, setSummaryData] = useState('');
   const [showOverlay, setShowOverlay] = useState(false);
+  const [suggestions, setSuggestions] = useState([]);
+  const [suggestionIndex, setSuggestionIndex] = useState(-1);
 
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [showLangMenu, setShowLangMenu] = useState(false);
@@ -76,15 +147,24 @@ const ReaderPage = () => {
   const [quizFinished, setQuizFinished] = useState(false);
   const [quizTimer, setQuizTimer] = useState(600); // 10 minutes
   const [quizLoading, setQuizLoading] = useState(false);
-  const [quizMessage, setQuizMessage] = useState('');
-  const [voiceActive, setVoiceActive] = useState(false);
-  const [isReadMode, setIsReadMode] = useState(false);
   const [userHighlights, setUserHighlights] = useState(() => {
     try {
       const saved = localStorage.getItem(`highlights_${filename}`);
       return saved ? JSON.parse(saved) : [];
     } catch (e) { return []; }
   });
+
+  const [explanationData, setExplanationData] = useState('');
+  const [isExplaining, setIsExplaining] = useState(false);
+
+  const [bookmarks, setBookmarks] = useState(() => {
+    try {
+      const saved = localStorage.getItem(`bookmarks_${filename}`);
+      const parsed = saved ? JSON.parse(saved) : [];
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (e) { return []; }
+  });
+  const [showBookmarks, setShowBookmarks] = useState(false);
 
   const [showImagesModal, setShowImagesModal] = useState(false);
   const [extractedImages, setExtractedImages] = useState([]);
@@ -97,6 +177,165 @@ const ReaderPage = () => {
   const [showAnswers, setShowAnswers] = useState({});
   const [viewMode, setViewMode] = useState('single'); // 'single', 'double', 'thumbnails'
   const [zoomLevel, setZoomLevel] = useState(100);
+  
+  // Narration States (Moved up to avoid TDZ errors in useEffects)
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isNarrating, setIsNarrating] = useState(false);
+  const [isNarrationLoading, setIsNarrationLoading] = useState(false);
+  const [narratingPage, setNarratingPage] = useState(1);
+  const [audioUrl, setAudioUrl] = useState(null);
+  const [narrationSpeed, setNarrationSpeed] = useState('1.0x'); 
+  const [narrationGender, setNarrationGender] = useState('f');
+  const [showShortcuts, setShowShortcuts] = useState(false);
+  const [activeCues, setActiveCues] = useState([]);
+  const [activeCueIndex, setActiveCueIndex] = useState(-1);
+  const [narrationVoice, setNarrationVoice] = useState(null);
+  const [availableVoices, setAvailableVoices] = useState([]);
+  const [showLayoutMenu, setShowLayoutMenu] = useState(false);
+  const layoutMenuRef = useRef(null);
+
+  const [voiceActive, setVoiceActive] = useState(false);
+  const [isReadMode, setIsReadMode] = useState(false);
+
+  // Synchronous Refs for narration parameters to avoid stale closures
+  const pagesRef = useRef([]);
+  const langRef = useRef(currentLang);
+  const speedRef = useRef(narrationSpeed);
+  const genderRef = useRef(narrationGender);
+  const narrationVoiceRef = useRef(narrationVoice);
+  const narrationSessionRef = useRef(0);
+
+  // Synchronize narration refs with state to avoid stale closures
+  useEffect(() => { langRef.current = currentLang; }, [currentLang]);
+  useEffect(() => { speedRef.current = narrationSpeed; }, [narrationSpeed]);
+  useEffect(() => { genderRef.current = narrationGender; }, [narrationGender]);
+  useEffect(() => { narrationVoiceRef.current = narrationVoice; }, [narrationVoice]);
+  useEffect(() => { pagesRef.current = pages; }, [pages]);
+
+  useEffect(() => { narrationSessionRef.current = 0; }, [filename]);
+
+  const handleGenderChange = (newGender) => {
+    setNarrationGender(newGender);
+    genderRef.current = newGender;
+    if (isNarratingRef.current) {
+      const resumeIndex = activeCueIndex >= 0 ? activeCueIndex : 0;
+      // Restart current page from the last known word
+      startNarration(narratingPageRef.current, resumeIndex);
+    }
+    // Clear pre-fetch for the old gender
+    preFetchedAudioRef.current = null;
+    preFetchPromiseRef.current = null;
+  };
+
+  const handleSpeedChange = (newSpeed) => {
+    setNarrationSpeed(newSpeed);
+    speedRef.current = newSpeed;
+    if (isNarratingRef.current) {
+      const resumeIndex = activeCueIndex >= 0 ? activeCueIndex : 0;
+      startNarration(narratingPageRef.current, resumeIndex);
+    }
+    preFetchedAudioRef.current = null;
+    preFetchPromiseRef.current = null;
+  };
+
+  const [selection, setSelection] = useState(null); 
+  const [word, setWord] = useState('');
+  const [activeHighlight, setActiveHighlight] = useState(null);
+  const [selectionRects, setSelectionRects] = useState([]);
+
+  const handleMouseUp = useCallback((e) => {
+    // If clicking inside the menu or header, don't clear selection yet
+    if (e.target.closest('.floating-context-menu') || e.target.closest('.header-icon-container')) {
+      return;
+    }
+
+    const highlightEl = e.target.closest('.user-highlight');
+    // More robust scroll container detection
+    const scrollContainer = viewerRef.current || e.target.closest('.viewer-content') || e.target.closest('.react-pdf__Document') || e.target.closest('.office-viewer-container');
+    
+    if (highlightEl && scrollContainer) {
+      const rect = highlightEl.getBoundingClientRect();
+      const containerRect = scrollContainer.getBoundingClientRect();
+      
+      setSelection({
+        text: highlightEl.innerText,
+        x: rect.left + rect.width / 2 - containerRect.left,
+        y: (rect.top < 100 ? rect.bottom + 10 : rect.top) - containerRect.top + scrollContainer.scrollTop,
+        isHighlight: true
+      });
+      setActiveHighlight(highlightEl);
+      return;
+    }
+
+    setTimeout(() => {
+      const sel = window.getSelection();
+      const selected = sel.toString().trim();
+      
+      if (selected && sel.rangeCount > 0 && scrollContainer) {
+        const range = sel.getRangeAt(0);
+        const containerRect = scrollContainer.getBoundingClientRect();
+        const rangeRect = range.getBoundingClientRect();
+        
+        if (rangeRect.height > 2) {
+          const isUserHighlighted = userHighlights.some(h => h.includes(selected) || selected.includes(h));
+          
+          setSelection({
+            text: selected,
+            x: rangeRect.left + rangeRect.width / 2 - containerRect.left,
+            y: rangeRect.top - containerRect.top + scrollContainer.scrollTop,
+            range: range.cloneRange(),
+            isHighlight: e.target.classList.contains('user-highlight') || e.target.closest('.user-highlight') || isUserHighlighted
+          });
+          setActiveHighlight(e.target.closest('.user-highlight'));
+          setWord(selected);
+          
+          // Capture rects relative to scroll container
+          const rects = Array.from(range.getClientRects()).map(r => ({
+            left: r.left - containerRect.left,
+            top: r.top - containerRect.top + scrollContainer.scrollTop,
+            width: r.width,
+            height: r.height
+          }));
+          setSelectionRects(rects);
+        } else {
+          setSelection(null);
+          setActiveHighlight(null);
+          setSelectionRects([]);
+        }
+      } else {
+        setSelection(null);
+        setWord('');
+        setActiveHighlight(null);
+        setSelectionRects([]);
+      }
+    }, 10);
+  }, [userHighlights]);
+
+  useEffect(() => {
+    window.addEventListener('mouseup', handleMouseUp);
+    return () => window.removeEventListener('mouseup', handleMouseUp);
+  }, [handleMouseUp]);
+
+  const handleLanguageChange = (newLang) => {
+    setCurrentLang(newLang);
+    langRef.current = newLang;
+    setSummaryData('');
+    // Stop and clear narration if language changes
+    stopNarration();
+    preFetchedAudioRef.current = null;
+    preFetchPromiseRef.current = null;
+  };
+
+  const toggleBookmark = (page) => {
+    let newBookmarks;
+    if (bookmarks.includes(page)) {
+      newBookmarks = [];
+    } else {
+      newBookmarks = [page];
+    }
+    setBookmarks(newBookmarks);
+    localStorage.setItem(`bookmarks_${filename}`, JSON.stringify(newBookmarks));
+  };
 
   const handleExtractImages = async () => {
     setShowImagesModal(true);
@@ -147,53 +386,74 @@ const ReaderPage = () => {
     }
   };
 
-  const updateTimestamp = async (type) => {
-    try {
-      await fetch('/api/book/timestamp', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({ filename, type })
-      });
-    } catch (e) {
-      console.error(`Failed to update ${type} timestamp:`, e);
-    }
-  };
-
   useEffect(() => {
-    if (filename) {
-      updateTimestamp('opened');
-    }
-    
-    const handleUnload = () => {
-      const formData = new FormData();
-      formData.append('filename', filename);
-      formData.append('type', 'closed');
-      navigator.sendBeacon('/api/book/timestamp', formData);
+    // Global error listener for debugging
+    const handleError = (e) => {
+      console.error("Global captured error:", e.error || e.message);
     };
+    window.addEventListener('error', handleError);
+    window.addEventListener('unhandledrejection', handleError);
 
-    window.addEventListener('beforeunload', handleUnload);
     return () => {
-      updateTimestamp('closed');
-      window.removeEventListener('beforeunload', handleUnload);
+      window.removeEventListener('error', handleError);
+      window.removeEventListener('unhandledrejection', handleError);
     };
-  }, [filename]);
+  }, []);
 
   useEffect(() => {
     localStorage.setItem(`highlights_${filename}`, JSON.stringify(userHighlights));
   }, [userHighlights, filename]);
 
+  // Handle Notebook Persistence
+  useEffect(() => {
+    if (filename) {
+      const savedNotes = localStorage.getItem(`notes_${filename}`);
+      setNotes(savedNotes || '');
+    }
+  }, [filename]);
+
+  const handleNotesChange = (e) => {
+    const val = e.target.value;
+    setNotes(val);
+    if (filename) localStorage.setItem(`notes_${filename}`, val);
+  };
+
+  // Sync Highlights & Auto-scroll for Narration
+  useEffect(() => {
+    if (isNarrating && activeCueIndex !== -1 && viewerRef.current) {
+      // Re-apply highlights to the PDF layer for the current narrating page
+      applyHighlightsToElement(viewerRef.current, activeCueIndex);
+    }
+  }, [activeCueIndex, isNarrating, narratingPage]);
+
+  useEffect(() => {
+    if (isNarrating && activeCueIndex !== -1 && showText) {
+      // Smooth scroll the extracted text modal to the active word
+      const modalBody = document.querySelector('.text-modal-body');
+      const activeWord = modalBody?.querySelector('.active-narrate-word');
+      if (activeWord && modalBody) {
+        const topPos = activeWord.offsetTop;
+        modalBody.scrollTo({
+          top: topPos - modalBody.clientHeight / 2,
+          behavior: 'smooth'
+        });
+      }
+    }
+  }, [activeCueIndex, isNarrating, showText]);
+
   // Narration States
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [isNarrating, setIsNarrating] = useState(false);
-  const [isNarrationLoading, setIsNarrationLoading] = useState(false);
-  const [narratingPage, setNarratingPage] = useState(1);
-  const [audioUrl, setAudioUrl] = useState(null);
-  const [narrationSpeed, setNarrationSpeed] = useState('1.0x'); 
-  const [narrationGender, setNarrationGender] = useState('f');
-  const [isSongMode, setIsSongMode] = useState(false);
-  const [showShortcuts, setShowShortcuts] = useState(false);
-  const [activeCues, setActiveCues] = useState([]);
-  const [activeCueIndex, setActiveCueIndex] = useState(-1);
+
+  // Fetch Available Voices
+  useEffect(() => {
+    const fetchVoices = async () => {
+      try {
+        const resp = await fetch('/api/voices');
+        const data = await resp.json();
+        setAvailableVoices(data);
+      } catch (e) { console.error("Failed to fetch voices:", e); }
+    };
+    fetchVoices();
+  }, []);
 
   // Refs for stable narration across renders
   const isAutoScrollingRef = useRef(false);
@@ -205,6 +465,7 @@ const ReaderPage = () => {
 
   useEffect(() => {
     const handleKeyDown = (e) => {
+      // Ignore key events if the user is typing in an input or textarea
       if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') return;
 
       if (e.code === 'Space') {
@@ -226,66 +487,44 @@ const ReaderPage = () => {
         }
       } else {
         const key = e.key.toLowerCase();
-        if (key === 's') { e.preventDefault(); handleToolClick('summary'); }
-        else if (key === 'a') { e.preventDefault(); handleToolClick('ask'); }
-        else if (key === 'r') { e.preventDefault(); handleToolClick('speak'); if (!isNarrating) startNarration(); }
-        else if (key === 'm') { e.preventDefault(); handleToolClick('meaning'); }
-        else if (key === 't') { e.preventDefault(); handleReadTranslationClick(); }
+        if (key === 't') { e.preventDefault(); handleReadTranslationClick(); }
         else if (key === 'f') { e.preventDefault(); setIsReadMode(!isReadMode); }
         else if (key === 'v') { e.preventDefault(); setVoiceActive(!voiceActive); }
         else if (key === 'x') { e.preventDefault(); setShowText(!showText); }
         else if (key === '/') { e.preventDefault(); setShowSearch(!showSearch); }
         else if (key === 'k') { e.preventDefault(); setShowHighlights(true); }
+        else if (key === 'b') { e.preventDefault(); toggleBookmark(currentPage); }
         else if (key === 'q') { e.preventDefault(); handleStartQuiz(); }
         else if (key === 'p') { e.preventDefault(); handleStartPrediction(); }
         else if (key === 'i') { e.preventDefault(); if (data?.has_images) handleExtractImages(); }
-        else if (key === 'h') { e.preventDefault(); /* Global help or toggle labels? */ }
+        else if (key === 'n') { e.preventDefault(); setIsNotebookOpen(!isNotebookOpen); }
+        // These rely on handleToolClick
+        else if (key === 's') { e.preventDefault(); handleToolClick('summary'); }
+        else if (key === 'a') { e.preventDefault(); handleToolClick('ask'); }
+        else if (key === 'r') { e.preventDefault(); handleToolClick('speak'); if (!isNarrating) startNarration(); }
+        else if (key === 'm') { e.preventDefault(); handleToolClick('meaning'); }
       }
     };
 
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [filename, currentLang]);
-
-  const applyHighlightsToElement = (element) => {
-    if (!element) return;
-    const terms = [];
-    if (searchTerm && searchTerm.trim()) terms.push({ text: searchTerm.trim(), type: 'search' });
-    userHighlights.forEach(uh => { if (uh && uh.trim()) terms.push({ text: uh.trim(), type: 'user' }); });
-    if (terms.length === 0) return;
-
-    const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, null, false);
-    const nodes = [];
-    let node;
-    while (node = walker.nextNode()) nodes.push(node);
-
-    nodes.forEach(textNode => {
-      const content = textNode.nodeValue;
-      if (!content || content.trim().length === 0) return;
-      
-      let newHtml = content;
-      let hasMatch = false;
-
-      const sortedTerms = [...terms].sort((a, b) => b.text.length - a.text.length);
-
-      sortedTerms.forEach(term => {
-        const escaped = term.text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        const regex = new RegExp(`(${escaped})(?![^<]*>)`, 'gi');
-        if (regex.test(newHtml)) {
-          hasMatch = true;
-          const className = term.type === 'search' ? 'search-highlight' : 'user-highlight';
-          newHtml = newHtml.replace(regex, (match) => `<mark class="${className}" style="color: transparent !important; background-color: ${term.type === 'search' ? 'rgba(255, 218, 106, 0.4)' : 'rgba(255, 224, 102, 0.6)'} !important;">${match}</mark>`);
-        }
-      });
-
-      if (hasMatch) {
-        const span = document.createElement('span');
-        span.className = 'highlight-container';
-        span.innerHTML = newHtml;
-        if (textNode.parentNode) textNode.parentNode.replaceChild(span, textNode);
+    const handleClickOutside = (e) => {
+      if (layoutMenuRef.current && !layoutMenuRef.current.contains(e.target)) {
+        setShowLayoutMenu(false);
       }
-    });
-  };
+      if (searchBarRef.current && !searchBarRef.current.contains(e.target) && searchBtnRef.current && !searchBtnRef.current.contains(e.target)) {
+        setShowSearch(false);
+      }
+    };
+    window.addEventListener('mousedown', handleClickOutside);
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('mousedown', handleClickOutside);
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [
+    filename, currentLang, numPages, currentPage, isNarrating, 
+    showSearch, voiceActive, showText, isReadMode, data, isPlaying, isNotebookOpen
+  ]);
+
 
   const isInitialMount = useRef(true);
   useEffect(() => {
@@ -299,27 +538,8 @@ const ReaderPage = () => {
       preFetchPromiseRef.current = null;
       playPage(narratingPageRef.current);
     }
-  }, [narrationSpeed, narrationGender]);
+  }, [narrationSpeed, narrationGender, currentLang, pages]);
 
-  const allLanguages = [
-    { code: 'en', name: 'English' },
-    { code: 'ta', name: 'Tamil' },
-    { code: 'hi', name: 'Hindi' },
-    { code: 'fr', name: 'French' },
-    { code: 'es', name: 'Spanish' },
-    { code: 'de', name: 'German' },
-    { code: 'zh-CN', name: 'Chinese (Simplified)' },
-    { code: 'ja', name: 'Japanese' },
-    { code: 'ru', name: 'Russian' },
-    { code: 'ko', name: 'Korean' },
-    { code: 'te', name: 'Telugu' },
-    { code: 'kn', name: 'Kannada' },
-    { code: 'ml', name: 'Malayalam' },
-    { code: 'mr', name: 'Marathi' },
-    { code: 'gu', name: 'Gujarati' },
-    { code: 'pa', name: 'Punjabi' },
-    { code: 'bn', name: 'Bengali' }
-  ];
 
   const handleReadTranslationClick = () => {
     if (currentLang.toLowerCase() !== (data?.detected_lang || 'en').toLowerCase()) {
@@ -346,6 +566,9 @@ const ReaderPage = () => {
     if (newLang === 'original' || newLang === (data?.detected_lang || 'en')) {
       setCurrentLang(data?.detected_lang || 'en');
       setShowOverlay(false);
+      setSummaryData('');
+      preFetchedAudioRef.current = null;
+      preFetchPromiseRef.current = null;
       return;
     }
 
@@ -353,32 +576,45 @@ const ReaderPage = () => {
     setIsAnalyzing(true);
     setAnalyzingPage(0);
 
+    // Start the 'Analyzing' animation immediately to give the "magic" feel
     let p = 0;
     const interval = setInterval(() => {
-      p += 2;
-      if (p > 95) p = 95; 
+      p += 5;
+      if (p > 98) p = 98; 
       setAnalyzingPage(p);
-    }, 100);
+    }, 60);
 
     try {
-      await fetch('/api/prepare_translation', {
+      // Fetch the translation status
+      const resp = await fetch('/api/prepare_translation', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams({ filename, lang: newLang })
       });
+      const result = await resp.json();
+      
+      // Even if it's 'ready', we wait a brief moment to let the animation play (satisfying UX)
+      const minimumDelay = 1500; // 1.5 seconds minimum for the magic feel
+      setTimeout(() => {
+        clearInterval(interval);
+        setAnalyzingPage(100);
+        
+        setTimeout(() => {
+          setIsAnalyzing(false);
+          setCurrentLang(newLang);
+          setSummaryData('');
+          // Clear pre-fetched audio when language changes
+          preFetchedAudioRef.current = null;
+          preFetchPromiseRef.current = null;
+        }, 400);
+      }, minimumDelay);
+
     } catch (e) {
       console.error("Preparation failed:", e);
-    } finally {
       clearInterval(interval);
-      setAnalyzingPage(100);
-      setTimeout(() => {
-        setIsAnalyzing(false);
-        setCurrentLang(newLang);
-        setSummaryData('');
-      }, 500);
+      setIsAnalyzing(false);
     }
   };
-
   const handleVoiceCommand = (command, value) => {
     switch (command) {
       case 'next': {
@@ -393,6 +629,14 @@ const ReaderPage = () => {
         if (data?.is_pdf) scrollToPdfPage(prev);
         break;
       }
+      case 'jump': {
+        if (value && !isNaN(value)) {
+          const targetPage = Math.max(1, Math.min(parseInt(value, 10), numPages));
+          setCurrentPage(targetPage);
+          if (data?.is_pdf) scrollToPdfPage(targetPage);
+        }
+        break;
+      }
       case 'meaning': handleToolClick('meaning'); break;
       case 'summary': handleToolClick('summary'); break;
       case 'ask': handleToolClick('ask'); break;
@@ -404,11 +648,50 @@ const ReaderPage = () => {
       case 'text': setShowText(prev => !prev); break;
       case 'search': setShowSearch(prev => !prev); break;
       case 'focus': setIsReadMode(prev => !prev); break;
-      case 'read': handleToolClick('speak'); startNarration(); break;
-      case 'pause': togglePlayback(); break;
-      default: console.log("Unknown voice command:", command);
+      case 'read': 
+        if (value && !isNaN(value)) {
+          const targetPage = Math.max(1, Math.min(parseInt(value, 10), numPages));
+          setCurrentPage(targetPage);
+          if (data?.is_pdf) scrollToPdfPage(targetPage);
+          // Start narration for that page
+          setTimeout(() => {
+            handleToolClick('speak');
+            startNarration();
+          }, 500);
+        } else if (selection && selection.text) {
+          handleReadSelection();
+        } else {
+          handleToolClick('speak'); 
+          startNarration(); 
+        }
+        break;
+      case 'pause': 
+      case 'stop':
+        stopNarration();
+        break;
+      default: 
+        if (command) {
+          const matchedLang = allLanguages.find(l => 
+            command.toLowerCase() === l.name.toLowerCase() || 
+            command.toLowerCase() === l.code.toLowerCase()
+          );
+          if (matchedLang) {
+            selectLanguage(matchedLang.code);
+            break;
+          }
+        }
+        console.log("Unknown voice command:", command);
     }
   };
+
+  const latestVoiceCommandRef = useRef(handleVoiceCommand);
+  useEffect(() => {
+    latestVoiceCommandRef.current = handleVoiceCommand;
+  });
+
+  const stableVoiceCommand = React.useCallback((cmd, val) => {
+    latestVoiceCommandRef.current(cmd, val);
+  }, []);
 
   const scrollToPdfPage = (pageNumber) => {
     if (viewerRef.current) {
@@ -468,12 +751,17 @@ const ReaderPage = () => {
 
   const stopNarration = () => {
     isNarratingRef.current = false;
+    narrationSessionRef.current += 1; // Invalidate any in-flight fetches
     setIsNarrating(false);
     setIsPlaying(false);
     setIsNarrationLoading(false);
+    setActiveCueIndex(-1);
+    setActiveCues([]);
     if (audioRef.current) {
       audioRef.current.pause();
-      audioRef.current.src = '';
+      // Use a silent source rather than empty string to cleanly stop loading
+      audioRef.current.src = "data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=";
+      audioRef.current.load();
     }
   };
 
@@ -483,63 +771,95 @@ const ReaderPage = () => {
   };
 
   const parseVTT = (vttText) => {
+    if (!vttText) return [];
     const cues = [];
-    const blocks = vttText.split(/\n\n+/);
+    const normalized = vttText.replace(/\r\n/g, '\n');
+    const blocks = normalized.split(/\n\n+/);
     blocks.forEach(block => {
-      const match = block.match(/(\d{2}:\d{2}:\d{2}\.\d{3}) --> (\d{2}:\d{2}:\d{2}\.\d{3})\n(.*)/s);
+      const match = block.match(/(\d{2}:\d{2}:\d{2}\.\d{3}) --> (\d{2}:\d{2}:\d{2}\.\d{3})\n+(.*)/s);
       if (match) {
-        const startRaw = match[1].split(':');
-        const startSec = (parseInt(startRaw[0]) * 3600) + (parseInt(startRaw[1]) * 60) + parseFloat(startRaw[2]);
-        const endRaw = match[2].split(':');
-        const endSec = (parseInt(endRaw[0]) * 3600) + (parseInt(endRaw[1]) * 60) + parseFloat(endRaw[2]);
-        cues.push({ start: startSec, end: endSec, word: match[3].trim() });
+        try {
+          const startRaw = match[1].split(':');
+          const startSec = (parseInt(startRaw[0]) * 3600) + (parseInt(startRaw[1]) * 60) + parseFloat(startRaw[2]);
+          const endRaw = match[2].split(':');
+          const endSec = (parseInt(endRaw[0]) * 3600) + (parseInt(endRaw[1]) * 60) + parseFloat(endRaw[2]);
+          cues.push({ start: startSec, end: endSec, word: match[3].trim() });
+        } catch (e) { console.warn("VTT parse block error:", e); }
       }
     });
     return cues;
   };
 
-  const startNarration = async (startPage = null) => {
-    if (isNarratingRef.current && startPage === null) {
+  const startNarration = async (startPage = null, startWordIndex = 0) => {
+    const isMidPageResume = startWordIndex > 0;
+    
+    // If already narrating and user clicked 'Read' again without a specific page, toggle stop.
+    if (isNarratingRef.current && startPage === null && !isMidPageResume) {
       stopNarration();
       return;
     }
+    
+    // If we're currently fetching translation/rendering, don't start narration yet
+    if (loading) {
+       log_error("Narration delayed: Data still loading/translating...");
+       return;
+    }
+
+    // Increment session to invalidate past attempts
+    const session = narrationSessionRef.current + 1;
+    narrationSessionRef.current = session;
+
+    if (pagesRef.current.length === 0 && data?.text) {
+      const reParsed = parsePages(data.text);
+      setPages(reParsed);
+      pagesRef.current = reParsed;
+    }
+
     if (!audioRef.current) audioRef.current = new Audio();
-    audioRef.current.play().then(() => { audioRef.current.pause(); }).catch(e => console.log("Audio unlock:", e));
+    // Pre-emptively unlock audio on user gesture
+    audioRef.current.play().catch(() => {}); 
+    audioRef.current.pause();
 
     setIsNarrating(true);
     isNarratingRef.current = true;
-
-    if (pages.length === 0 && data?.text) {
-      const reParsed = parsePages(data.text);
-      setPages(reParsed);
-      if (reParsed.length === 0) {
-        stopNarration();
-        return;
-      }
-    }
-
+    
     const pageToStart = startPage || currentPage || 1;
     setNarratingPage(pageToStart);
     narratingPageRef.current = pageToStart;
-    setTimeout(() => { playPage(pageToStart); }, 100);
+    
+    // Small delay to ensure state propagates before fetch
+    setTimeout(() => { 
+      if (narrationSessionRef.current === session) {
+        playPage(pageToStart, session, startWordIndex); 
+      }
+    }, 50);
   };
-
-  const preFetchNextPage = (nextPageNum) => {
-    if (!isNarratingRef.current || nextPageNum > pages.length) return;
-    const nextText = pages[nextPageNum - 1];
+  const preFetchPage = (nextPageNum) => {
+    // Lifted isNarrating check to allow early preparation
+    if (nextPageNum > (pagesRef.current.length || 0)) return;
+    const nextText = pagesRef.current[nextPageNum - 1];
     if (!nextText || nextText.trim() === "" || nextText.includes('[Empty Page]')) {
-      preFetchNextPage(nextPageNum + 1);
+      preFetchPage(nextPageNum + 1);
       return;
     }
     const rateMap = { '0.5x': '-50%', '0.75x': '-25%', '1.0x': '+0%', '1.25x': '+25%', '1.5x': '+50%', '2.0x': '+100%' };
-    const rate = rateMap[narrationSpeed] || '+0%';
+    const rate = rateMap[speedRef.current] || '+0%';
 
     preFetchPromiseRef.current = (async () => {
       try {
+        console.log(`Narration: Pre-charging Page ${nextPageNum}...`);
         const resp = await fetch('/api/speak', {
           method: 'POST',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
-          body: new URLSearchParams({ text: nextText, filename, lang: data?.detected_lang || currentLang, rate, gender: narrationGender, is_song: isSongMode, expressive: 'false' })
+          body: new URLSearchParams({ 
+            text: nextText, 
+            filename, 
+            lang: langRef.current, 
+            rate, 
+            gender: genderRef.current, 
+            expressive: 'false', 
+            voice: narrationVoiceRef.current || ""
+          })
         });
         const result = await resp.json();
         if (result.audio_url) {
@@ -547,57 +867,93 @@ const ReaderPage = () => {
           preFetchedAudioRef.current = res;
           return res;
         }
-      } catch (err) { console.warn("Pre-fetch error:", err); }
+      } catch (err) { console.warn("Narration: Pre-charge error:", err); }
       return null;
     })();
   };
-
-  const playPage = async (pageNum) => {
-    if (!isNarratingRef.current) return;
-    setNumPages(pages.length);
+  const playPage = async (pageNum, session = null, startWordIndex = 0) => {
+    const currentSession = session || narrationSessionRef.current;
+    if (!isNarratingRef.current || narrationSessionRef.current !== currentSession) return;
+    
+    setNumPages(pagesRef.current.length);
     setCurrentPage(pageNum);
     if (data?.is_pdf) scrollToPdfPage(pageNum);
     else scrollToTextPage(pageNum);
 
-    const totalPages = originalPages.length || pages.length;
-    const pageText = (originalPages.length > 0 ? originalPages[pageNum - 1] : pages[pageNum - 1]);
+    const totalPages = pagesRef.current.length;
+    let pageText = pagesRef.current[pageNum - 1];
+    
+    if (startWordIndex > 0 && pageText) {
+       // Slice the text from the specified word index
+       const words = pageText.split(/(\s+)/);
+       // Word index 0 = parts[0], parts[1] (space)
+       // Word index X = parts[X*2]
+       const remainder = words.slice(startWordIndex * 2);
+       pageText = remainder.join('');
+    }
+
     if (!pageText || pageText.trim() === "" || pageText.includes('[Empty Page]')) {
       if (isNarratingRef.current && pageNum < totalPages) {
         const next = pageNum + 1;
         setNarratingPage(next);
         narratingPageRef.current = next;
-        playPage(next);
+        playPage(next, currentSession);
       } else { stopNarration(); }
       return;
     }
 
     try {
-      setIsNarrationLoading(true);
       let result;
+      // IMMEDIATE DATA CONSUMPTION: If audio is already pre-fetched/pre-charging, grab it instantly
       if (preFetchPromiseRef.current) {
-        const preFetched = await preFetchPromiseRef.current;
-        if (preFetched && preFetched.pageNum === pageNum) { result = preFetched; }
-        preFetchPromiseRef.current = null;
+        // If it's already a completed promise or close to it, we wait briefly but don't set loading yet 
+        // to avoid flicker if it's instant (cached)
+        const possibleResult = await Promise.race([
+          preFetchPromiseRef.current,
+          new Promise(r => setTimeout(() => r('PENDING'), 50)) // 50ms race to keep it feeling instant
+        ]);
+        
+        if (possibleResult && possibleResult !== 'PENDING' && possibleResult.pageNum === pageNum && !startWordIndex) {
+          result = possibleResult;
+          preFetchPromiseRef.current = null;
+        }
       }
-      if (!result && preFetchedAudioRef.current && preFetchedAudioRef.current.pageNum === pageNum) {
+
+      if (!result && preFetchedAudioRef.current && preFetchedAudioRef.current.pageNum === pageNum && !startWordIndex) {
         result = preFetchedAudioRef.current;
         preFetchedAudioRef.current = null;
       }
+      
+      // If still no result after rapid check, THEN show loading state
       if (!result) {
+        setIsNarrationLoading(true);
         const rateMap = { '0.5x': '-50%', '0.75x': '-25%', '1.0x': '+0%', '1.25x': '+25%', '1.5x': '+50%', '2.0x': '+100%' };
-        const rate = rateMap[narrationSpeed] || '+0%';
+        const rate = rateMap[speedRef.current] || '+0%';
         const resp = await fetch('/api/speak', {
           method: 'POST',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
-          body: new URLSearchParams({ text: pageText, filename, lang: data?.detected_lang || currentLang, rate, gender: narrationGender, is_song: isSongMode, expressive: 'false' })
+          body: new URLSearchParams({ 
+            text: pageText, 
+            filename, 
+            lang: langRef.current, 
+            rate, 
+            gender: genderRef.current, 
+            expressive: 'false', 
+            voice: narrationVoiceRef.current || ""
+          })
         });
         result = await resp.json();
       }
 
+      // Critical check: narration might have stopped or changed session during fetch
+      if (!isNarratingRef.current || narrationSessionRef.current !== currentSession) {
+        setIsNarrationLoading(false);
+        return;
+      }
+
       setIsNarrationLoading(false);
 
-      if (result.audio_url && isNarratingRef.current) {
-        // Handle VTT synchronization
+      if (result.audio_url) {
         if (result.vtt_url) {
           try {
             const vttResp = await fetch(result.vtt_url);
@@ -619,23 +975,43 @@ const ReaderPage = () => {
         audioRef.current.ontimeupdate = () => {
           const currentTime = audioRef.current.currentTime;
           const idx = activeCues.findIndex(cue => currentTime >= cue.start && currentTime <= cue.end);
-          if (idx !== -1) setActiveCueIndex(idx);
+          if (idx !== -1) {
+              setActiveCueIndex(idx + startWordIndex);
+          }
         };
 
-        audioRef.current.onplay = () => { setIsPlaying(true); preFetchNextPage(pageNum + 1); };
+        audioRef.current.onplay = () => { 
+          setIsPlaying(true); 
+          preFetchPage(pageNum + 1); 
+        };
+        
+        audioRef.current.onerror = (e) => {
+            console.error("Audio playback error:", e);
+            stopNarration();
+        };
+
         audioRef.current.onended = () => {
           setActiveCueIndex(-1);
           setActiveCues([]);
-          if (isNarratingRef.current && narratingPageRef.current < (originalPages.length || pages.length)) {
+          if (isNarratingRef.current && narrationSessionRef.current === currentSession && narratingPageRef.current < pages.length) {
             const next = narratingPageRef.current + 1;
             setNarratingPage(next);
             narratingPageRef.current = next;
-            playPage(next);
-          } else { stopNarration(); }
+            playPage(next, currentSession);
+          } else if (narrationSessionRef.current === currentSession) { 
+            stopNarration(); 
+          }
         };
-        await audioRef.current.play();
+
+        try {
+          await audioRef.current.play();
+        } catch (playErr) {
+          if (playErr.name !== 'AbortError') {
+             console.error("Narration Play Error:", playErr);
+             stopNarration();
+          }
+        }
       } else {
-        setIsNarrationLoading(false);
         stopNarration();
       }
     } catch (err) {
@@ -651,66 +1027,6 @@ const ReaderPage = () => {
       else { audioRef.current.play(); setIsPlaying(true); }
     }
   };
-
-  const [selection, setSelection] = useState(null); 
-  const [word, setWord] = useState('');
-  const [activeHighlight, setActiveHighlight] = useState(null);
-  const [selectionRects, setSelectionRects] = useState([]);
-
-  const handleMouseUp = (e) => {
-    const highlightEl = e.target.closest('.user-highlight');
-    if (highlightEl) {
-      const rect = highlightEl.getBoundingClientRect();
-      setSelection({
-        text: highlightEl.innerText,
-        x: rect.left + rect.width / 2,
-        y: rect.top < 100 ? rect.bottom + 10 : rect.top,
-        isHighlight: true
-      });
-      setActiveHighlight(highlightEl);
-      return;
-    }
-    setTimeout(() => {
-      const selected = window.getSelection().toString().trim();
-      const sel = window.getSelection();
-      if (selected && sel.rangeCount > 0) {
-        const range = sel.getRangeAt(0);
-        if (Math.abs(range.getBoundingClientRect().height) > 2) {
-          const isUserHighlighted = userHighlights.some(h => h.includes(selected) || selected.includes(h));
-          setSelection({
-            text: selected,
-            x: e.clientX,
-            y: e.clientY - 20,
-            range: range.cloneRange(),
-            isHighlight: e.target.classList.contains('user-highlight') || e.target.closest('.user-highlight') || isUserHighlighted
-          });
-          setActiveHighlight(e.target.closest('.user-highlight'));
-          setWord(selected);
-          
-          // Capture rects for persistent selection UI
-          const rects = Array.from(range.getClientRects()).map(r => ({
-            left: r.left,
-            top: r.top,
-            width: r.width,
-            height: r.height
-          }));
-          setSelectionRects(rects);
-        } else {
-          setSelection(null);
-          setActiveHighlight(null);
-          setSelectionRects([]);
-        }
-      } else {
-        if (!e.target.closest('.floating-context-menu') && !e.target.closest('.header-icon-container')) {
-          setSelection(null);
-          setWord('');
-          setActiveHighlight(null);
-          setSelectionRects([]);
-        }
-      }
-    }, 10);
-  };
-
   useEffect(() => {
     if (data && data.text) {
       const parsed = parsePages(data.text);
@@ -727,6 +1043,11 @@ const ReaderPage = () => {
         setNumPages(parsed.length);
         setCurrentPage(1);
       }
+
+      // INSTANT READ ALOUD: Pre-charge Page 1 as soon as book is opened
+      if (parsed.length > 0) {
+        setTimeout(() => preFetchPage(1), 100);
+      }
     }
   }, [data]);
 
@@ -739,13 +1060,47 @@ const ReaderPage = () => {
       const resp = await fetch('/api/speak', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
-        body: new URLSearchParams({ text: selection.text, filename, lang: currentLang, rate, gender: narrationGender, is_song: isSongMode, expressive: 'false' })
+        body: new URLSearchParams({ text: selection.text, filename, lang: currentLang, rate, gender: narrationGender, expressive: 'false' })
       });
       const result = await resp.json();
       if (result.audio_url) {
         if (!audioRef.current) audioRef.current = new Audio();
         audioRef.current.src = result.audio_url;
-        audioRef.current.play();
+        
+        // Handle VTT if returned
+        if (result.vtt_url) {
+          try {
+            const vttResp = await fetch(result.vtt_url);
+            const vttText = await vttResp.text();
+            const cues = parseVTT(vttText);
+            setActiveCues(cues);
+            setActiveCueIndex(0);
+          } catch (e) { console.warn("VTT fetch error for selection:", e); }
+        } else {
+          setActiveCues([]);
+          setActiveCueIndex(-1);
+        }
+
+        // Provide visual feedback in the header
+        setIsNarrating(true);
+        isNarratingRef.current = true;
+        setIsPlaying(true);
+        
+        // Update ontimeupdate for selection reading
+        audioRef.current.ontimeupdate = () => {
+          const currentTime = audioRef.current.currentTime;
+          const idx = activeCues.findIndex(cue => currentTime >= cue.start && currentTime <= cue.end);
+          if (idx !== -1) setActiveCueIndex(idx);
+        };
+
+        audioRef.current.onended = () => { 
+          stopNarration(); 
+          setActiveCues([]);
+          setActiveCueIndex(-1);
+        };
+        audioRef.current.onerror = () => { stopNarration(); };
+        
+        await audioRef.current.play();
       }
     } catch (err) { console.error("Read selection error:", err); }
   };
@@ -759,9 +1114,11 @@ const ReaderPage = () => {
           setUserHighlights(prev => [...prev, textToHighlight]);
         }
       }
+      // CRITICAL: Clear selection and window selection to dismiss menu
       setSelection(null);
       setWord('');
       setSelectionRects([]);
+      window.getSelection().removeAllRanges();
     }
   };
 
@@ -777,6 +1134,31 @@ const ReaderPage = () => {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+  };
+
+  const handleExplainSelection = async () => {
+    if (!selection || !selection.text) return;
+    setIsExplaining(true);
+    handleToolClick('explain');
+    setExplanationData(''); // Clear previous
+    try {
+      const resp = await fetch('/api/explain', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
+        body: new URLSearchParams({ text: selection.text, filename, lang: currentLang })
+      });
+      const result = await resp.json();
+      if (result.explanation) {
+        setExplanationData(result.explanation);
+      } else if (result.error) {
+        setExplanationData(`Error: ${result.error}`);
+      }
+    } catch (err) {
+      console.error("Explain selection error:", err);
+      setExplanationData("Failed to connect to the AI service.");
+    } finally {
+      setIsExplaining(false);
+    }
   };
 
   const handleUnhighlight = () => {
@@ -804,22 +1186,35 @@ const ReaderPage = () => {
       if (result.text) {
         const parsed = parsePages(result.text);
         setPages(parsed);
-        setNumPages(parsed.length);
-        if (result.pages) setNumPages(result.pages);
-        else if (result.count) setNumPages(result.count);
+        const countFromPages = parsed.length > 0 ? parsed.length : 1;
+        
+        let finalNumPages = countFromPages;
+        if (result.pages && typeof result.pages === 'number') {
+          finalNumPages = result.pages;
+        } else if (result.pages && typeof result.pages === 'string' && !isNaN(parseInt(result.pages))) {
+          finalNumPages = parseInt(result.pages, 10);
+        } else if (result.count && typeof result.count === 'number') {
+          finalNumPages = result.count;
+        }
+        
+        setNumPages(finalNumPages);
       }
     } catch (err) { console.error(err); }
     finally { setLoading(false); }
   };
 
-  const fetchSummary = async () => {
-    if (!data || !data.text || summaryData || isFetchingSummary) return;
+  const [summaryLang, setSummaryLang] = useState('');
+
+  const fetchSummary = async (force = false) => {
+    if (!data || !data.text || isFetchingSummary) return;
+    if (summaryData && summaryLang === currentLang && !force) return;
+    
     setIsFetchingSummary(true);
     try {
       const resp = await fetch('/api/summarize_file', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
-        body: new URLSearchParams({ filename, lang: currentLang, text: data.text })
+        body: new URLSearchParams({ filename, lang: currentLang })
       });
       const result = await resp.json();
       if (result.summary) setSummaryData(result.summary);
@@ -828,8 +1223,13 @@ const ReaderPage = () => {
   };
 
   useEffect(() => {
-    if (data && data.text && !summaryData) fetchSummary();
-  }, [data, currentLang]);
+    if (data && data.text) {
+      if (!summaryData || summaryLang !== currentLang) {
+        fetchSummary();
+        setSummaryLang(currentLang);
+      }
+    }
+  }, [data, currentLang, summaryData, summaryLang]);
 
   useEffect(() => { fetchData(); }, [filename, currentLang]);
 
@@ -871,24 +1271,37 @@ const ReaderPage = () => {
   }, [filename, currentLang]);
 
 
-  // Handle Highlighting in PDF Text Layer
+  // Handle Highlighting in Original View (PDF and Office)
   useEffect(() => {
-    if (!data?.is_pdf) return;
-    // When search/highlights change, re-apply to all rendered pages
-    const textLayers = document.querySelectorAll('.react-pdf__Page__textContent');
-    textLayers.forEach(layer => {
-      // Clear marks first
-      const marks = layer.querySelectorAll('mark.search-highlight, mark.user-highlight');
-      marks.forEach(m => {
-        const parent = m.parentNode;
-        if (parent) {
-          while (m.firstChild) parent.insertBefore(m.firstChild, m);
-          parent.removeChild(m);
-        }
+    // 1. PDF Text Layers
+    if (data?.is_pdf) {
+      const textLayers = document.querySelectorAll('.react-pdf__Page__textContent');
+      textLayers.forEach(layer => {
+        const container = layer.closest('[data-page-number]');
+        const pageNum = container ? parseInt(container.getAttribute('data-page-number'), 10) : -1;
+        const isNarratingPage = narratingPage === pageNum;
+        applyHighlightsToElement(layer, isNarratingPage ? activeCueIndex : -1);
       });
-      applyHighlightsToElement(layer);
-    });
-  }, [searchTerm, userHighlights, data?.is_pdf]);
+    }
+
+    // 2. Office/DOCX View
+    if (data?.is_office && officeViewerRef.current) {
+      applyHighlightsToElement(officeViewerRef.current, isNarrating ? activeCueIndex : -1);
+    }
+  }, [searchTerm, userHighlights, data?.is_pdf, data?.is_office, activeCueIndex, narratingPage, isNarrating]);
+
+  // Handle Auto-scroll for Extracted Text Modal
+  useEffect(() => {
+    if (showText && isNarrating) {
+      const activeWordEl = document.querySelector('.text-modal-body .active-narrate-word');
+      if (activeWordEl) {
+        activeWordEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else {
+        const activePageEl = document.querySelector(`.text-modal-body #page-${narratingPage}`);
+        if (activePageEl) activePageEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+  }, [showText, isNarrating, activeCueIndex, narratingPage]);
 
   const handleFinishQuiz = async () => {
     setQuizFinished(true);
@@ -925,9 +1338,10 @@ const ReaderPage = () => {
     </div>
   );
 
-  if (!data) return <div style={{ color: '#4a342e', padding: '100px', textAlign: 'center', fontSize: '1.2rem', fontWeight: 'bold' }}>Error loading book: {filename}<br/>(Please ensure the backend is running)</div>;
+  if (!data) return <div style={{ color: '#4a342e', padding: '100px', textAlign: 'center', fontSize: '1.2rem', fontWeight: 'bold', background: 'white' }}>Error loading book: {filename}<br/>(Checking data: {String(data)})</div>;
 
   const handleStartQuiz = async () => {
+    if (!showQuiz) resetQuiz();
     setShowQuiz(true);
     if (quizQuestions.length === 0) {
       setQuizLoading(true);
@@ -972,6 +1386,142 @@ const ReaderPage = () => {
     const secs = seconds % 60;
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
+
+  const resetQuiz = () => {
+    setCurrentQuizIndex(0);
+    setQuizAnswers({});
+    setQuizFinished(false);
+    setQuizTimer(600);
+    setQuizQuestions([]);
+    setQuizMessage('');
+  };
+
+  // Robust helper for PDF text layer highlighting (Handles fragmented spans)
+  const applyHighlightsToElement = (container, activeWordIdx = -1) => {
+    if (!container) return;
+    
+    // Clear marks first to allow re-application on cue change
+    const marks = container.querySelectorAll('mark.search-highlight, mark.user-highlight, mark.active-narrate-word');
+    marks.forEach(m => {
+      const parent = m.parentNode;
+      if (parent) {
+        // If it's an active-narrate-word, we just replace it with its text to avoid re-marking issues
+        // For search/user highlights we might want to keep them but applyHighlightsToElement re-renders everything anyway
+        while (m.firstChild) parent.insertBefore(m.firstChild, m);
+        parent.removeChild(m);
+      }
+    });
+
+    const terms = [searchTerm, ...userHighlights].filter(t => t && t.trim().length > 1);
+    
+    // 1. Collect all text nodes and their cumulative offsets
+    const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT, null, false);
+    let nodes = [];
+    let fullText = "";
+    let node;
+    while (node = walker.nextNode()) {
+      nodes.push({ node, start: fullText.length, end: fullText.length + node.nodeValue.length });
+      fullText += node.nodeValue;
+    }
+
+    // 2. Highlight Narration Word (Priority 1)
+    if (activeWordIdx !== -1 && activeCues.length > activeWordIdx) {
+      const cue = activeCues[activeWordIdx];
+      // Use fuzzy matching in case VTT word differs slightly from document text
+      const cleanWord = cue.word.replace(/[^\w]/g, '').toLowerCase();
+      
+      // We need to find the word in fullText. Since VTT doesn't give us offsets in fullText,
+      // we roughly estimate based on word order or use a more robust search.
+      // Heuristic: The n-th word in fullText should match the n-th cue.
+      const wordsInText = fullText.split(/(\s+)/);
+      let wordCounter = 0;
+      let currentOffset = 0;
+      
+      for (const part of wordsInText) {
+        const isWord = /\S/.test(part);
+        if (isWord) {
+          if (wordCounter === activeWordIdx) {
+            const matchStart = currentOffset;
+            const matchEnd = currentOffset + part.length;
+            
+            const range = document.createRange();
+            let startSet = false, endSet = false;
+            nodes.forEach(n => {
+              if (!startSet && matchStart >= n.start && matchStart < n.end) {
+                range.setStart(n.node, matchStart - n.start);
+                startSet = true;
+              }
+              if (!endSet && matchEnd > n.start && matchEnd <= n.end) {
+                range.setEnd(n.node, matchEnd - n.start);
+                endSet = true;
+              }
+            });
+            
+            if (startSet && endSet) {
+              const mark = document.createElement('mark');
+              mark.className = 'active-narrate-word';
+              try { range.surroundContents(mark); } catch (e) { console.warn("PDF Narrate Wrap Error:", e); }
+            }
+            break;
+          }
+          wordCounter++;
+        }
+        currentOffset += part.length;
+      }
+    }
+
+    // 3. Highlight Search and User Terms (Priority 2)
+    terms.forEach(term => {
+      const escaped = term.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const regex = new RegExp(escaped, 'gi');
+      let match;
+      while ((match = regex.exec(fullText)) !== null) {
+        const matchStart = match.index;
+        const matchEnd = match.index + term.length;
+
+        const range = document.createRange();
+        let startSet = false, endSet = false;
+
+        nodes.forEach(n => {
+          if (!startSet && matchStart >= n.start && matchStart < n.end) {
+            range.setStart(n.node, matchStart - n.start);
+            startSet = true;
+          }
+          if (!endSet && matchEnd > n.start && matchEnd <= n.end) {
+            range.setEnd(n.node, matchEnd - n.start);
+            endSet = true;
+          }
+        });
+
+        if (startSet && endSet) {
+          const mark = document.createElement('mark');
+          mark.className = term === searchTerm ? 'search-highlight' : 'user-highlight';
+          
+          if (!range.startContainer.parentElement.closest('mark')) {
+            try {
+              const fragment = range.extractContents();
+              const wrapNode = (node) => {
+                if (node.nodeType === Node.TEXT_NODE) {
+                  const m = document.createElement('mark');
+                  m.className = mark.className;
+                  m.appendChild(node.cloneNode());
+                  return m;
+                } else if (node.nodeType === Node.ELEMENT_NODE) {
+                  const newNode = node.cloneNode(false);
+                  Array.from(node.childNodes).forEach(child => newNode.appendChild(wrapNode(child)));
+                  return newNode;
+                }
+                return node.cloneNode(true);
+              };
+              const wrappedFragment = document.createDocumentFragment();
+              Array.from(fragment.childNodes).forEach(child => wrappedFragment.appendChild(wrapNode(child)));
+              range.insertNode(wrappedFragment);
+            } catch (e) { console.warn("Highlight range error:", e); }
+          }
+        }
+      }
+    });
+  };
   const handleToolClick = (tabId) => { setActiveTab(tabId); setShowPanel(true); };
 
   const highlightText = (text, highlight, activeWordIndex = -1) => {
@@ -989,9 +1539,24 @@ const ReaderPage = () => {
             const isWord = /\S/.test(part);
             if (isWord) {
               const currentIdx = wordCounter++;
-              if (currentIdx === activeWordIndex) {
-                return <span key={i} className="active-narrate-word">{part}</span>;
+              // Check if THIS word is part of any user highlight
+              const isUserHighlighted = userHighlights.some(uh => 
+                part.toLowerCase().includes(uh.toLowerCase()) || 
+                uh.toLowerCase().includes(part.toLowerCase())
+              );
+
+          if (currentIdx === activeWordIndex) {
+            return (
+              <mark key={i} className={isUserHighlighted ? 'user-highlight active-narrate-word' : 'active-narrate-word'} style={isUserHighlighted ? { backgroundColor: 'rgba(212, 163, 115, 0.4)' } : {}}>
+                {part}
+              </mark>
+            );
+          }
+              
+              if (isUserHighlighted) {
+                return <mark key={i} className="user-highlight">{part}</mark>;
               }
+
               // Still apply simple search highlighting for other words
               if (highlight && part.toLowerCase().includes(highlight.toLowerCase())) {
                 return <mark key={i} className="search-highlight">{part}</mark>;
@@ -1056,8 +1621,10 @@ const ReaderPage = () => {
     
     const apply = (term, className) => {
       if (!term || !term.trim()) return;
+      // Escape and turn spaces into "optional tags + whitespace" matcher
       const escaped = term.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      const regex = new RegExp(`(${escaped})(?![^<]*>)`, 'gi');
+      const fuzzy = escaped.replace(/\s+/g, '(<[^>]*>)*\\s+(<[^>]*>)*');
+      const regex = new RegExp(`(${fuzzy})(?![^<]*>)`, 'gi');
       result = result.replace(regex, (match) => `<mark class="${className}">${match}</mark>`);
     };
 
@@ -1066,26 +1633,69 @@ const ReaderPage = () => {
     return result;
   };
 
+  const headerViewControls = (
+    <div className="view-controls-header">
+      {isNarrating && (
+        <div className="header-icon-container stop-btn" title="Stop Narration" onClick={stopNarration}>
+          <div className="header-icon" style={{ background: '#e74c3c' }}>
+            <Square size={16} fill="white" />
+          </div>
+          <span className="header-icon-label" style={{ color: '#e74c3c' }}>Stop</span>
+        </div>
+      )}
+      <div className="layout-dropdown-wrapper" ref={layoutMenuRef}>
+        <div 
+          className={`header-icon-container layout-toggle-btn ${showLayoutMenu ? 'active' : ''}`} 
+          title="Change Layout" 
+          onClick={() => setShowLayoutMenu(!showLayoutMenu)}
+        >
+          <div className="header-icon">
+            {viewMode === 'single' ? <Square size={18} /> : <Columns2 size={18} />}
+          </div>
+          <span className="header-icon-label">Layout</span>
+        </div>
+        
+        {showLayoutMenu && (
+          <div className="layout-mini-dropdown">
+            <div className={`layout-option ${viewMode === 'single' ? 'active' : ''}`} onClick={() => { setViewMode('single'); setShowLayoutMenu(false); }}>
+              <div className="layout-option-icon"><Square size={14} /></div>
+              <span>Single</span>
+            </div>
+            <div className={`layout-option ${viewMode === 'double' ? 'active' : ''}`} onClick={() => { setViewMode('double'); setShowLayoutMenu(false); }}>
+              <div className="layout-option-icon"><Columns2 size={14} /></div>
+              <span>Double</span>
+            </div>
+          </div>
+        )}
+      </div>
+      <div className="header-controls-divider"></div>
+      <div className={`header-icon-container ${bookmarks.includes(currentPage) ? 'active' : ''}`} title="Bookmark" onClick={() => toggleBookmark(currentPage)}>
+        <div className="header-icon"><Bookmark size={18} fill={bookmarks.includes(currentPage) ? "#e07a5f" : "none"} /></div>
+        <span className="header-icon-label">Mark</span>
+      </div>
+      <div className="header-icon-container" title="Bookmarks" onClick={() => setShowBookmarks(true)}>
+        <div className="header-icon"><List size={18} /></div>
+        <span className="header-icon-label">List</span>
+      </div>
+    </div>
+  );
+
   return (
-    <div className={`reader-root ${isReadMode ? 'read-mode-active' : ''}`} onMouseUp={handleMouseUp}>
+    <ErrorBoundary>
+    <div className={`reader-root ${isReadMode ? 'read-mode-active' : ''}`} style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: 'url(/static/user_parchment.jpg) repeat' }}>
+      <style>{`
+        .reader-root { display: flex !important; visibility: visible !important; opacity: 1 !important; }
+        .reader-main { display: flex !important; visibility: visible !important; opacity: 1 !important; flex: 1 !important; height: auto !important; min-height: 500px !important; }
+        header { display: flex !important; visibility: visible !important; opacity: 1 !important; background: #4a342e !important; }
+        .original-file-viewer { display: flex !important; visibility: visible !important; opacity: 1 !important; flex: 1 !important; }
+        .viewer-content { display: block !important; visibility: visible !important; opacity: 1 !important; height: 100% !important; }
+      `}</style>
       {/* Persistent Selection Overlay */}
-      {selection && selectionRects.map((rect, i) => (
-        <div key={i} style={{
-          position: 'fixed',
-          left: rect.left,
-          top: rect.top,
-          width: rect.width,
-          height: rect.height,
-          backgroundColor: 'rgba(0, 120, 215, 0.3)',
-          pointerEvents: 'none',
-          zIndex: 10000,
-          borderRadius: '2px'
-        }} />
-      ))}
       <Header 
-        subtitle={data?.filename} 
+        subtitle={data?.filename || 'No Filename'} 
         originalLang={data?.detected_lang || 'en'} 
         showBack={true} 
+        leftContent={headerViewControls}
         moreTools={
           <>
             <div className="header-icon-container" title="Extracted Text (X)" onClick={() => setShowText(!showText)}>
@@ -1116,7 +1726,7 @@ const ReaderPage = () => {
               <kbd className="shortcut-key-label">K</kbd>
               <span className="header-icon-label">My Marks</span>
             </div>
-            <div className="header-icon-container" title="Take a Quiz" onClick={() => handleStartQuiz()}>
+            <div className="header-icon-container" title="Take a Quiz (Q)" onClick={() => handleStartQuiz()}>
               <div className="header-icon"><HelpCircle size={18} color="#faedcd" /></div>
               <kbd className="shortcut-key-label">Q</kbd>
               <span className="header-icon-label">Quiz</span>
@@ -1155,7 +1765,7 @@ const ReaderPage = () => {
           <span className="header-icon-label">Translation</span>
           {showOverlay && <div className="translation-pulse"></div>}
         </div>
-        <div className={`header-icon-container search-btn-premium ${showSearch ? 'active' : ''}`} title="Search (/)" onClick={() => setShowSearch(!showSearch)}>
+        <div ref={searchBtnRef} className={`header-icon-container search-btn-premium ${showSearch ? 'active' : ''}`} title="Search (/)" onClick={() => setShowSearch(!showSearch)}>
           <div className="header-icon">
             <Search size={18} color={showSearch ? "#ffffff" : "#faedcd"} />
             <div className="search-icon-pulse"></div>
@@ -1163,20 +1773,71 @@ const ReaderPage = () => {
           <kbd className="shortcut-key-label">/</kbd>
           <span className="header-icon-label">Search</span>
         </div>
+        <div className={`header-icon-container ${isNotebookOpen ? 'notebook-toggle-btn-vibrant' : ''}`} title="Notebook (N)" onClick={() => setIsNotebookOpen(!isNotebookOpen)}>
+          <div className="header-icon"><Edit3 size={18} color={isNotebookOpen ? "#ffffff" : "#faedcd"} /></div>
+          <kbd className="shortcut-key-label">N</kbd>
+          <span className="header-icon-label">Notes</span>
+        </div>
       </Header>
 
       {showSearch && (
-        <div className="search-bar-inline">
+        <div ref={searchBarRef} className="search-bar-inline">
           <div className="search-input-wrapper">
             <Search size={20} className="search-icon-inner" />
             <input
               type="text"
-              placeholder="Search text or type a page number…"
+              placeholder="Type icon name or page number…"
               value={searchTerm}
+              onKeyDown={(e) => {
+                if (suggestions.length > 0) {
+                  if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    setSuggestionIndex(prev => (prev + 1) % suggestions.length);
+                  } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    setSuggestionIndex(prev => (prev - 1 + suggestions.length) % suggestions.length);
+                  } else if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const selected = suggestionIndex >= 0 ? suggestions[suggestionIndex] : null;
+                    if (selected) {
+                      if (selected.type === 'command') handleVoiceCommand(selected.id);
+                      else selectLanguage(selected.code);
+                      setSearchTerm('');
+                      setSuggestions([]);
+                      setShowSearch(false);
+                    }
+                  } else if (e.key === 'Escape') {
+                    setSuggestions([]);
+                  }
+                }
+              }}
               onChange={(e) => {
                 const val = e.target.value;
                 setSearchTerm(val);
+                
+                if (!val.trim()) {
+                  setSuggestions([]);
+                  setPageJumpMsg('');
+                  return;
+                }
+
                 const pageMatch = val.trim().match(/^(?:p(?:age)?\s*)?(\d+)$/i);
+                
+                // Suggestions filtering
+                const normalizedVal = val.trim().toLowerCase();
+                const matchedCmds = COMMANDS.filter(c => 
+                  c.name.toLowerCase().includes(normalizedVal)
+                ).map(c => ({ ...c, type: 'command' }));
+
+                const matchedLangs = allLanguages.filter(l => 
+                  l.name.toLowerCase().includes(normalizedVal) || 
+                  l.code.toLowerCase().includes(normalizedVal)
+                ).map(l => ({ ...l, type: 'language' }));
+
+                const combined = []; // Disabled suggestions in search bar as requested
+                setSuggestions(combined);
+                setSuggestionIndex(-1);
+
                 if (pageMatch) {
                   const target = parseInt(pageMatch[1], 10);
                   if (target >= 1 && target <= numPages) {
@@ -1185,34 +1846,68 @@ const ReaderPage = () => {
                     if (data?.is_pdf) scrollToPdfPage(target);
                     else scrollToTextPage(target);
                   } else { setPageJumpMsg(`Page ${target} out of range`); }
-                } else { setPageJumpMsg(''); }
+                } else { 
+                  // If it's a perfect match for a language or command, we can show it in badge
+                  const exactLang = allLanguages.find(l => normalizedVal === l.name.toLowerCase());
+                  if (exactLang) setPageJumpMsg(`Language: ${exactLang.name}`);
+                  else setPageJumpMsg(''); 
+                }
               }}
+              onBlur={() => setTimeout(() => setSuggestions([]), 200)}
               autoFocus
             />
-            {searchTerm && <CloseIcon size={18} className="clear-search" onClick={() => { setSearchTerm(''); setPageJumpMsg(''); }} />}
+            {searchTerm && <CloseIcon size={18} className="clear-search" onClick={() => { setSearchTerm(''); setPageJumpMsg(''); setSuggestions([]); }} />}
           </div>
           {pageJumpMsg && <div className="page-jump-badge">{pageJumpMsg}</div>}
+          
+          {suggestions.length > 0 && (
+            <div className="search-suggestions-dropdown">
+              {suggestions.map((item, idx) => (
+                <div 
+                  key={item.id || item.code}
+                  className={`suggestion-item ${idx === suggestionIndex ? 'active' : ''} ${item.type}`}
+                  onClick={() => {
+                    if (item.type === 'command') handleVoiceCommand(item.id);
+                    else selectLanguage(item.code);
+                    setSearchTerm('');
+                    setSuggestions([]);
+                    setShowSearch(false);
+                  }}
+                >
+                  <span className="suggestion-icon">
+                    {item.type === 'command' ? item.icon : <Languages size={14} />}
+                  </span>
+                  <span className="suggestion-name">{item.name}</span>
+                  {item.shortcut && <span className="suggestion-shortcut">{item.shortcut}</span>}
+                  {item.type === 'language' && <span className="suggestion-type-tag">Language</span>}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
+
 
       <div className="book-title-section">
         <h1 className="book-display-title">{data?.filename}</h1>
       </div>
 
-      <main style={{ flex: 1, display: 'flex', position: 'relative' }}>
+      <main className="reader-main" style={{ flex: 1, display: 'flex', minHeight: 0, position: 'relative' }}>
         <ToolPanel
           active={showPanel}
           onClose={() => { setShowPanel(false); setWord(''); }}
           filename={filename}
-          text={data.text}
+          text={data?.text}
           lang={currentLang}
           detectedLang={data?.detected_lang}
           detectedLangName={data?.detected_lang_name}
           externalTab={activeTab}
           initialWord={word}
           initialSummary={summaryData}
+          initialExplanation={explanationData}
+          isExplaining={isExplaining}
           isFetchingSummary={isFetchingSummary}
-          onLanguageChange={(newLang) => { setCurrentLang(newLang); setSummaryData(''); }}
+          onLanguageChange={handleLanguageChange}
           isNarrating={isNarrating}
           isPlaying={isPlaying}
           narratingPage={narratingPage}
@@ -1222,14 +1917,15 @@ const ReaderPage = () => {
           onStartNarration={startNarration}
           currentViewPage={currentPage}
           narrationSpeed={narrationSpeed}
-          onSpeedChange={setNarrationSpeed}
+          onSpeedChange={handleSpeedChange}
           narrationGender={narrationGender}
-          onGenderChange={setNarrationGender}
-          isSongMode={isSongMode}
-          onSongModeChange={setIsSongMode}
+          onGenderChange={handleGenderChange}
+          narrationVoice={narrationVoice}
+          onVoiceChange={setNarrationVoice}
+          availableVoices={availableVoices}
         />
 
-        <div style={{ flex: 1, display: 'flex', padding: '10px', gap: '10px', position: 'relative' }}>
+        <div style={{ flex: 1, display: 'flex', padding: '10px', gap: '10px', position: 'relative', overflow: 'hidden' }}>
 
           {isNarrationLoading && (
             <div style={{ position: 'fixed', bottom: '40px', left: '50%', transform: 'translateX(-50%)', background: '#e07a5f', color: '#fff', padding: '12px 24px', borderRadius: '30px', boxShadow: '0 4px 15px rgba(0,0,0,0.2)', display: 'flex', alignItems: 'center', gap: '12px', zIndex: 1000, animation: 'fadeIn 0.3s ease' }}>
@@ -1239,10 +1935,46 @@ const ReaderPage = () => {
             </div>
           )}
 
-          <div className={`original-file-viewer ${currentLang.toLowerCase() !== (data?.detected_lang || 'en').toLowerCase() ? 'translating' : ''}`} style={{ flex: 1, display: 'flex', background: 'transparent', borderRadius: '12px', position: 'relative' }}>
-            <div className="viewer-content">
+          <div className={`original-file-viewer ${currentLang.toLowerCase() !== (data?.detected_lang || 'en').toLowerCase() ? 'translating' : ''}`} style={{ flex: 1, display: 'flex', flexDirection: 'column', background: 'transparent', borderRadius: '12px', position: 'relative', minHeight: 0 }}>
+            <div className="viewer-content" style={{ position: 'relative', flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+              {/* Selection Overlay for non-PDF modes */}
+              {!data.is_pdf && selection && (
+                <div style={{ position: 'absolute', top: 0, left: 0, pointerEvents: 'none', zIndex: 10000, width: '100%', height: '100%' }}>
+                  {selectionRects.map((rect, i) => (
+                    <div key={i} style={{ position: 'absolute', left: rect.left, top: rect.top, width: rect.width, height: rect.height, backgroundColor: 'rgba(0, 120, 215, 0.2)', borderRadius: '2px' }} />
+                  ))}
+                  <div className="floating-context-menu" style={{ left: selection.x, top: selection.y, transform: 'translateX(-50%) translateY(-100%)', marginTop: '-10px', position: 'absolute', display: 'flex', gap: '8px', background: '#4a342e', padding: '6px 10px', borderRadius: '12px', boxShadow: '0 8px 30px rgba(0,0,0,0.4)', zIndex: 10001, border: '1px solid #d4a373', pointerEvents: 'auto' }} onMouseDown={(e) => e.stopPropagation()} onMouseUp={(e) => e.stopPropagation()}>
+                    <div onClick={(e) => { e.stopPropagation(); handleToolClick('meaning'); setSelection(null); }} className="context-menu-btn" title="Meaning"><Book size={18} /></div>
+                    <div onClick={(e) => { e.stopPropagation(); handleExplainSelection(); setSelection(null); }} className="context-menu-btn" title="Explain"><Sparkles size={18} /></div>
+                    <div onClick={(e) => { e.stopPropagation(); handleReadSelection(); }} className="context-menu-btn" title="Read Selection"><Play size={18} /></div>
+                    {selection.isHighlight ? (
+                      <div onClick={(e) => { e.stopPropagation(); handleUnhighlight(); }} className="context-menu-btn" title="Remove Highlight" style={{ color: '#e74c3c' }}><Highlighter size={18} /></div>
+                    ) : selection.range && (
+                      <div onClick={(e) => { e.stopPropagation(); handleHighlight(); }} className="context-menu-btn" title="Highlight"><Highlighter size={18} /></div>
+                    )}
+                  </div>
+                </div>
+              )}
               {data.is_pdf ? (
                 <div ref={viewerRef} onScroll={handlePdfScroll} style={{ position: 'relative', width: '100%', height: '100%', overflow: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center', background: 'transparent', scrollBehavior: 'smooth' }}>
+                  {/* Selection Overlay for PDF mode */}
+                  {selection && (
+                    <div style={{ position: 'absolute', top: 0, left: 0, pointerEvents: 'none', zIndex: 10000, width: '100%', height: '100%' }}>
+                      {selectionRects.map((rect, i) => (
+                        <div key={i} style={{ position: 'absolute', left: rect.left, top: rect.top, width: rect.width, height: rect.height, backgroundColor: 'rgba(0, 120, 215, 0.2)', borderRadius: '2px' }} />
+                      ))}
+                      <div className="floating-context-menu" style={{ left: selection.x, top: selection.y, transform: 'translateX(-50%) translateY(-100%)', marginTop: '-10px', position: 'absolute', display: 'flex', gap: '8px', background: '#4a342e', padding: '6px 10px', borderRadius: '12px', boxShadow: '0 8px 30px rgba(0,0,0,0.4)', zIndex: 10001, border: '1px solid #d4a373', pointerEvents: 'auto' }} onMouseDown={(e) => e.stopPropagation()} onMouseUp={(e) => e.stopPropagation()}>
+                        <div onClick={(e) => { e.stopPropagation(); handleToolClick('meaning'); setSelection(null); }} className="context-menu-btn" title="Meaning"><Book size={18} /></div>
+                        <div onClick={(e) => { e.stopPropagation(); handleExplainSelection(); setSelection(null); }} className="context-menu-btn" title="Explain"><Sparkles size={18} /></div>
+                        <div onClick={(e) => { e.stopPropagation(); handleReadSelection(); }} className="context-menu-btn" title="Read Selection"><Play size={18} /></div>
+                        {selection.isHighlight ? (
+                          <div onClick={(e) => { e.stopPropagation(); handleUnhighlight(); }} className="context-menu-btn" title="Remove Highlight" style={{ color: '#e74c3c' }}><Highlighter size={18} /></div>
+                        ) : selection.range && (
+                          <div onClick={(e) => { e.stopPropagation(); handleHighlight(); }} className="context-menu-btn" title="Highlight"><Highlighter size={18} /></div>
+                        )}
+                      </div>
+                    </div>
+                  )}
                   {pdfError ? (
                     <div className="error-preview">Failed to load PDF locally.</div>
                   ) : (
@@ -1285,7 +2017,7 @@ const ReaderPage = () => {
                             const pageNum = index + 1;
                             const isVisible = (numPages <= 40) || (Math.abs(pageNum - currentPage) <= 5);
                             return (
-                              <div key={`page_${pageNum}`} data-page-number={pageNum} className="pdf-page-container" style={{ position: 'relative', minHeight: isVisible ? 'auto' : '820px', width: '100%', display: 'flex', justifyContent: 'center', padding: '20px 0' }}>
+                              <div key={`page_${pageNum}`} data-page-number={pageNum} className={`pdf-page-container ${narratingPage === pageNum ? 'is-narrating' : ''}`} style={{ position: 'relative', minHeight: isVisible ? 'auto' : '820px', width: '100%', display: 'flex', justifyContent: 'center', padding: '20px 0' }}>
                                 {isVisible ? (
                                   <>
                                     <Page 
@@ -1314,15 +2046,24 @@ const ReaderPage = () => {
                   )}
                 </div>
               ) : data.is_office ? (
-                <div style={{ position: 'relative' }}>
-                  <div dangerouslySetInnerHTML={{ __html: highlightHtml(data.office_html, searchTerm) }} className="office-viewer" />
-                  {showOverlay && data.text && (
-                    <div className="page-translation-overlay" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}><div className="page-translation-card">{highlightText(data.text, searchTerm, isNarrating ? activeCueIndex : -1)}</div></div>
-                  )}
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+                  <div className="premium-reader-page" style={{ transform: `scale(${zoomLevel / 100})`, transformOrigin: 'top center' }}>
+                    <div 
+                      ref={officeViewerRef}
+                      dangerouslySetInnerHTML={{ __html: highlightHtml(data.office_html, searchTerm) }} 
+                      className="office-viewer" 
+                    />
+                    {showOverlay && pages[currentPage - 1] && (
+                      <div className="page-translation-overlay"><div className="page-translation-card">{highlightText(pages[currentPage - 1], searchTerm, isNarrating ? activeCueIndex : -1)}</div></div>
+                    )}
+                  </div>
+                  <div className="pdf-navigation" style={{ marginTop: '20px' }}>
+                    <span className="page-info">Document View</span>
+                  </div>
                 </div>
               ) : data.is_image ? (
-                <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center', background: 'rgba(0,0,0,0.05)', padding: '40px 0' }}>
-                  <div className="image-page-container" style={{ position: 'relative', backgroundColor: '#ffffff', boxShadow: '0 10px 30px rgba(0,0,0,0.15)', borderRadius: '4px', maxWidth: '800px', width: '90%', display: 'flex', justifyContent: 'center' }}>
+                <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px 0' }}>
+                  <div className="premium-reader-page" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', overflow: 'hidden', minHeight: 'auto', transform: `scale(${zoomLevel / 100})`, transformOrigin: 'top center' }}>
                     <img src={`/uploads/${encodeURIComponent(data.filename)}`} alt="Book Page" style={{ maxWidth: '100%', height: 'auto', display: 'block' }} />
                     {(showOverlay || searchTerm) && data.text && (
                       <div className="page-translation-overlay" style={{ background: searchTerm && !showOverlay ? 'transparent' : 'rgba(255, 255, 255, 0.7)' }}>
@@ -1333,7 +2074,7 @@ const ReaderPage = () => {
                     )}
                   </div>
                   <div className="pdf-navigation" style={{ marginTop: '20px' }}>
-                    <span className="page-info">Page 1 of 1</span>
+                    <span className="page-info">Image View</span>
                   </div>
                 </div>
               ) : data.is_video ? ( 
@@ -1341,14 +2082,14 @@ const ReaderPage = () => {
               ) : pages.length > 0 ? (
                 <div style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                   <div className={`text-view-container ${viewMode === 'double' ? 'double-mode' : ''}`} style={{ transform: `scale(${zoomLevel / 100})`, transformOrigin: 'top center', transition: 'transform 0.2s' }}>
-                    <div ref={viewerRef} className={`react-pdf-page book-text-page ${narratingPage === currentPage ? 'narrating' : ''}`} onClick={() => startNarration(currentPage)} style={{ cursor: 'pointer' }}>
+                    <div ref={viewerRef} className={`premium-reader-page book-text-page ${narratingPage === currentPage ? 'is-narrating' : ''}`} onClick={() => startNarration(currentPage)} style={{ cursor: 'pointer' }}>
                       <div className="book-text-content">{highlightText(pages[currentPage - 1], searchTerm, narratingPage === currentPage ? activeCueIndex : -1)}</div>
                       {showOverlay && pages[currentPage - 1] && (
                         <div className="page-translation-overlay"><div className="page-translation-card">{highlightText(pages[currentPage - 1], searchTerm, narratingPage === currentPage ? activeCueIndex : -1)}</div></div>
                       )}
                     </div>
                     {viewMode === 'double' && currentPage < numPages && (
-                      <div className={`react-pdf-page book-text-page ${narratingPage === currentPage + 1 ? 'narrating' : ''}`} onClick={() => startNarration(currentPage + 1)} style={{ cursor: 'pointer' }}>
+                      <div className={`premium-reader-page book-text-page ${narratingPage === currentPage + 1 ? 'is-narrating' : ''}`} onClick={() => startNarration(currentPage + 1)} style={{ cursor: 'pointer' }}>
                         <div className="book-text-content">{highlightText(pages[currentPage], searchTerm, narratingPage === currentPage + 1 ? activeCueIndex : -1)}</div>
                         {showOverlay && pages[currentPage] && (
                           <div className="page-translation-overlay"><div className="page-translation-card">{highlightText(pages[currentPage], searchTerm, narratingPage === currentPage + 1 ? activeCueIndex : -1)}</div></div>
@@ -1367,21 +2108,36 @@ const ReaderPage = () => {
               ) : null}
             </div>
           </div>
-
+          
+          {/* Dedicated Notebook Panel */}
+          {isNotebookOpen && (
+            <div className="notebook-paper-panel">
+              <div className="notebook-sheet">
+                <div className="notebook-header-vibrant">
+                  <h3>Pocket Notebook</h3>
+                  <button 
+                    onClick={() => { if(window.confirm('Clear all notes?')) handleNotesChange({target:{value:''}}); }}
+                    style={{ background: 'transparent', border: 'none', color: '#e74c3c', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px' }}
+                  >
+                    <Trash2 size={14} /> Clear
+                  </button>
+                </div>
+                <textarea 
+                  className="notebook-textarea"
+                  placeholder="Type your notes here while seeing the book..."
+                  value={notes}
+                  onChange={handleNotesChange}
+                  autoFocus
+                />
+                <div style={{ marginTop: '10px', fontSize: '0.75rem', color: '#8b7355', textAlign: 'right' }}>
+                  Auto-saved for {filename}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </main>
 
-      {selection && (
-        <div className="floating-context-menu" style={{ left: selection.x, top: selection.y, transform: 'translateX(-50%) translateY(-100%)', marginTop: '-10px', position: 'fixed', display: 'flex', gap: '8px', background: '#4a342e', padding: '6px 10px', borderRadius: '12px', boxShadow: '0 8px 30px rgba(0,0,0,0.4)', zIndex: 10001, border: '1px solid #d4a373' }} onMouseDown={(e) => e.stopPropagation()} onMouseUp={(e) => e.stopPropagation()}>
-          <div onClick={(e) => { e.stopPropagation(); handleToolClick('meaning'); setSelection(null); }} className="context-menu-btn" title="Meaning"><Book size={18} /></div>
-          <div onClick={(e) => { e.stopPropagation(); handleReadSelection(); }} className="context-menu-btn" title="Read Selection"><Play size={18} /></div>
-          {selection.isHighlight ? (
-            <div onClick={(e) => { e.stopPropagation(); handleUnhighlight(); }} className="context-menu-btn" title="Remove Highlight" style={{ color: '#e74c3c' }}><Highlighter size={18} /></div>
-          ) : selection.range && (
-            <div onClick={(e) => { e.stopPropagation(); handleHighlight(); }} className="context-menu-btn" title="Highlight"><Highlighter size={18} /></div>
-          )}
-        </div>
-      )}
 
       {showText && (
         <div className="text-modal-overlay" onClick={() => setShowText(false)}>
@@ -1471,6 +2227,7 @@ const ReaderPage = () => {
               <div className="shortcut-full-item"><kbd>T</kbd> <span>Translate Book</span></div>
               <div className="shortcut-full-item"><kbd>M</kbd> <span>Word Meaning</span></div>
               <div className="shortcut-full-item"><kbd>F</kbd> <span>Focus Mode</span></div>
+              <div className="shortcut-full-item"><kbd>N</kbd> <span>Pocket Notebook (Blank Paper)</span></div>
               <div className="shortcut-full-item"><kbd>V</kbd> <span>Toggle Voice Control</span></div>
               <div className="shortcut-full-item"><kbd>X</kbd> <span>Toggle Extracted Text</span></div>
               <div className="shortcut-full-item"><kbd>/</kbd> <span>Open Search</span></div>
@@ -1503,7 +2260,7 @@ const ReaderPage = () => {
         </div>
       )}
 
-      <VoiceController isActive={voiceActive} setIsActive={setVoiceActive} onCommand={handleVoiceCommand} languages={allLanguages} />
+      <VoiceController isActive={voiceActive} setIsActive={setVoiceActive} onCommand={stableVoiceCommand} languages={allLanguages} />
 
       {showQuiz && (
         <div className="quiz-modal-overlay">
@@ -1523,7 +2280,7 @@ const ReaderPage = () => {
                     <span>{formatTime(quizTimer)}</span>
                   </div>
                 )}
-                <button className="quiz-close-btn" onClick={() => { setShowQuiz(false); if(quizFinished) { setQuizQuestions([]); setQuizAnswers({}); setQuizFinished(false); } }}><CloseIcon size={24} /></button>
+                <button className="quiz-close-btn" onClick={() => { setShowQuiz(false); resetQuiz(); }}><CloseIcon size={24} /></button>
               </div>
             </div>
 
@@ -1552,7 +2309,7 @@ const ReaderPage = () => {
                     </p>
                     <div style={{ display: 'flex', gap: '15px', marginTop: '30px' }}>
                       <button className="quiz-btn-primary" onClick={() => { setQuizFinished(false); setQuizAnswers({}); setCurrentQuizIndex(0); setQuizTimer(600); }}><RotateCcw size={18} /> Restart Quiz</button>
-                      <button className="quiz-btn-secondary" onClick={() => { setShowQuiz(false); setQuizQuestions([]); setQuizAnswers({}); setQuizFinished(false); }}>Close</button>
+                      <button className="quiz-btn-secondary" onClick={() => { setShowQuiz(false); resetQuiz(); }}>Close</button>
                     </div>
                   </div>
 
@@ -1830,6 +2587,56 @@ const ReaderPage = () => {
         </div>
       )}
 
+      {showBookmarks && (
+        <div className="text-modal-overlay" onClick={() => setShowBookmarks(false)}>
+          <div className="text-modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '500px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <Bookmark size={24} color="#e07a5f" fill="#e07a5f" />
+                <h3 style={{ margin: 0, color: '#4a342e', fontFamily: "'Alice', serif" }}>Your Bookmarks</h3>
+              </div>
+              <button onClick={() => setShowBookmarks(false)} className="close-thumbnails" style={{ background: 'none', border: 'none', cursor: 'pointer' }}><CloseIcon size={24} /></button>
+            </div>
+            <div className="bookmarks-list">
+              {bookmarks.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '40px', color: '#8b7355' }}>
+                  <Bookmark size={48} style={{ opacity: 0.2, marginBottom: '15px' }} />
+                  <p>No bookmarks yet. Click the bookmark icon to save a page!</p>
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  {bookmarks.map((page) => (
+                    <div key={page} className={`bookmark-item ${narratingPage === page ? 'is-narrating' : ''}`} onClick={() => { setCurrentPage(page); setShowBookmarks(false); if(data?.is_pdf) scrollToPdfPage(page); else scrollToTextPage(page); }} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 15px', background: 'white', borderRadius: '10px', border: '1px solid #eee', cursor: 'pointer', transition: 'all 0.2s' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <div style={{ fontWeight: 'bold', color: '#4a342e' }}>Page {page}</div>
+                        {narratingPage === page && (
+                          <div className="now-reading-tag" style={{ fontSize: '0.6rem', background: '#e07a5f', color: 'white', padding: '2px 6px', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                            <Volume2 size={10} /> Reading
+                          </div>
+                        )}
+                      </div>
+                      <button 
+                        onClick={(e) => { e.stopPropagation(); toggleBookmark(page); }}
+                        style={{ background: 'none', border: 'none', color: '#e74c3c', cursor: 'pointer', padding: '5px' }}
+                        title="Remove Bookmark"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Floating Zoom Controls - Bottom Right */}
+      <FloatingZoomControls 
+        zoomLevel={zoomLevel} 
+        setZoomLevel={setZoomLevel} 
+      />
+
       {/* Floating Voice Assistant - Professional Pill */}
       <div 
         className={`voice-assistant-pill ${voiceActive ? 'active-voice' : ''}`} 
@@ -1841,37 +2648,13 @@ const ReaderPage = () => {
         </div>
         <span className="voice-text">Access icons by text or voice</span>
       </div>
-      <div className="view-controls-pill">
-        <button 
-          className={`view-btn ${viewMode === 'single' ? 'active' : ''}`} 
-          onClick={() => setViewMode('single')} 
-          title="Single Page View"
-        >
-          <Square size={18} />
-        </button>
-        <button 
-          className={`view-btn ${viewMode === 'double' ? 'active' : ''}`} 
-          onClick={() => setViewMode('double')} 
-          title="Two Page View"
-        >
-          <Columns2 size={18} />
-        </button>
-        <button 
-          className={`view-btn ${viewMode === 'thumbnails' ? 'active' : ''}`} 
-          onClick={() => setViewMode('thumbnails')} 
-          title="Thumbnail View"
-        >
-          <LayoutGrid size={18} />
-        </button>
-        <div className="view-divider"></div>
-        <button className="view-btn" onClick={() => setZoomLevel(prev => Math.max(50, prev - 10))} title="Zoom Out">
-          <ZoomOut size={18} />
-        </button>
-        <span className="zoom-label">{zoomLevel}%</span>
-        <button className="view-btn" onClick={() => setZoomLevel(prev => Math.min(200, prev + 10))} title="Zoom In">
-          <ZoomIn size={18} />
-        </button>
+
+      {/* Reading Progress Bar */}
+      <div className="reading-progress-container">
+        <div className="reading-progress-fill" style={{ width: `${numPages > 0 ? (currentPage / numPages) * 100 : 0}%` }}></div>
+        <div className="reading-progress-text">{Math.round(numPages > 0 ? (currentPage / numPages) * 100 : 0)}% Read</div>
       </div>
+      {/* View controls moved to header */}
 
       {viewMode === 'thumbnails' && (
         <div className="thumbnail-overlay fade-in" onClick={() => setViewMode('single')}>
@@ -1882,7 +2665,7 @@ const ReaderPage = () => {
             </div>
             <div className="thumbnail-grid">
               {pages.map((p, idx) => (
-                <div key={idx} className="thumbnail-item" onClick={() => { setCurrentPage(idx + 1); setViewMode('single'); if(data?.is_pdf) scrollToPdfPage(idx+1); else scrollToTextPage(idx+1); }}>
+                <div key={idx} className={`thumbnail-item ${narratingPage === idx + 1 ? 'is-narrating' : ''} ${currentPage === idx + 1 ? 'active' : ''}`} onClick={() => { setCurrentPage(idx + 1); setViewMode('single'); if(data?.is_pdf) scrollToPdfPage(idx+1); else scrollToTextPage(idx+1); }}>
                   <div className="thumbnail-page-box">
                     <span className="thumb-page-num">{idx + 1}</span>
                     <div className="thumb-content-preview">
@@ -1895,7 +2678,48 @@ const ReaderPage = () => {
           </div>
         </div>
       )}
+      {/* Floating Context Menu */}
+      {selection && (
+        <div 
+          className="floating-context-menu" 
+          style={{ 
+            position: 'absolute', 
+            left: `${selection.x}px`, 
+            top: `${selection.y}px`,
+            transform: 'translate(-50%, -120%)',
+            zIndex: 10000
+          }}
+        >
+          <div className="context-menu-inner">
+            <button onClick={handleReadSelection} title="Read Aloud" className="ctx-btn read">
+              <Volume2 size={16} />
+              <span>Read</span>
+            </button>
+            <button onClick={handleExplainSelection} title="AI Explanation" className="ctx-btn explain">
+              <Sparkles size={16} />
+              <span>Explain</span>
+            </button>
+            {selection.isHighlight ? (
+              <button onClick={handleUnhighlight} title="Remove Highlight" className="ctx-btn remove">
+                <Trash2 size={16} />
+                <span>Remove</span>
+              </button>
+            ) : (
+              <button onClick={handleHighlight} title="Highlight Text" className="ctx-btn highlight">
+                <Highlighter size={16} />
+                <span>Highlight</span>
+              </button>
+            )}
+            <div className="ctx-divider"></div>
+            <button className="close-context" onClick={() => setSelection(null)}>
+              <CloseIcon size={14} />
+            </button>
+          </div>
+          <div className="context-menu-arrow"></div>
+        </div>
+      )}
     </div>
+    </ErrorBoundary>
   );
 };
 

@@ -3,7 +3,7 @@ import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { Home, Book, Upload, BookOpen, GripVertical, X, Search } from 'lucide-react';
 import RecommendationModal from './RecommendationModal';
 
-const Header = ({ subtitle, originalLang, showBack = false, hideNav = false, children, moreTools }) => {
+const Header = ({ subtitle, originalLang, showBack = false, hideNav = false, children, moreTools, leftContent }) => {
   const [isToolsOpen, setIsToolsOpen] = React.useState(false);
   const [showRecs, setShowRecs] = React.useState(false);
   const [toolSearch, setToolSearch] = React.useState('');
@@ -41,7 +41,7 @@ const Header = ({ subtitle, originalLang, showBack = false, hideNav = false, chi
       boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
       borderBottom: '1px solid rgba(212, 163, 115, 0.2)'
     }}>
-      <div className="header-left" style={{ flex: 1.5 }}>
+      <div className="header-left" style={{ flex: 1.5, display: 'flex', alignItems: 'center', gap: '15px' }}>
         {isLibraryPage ? (
           <div className="header-icon-container" title="Home" onClick={() => navigate('/')}>
             <div className="header-icon">
@@ -57,6 +57,7 @@ const Header = ({ subtitle, originalLang, showBack = false, hideNav = false, chi
             <span className="header-icon-label">Library</span>
           </div>
         ) : null}
+        {leftContent}
       </div>
 
       <div className="header-center" style={{ flex: 2, textAlign: 'center' }}>
@@ -137,6 +138,7 @@ const Header = ({ subtitle, originalLang, showBack = false, hideNav = false, chi
                   {moreTools && (
                     <div className="dynamic-tools-section" style={{ borderTop: '1px solid rgba(212, 163, 115, 0.2)', paddingTop: '8px', marginTop: '4px' }}>
                       {React.Children.map(moreTools, child => {
+                        if (!React.isValidElement(child)) return null;
                         const toolTitle = child.props.title || '';
                         if (!toolTitle.toLowerCase().includes(toolSearch.toLowerCase())) return null;
                         return (

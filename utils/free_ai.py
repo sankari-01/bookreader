@@ -8,8 +8,8 @@ class FreeImageExplainer:
     
     PATTERNS = {
         "cloud_computing": {
-            "keywords": ["cloud", "server", "computing", "architecture", "network", "virtual"],
-            "description": "This technical illustration depicts a modern Cloud Computing architecture. It visualizes the complex ecosystem of virtualized servers, data storage, and networking layers that enable scalable and resilient digital infrastructure for enterprise-level applications and remote services."
+            "keywords": ["cloud", "server", "computing", "architecture", "network", "virtual", "router", "switch", "topology", "lan", "wan"],
+            "description": "This technical illustration depicts a modern Cloud Computing architecture and network topology. It visualizes the complex ecosystem of virtualized servers, data storage, and networking layers—including routers and switches—that enable scalable and resilient digital infrastructure."
         },
         "business_growth": {
             "keywords": ["growth", "sales", "revenue", "profit", "chart", "graph", "upward"],

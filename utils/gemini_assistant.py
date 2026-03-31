@@ -56,7 +56,7 @@ class GeminiAssistant:
             response = cls._model.generate_content(prompt) if cls._model else None
             if response and response.text:
                 return response.text.strip()
-            return "Gemini returned an empty response or model not initialized."
+            return "AI Error: Gemini returned an empty response or model not initialized."
         except Exception as e:
             log_error(f"Gemini AI Error: {e}")
             return f"AI Error: {str(e)}"
@@ -64,13 +64,13 @@ class GeminiAssistant:
     @classmethod
     def describe_image(cls, pil_image, prompt="Describe this image in about 40 words, focusing on its context and significance."):
         if not cls.configure():
-            return "AI Configuration missing. (Local OCR only)"
+            return "AI Error: Gemini configuration missing. (Local OCR only)"
         try:
             # Gemini 1.5-flash handles PIL images directly in the list
             response = cls._model.generate_content([prompt, pil_image])
             if response and response.text:
                 return response.text.strip()
-            return "Model returned empty description."
+            return "AI Error: Model returned empty description."
         except Exception as e:
             log_error(f"Gemini Image Description Error: {e}")
-            return f"AI Description Error: {str(e)}"
+            return f"AI Error: {str(e)}"

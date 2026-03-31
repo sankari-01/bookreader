@@ -131,8 +131,11 @@ def extract_images_from_pdf(path, output_dir):
                     )
                     explanation = GeminiAssistant.describe_image(pil_img, ai_prompt)
                     
-                    if not explanation or "AI Configuration missing" in explanation or "AI Description Error" in explanation:
-                        # Fallback to local Free AI Explainer (Pattern-based)
+                    # Robust check for any AI error format (case-insensitive)
+                    failed_ai = not explanation or "error" in explanation.lower() or "configuration" in explanation.lower() or "empty" in explanation.lower()
+                    
+                    if failed_ai:
+                        # Fallback to local Free AI Explainer (OCR + Pattern-based)
                         ocr_text = pytesseract.image_to_string(pil_img).strip()
                         from utils.free_ai import FreeImageExplainer
                         explanation = FreeImageExplainer.explain(ocr_text)

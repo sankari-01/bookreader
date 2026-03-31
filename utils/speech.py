@@ -2,6 +2,7 @@ import os
 import asyncio
 import edge_tts
 import hashlib
+from utils.logger import log_error
 
 VOICE_MAP = {
     'en': {'f': 'en-US-EmmaNeural', 'm': 'en-US-GuyNeural'},
@@ -23,7 +24,7 @@ VOICE_MAP = {
     'bn': {'f': 'bn-IN-TanishaNeural', 'm': 'bn-IN-BashkarNeural'}
 }
 
-def text_to_speech(text, lang='en', rate='+0%', gender='f', expressive=True, is_song=False):
+def text_to_speech(text, lang='en', rate='+0%', gender='f', expressive=True, voice=None):
     """
     Synchronous wrapper for edge-tts generation.
     Returns (audio_filename, vtt_filename) stored in the static folder.
@@ -33,7 +34,7 @@ def text_to_speech(text, lang='en', rate='+0%', gender='f', expressive=True, is_
         return None, "No text provided"
         
     # Generate unique filenames based on text content, lang, rate, gender, expressive flag, and is_song
-    text_hash = hashlib.md5(f"{text}_{rate}_{gender}_{expressive}_{is_song}".encode('utf-8')).hexdigest()
+    text_hash = hashlib.md5(f"{text}_{rate}_{gender}_{expressive}_{voice}".encode('utf-8')).hexdigest()
     audio_filename = f"speech_{text_hash}_{lang}.mp3"
     vtt_filename = f"speech_{text_hash}_{lang}.vtt"
     
@@ -48,54 +49,76 @@ def text_to_speech(text, lang='en', rate='+0%', gender='f', expressive=True, is_
     if os.path.exists(audio_path):
         return audio_filename, vtt_filename
         
-    voice_options = VOICE_MAP.get(lang.lower(), VOICE_MAP['en'])
-    voice = voice_options.get(gender, voice_options['f'])
+    if not voice:
+        voice_options = VOICE_MAP.get(lang.lower(), VOICE_MAP['en'])
+        voice = voice_options.get(gender, voice_options['f'])
     
     final_text = text
-    if is_song:
-        from utils.narration_expander import NarrationExpander
-        expanded = NarrationExpander.turn_into_song(text, lang)
-        if expanded and "<" in expanded:
-            final_text = f"<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xmlns:mstts='https://www.w3.org/2001/mstts' xml:lang='{lang}'>{expanded}</speak>"
-        else:
-            final_text = expanded
-    elif expressive:
+    if expressive:
         from utils.narration_expander import NarrationExpander
         expanded = NarrationExpander.theatricalize(text, lang)
         if expanded and "<" in expanded:
-            # Wrap in SSML
-            final_text = f"<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xmlns:mstts='https://www.w3.org/2001/mstts' xml:lang='{lang}'>{expanded}</speak>"
+            # Wrap in SSML with voice tag for better compatibility
+            final_text = f"<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xmlns:mstts='https://www.w3.org/2001/mstts' xml:lang='{lang}'><voice name='{voice}'>{expanded.strip()}</voice></speak>"
     
+    log_error(f"TTS starting for {lang} voice {voice} (Expressive: {expressive})")
     try:
-        asyncio.run(_generate_speech(final_text, voice, audio_path, vtt_path, rate))
+        asyncio.run(_generate_speech(final_text, voice, audio_path, vtt_path, rate, lang=lang, original_text=text))
         return audio_filename, vtt_filename
     except Exception as e:
-        print(f"TTS Error: {e}")
-        # Fallback to plain text if SSML failed
+        log_error(f"TTS Error: {e}")
+        # Fallback to plain text if SSML generation failed
         if expressive:
              try:
-                 asyncio.run(_generate_speech(text, voice, audio_path, vtt_path, rate))
+                 asyncio.run(_generate_speech(text, voice, audio_path, vtt_path, rate, lang=lang, original_text=text))
                  return audio_filename, vtt_filename
-             except: pass
+             except Exception as fe:
+                 log_error(f"TTS Fallback failed: {fe}")
         return None, str(e)
 
-async def _generate_speech(text, voice, audio_path, vtt_path, rate='+0%'):
+async def _generate_speech(text, voice, audio_path, vtt_path, rate='+0%', lang='en', original_text=""):
+    # Determine if the input is actually SSML (starts with <speak)
     is_ssml = text.strip().startswith("<speak")
+    
+    # edge-tts supports rate, volume, and pitch parameters directly in the Communicate object.
+    # If it's NOT SSML, we pass raw text + the rate parameter.
+    # If it IS SSML, we pass the SSML string directly and edge-tts handles the internal prosody tags.
+    
     if is_ssml:
+        log_error(f"TTS generating from SSML for {voice} (lang: {lang})")
         communicate = edge_tts.Communicate(text, voice)
     else:
+        log_error(f"TTS generating from RAW TEXT for {voice} (rate: {rate}, lang: {lang})")
         communicate = edge_tts.Communicate(text, voice, rate=rate)
+    
     # edge-tts supports generating VTT subtitles directly
     subs = edge_tts.SubMaker()
     
-    with open(audio_path, "wb") as f:
-        async for chunk in communicate.stream():
-            if chunk["type"] == "audio":
-                f.write(chunk["data"])
-            elif chunk["type"] == "WordBoundary":
-                subs.feed(chunk)
-                
-    with open(vtt_path, "w", encoding="utf-8") as f:
-        srt_content = subs.get_srt()
-        vtt_content = "WEBVTT\n\n" + srt_content.replace(',', '.')
-        f.write(vtt_content)
+    try:
+        with open(audio_path, "wb") as f:
+            async for chunk in communicate.stream():
+                if chunk["type"] == "audio":
+                    f.write(chunk["data"])
+                elif chunk["type"] == "WordBoundary":
+                    subs.feed(chunk)
+                    
+        with open(vtt_path, "w", encoding="utf-8") as f:
+            srt_content = subs.get_srt()
+            vtt_content = "WEBVTT\n\n" + srt_content.replace(',', '.')
+            f.write(vtt_content)
+    except Exception as e:
+        # If SSML fails, fallback to bare plain text (wrapped safely)
+        if is_ssml or final_ssml != text:
+             log_error(f"SSML error, falling back to plain: {e}")
+             fallback_text = original_text if original_text else text
+             # Ensure fallback text is escaped
+             clean_fallback = fallback_text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+             final_fallback_ssml = f"<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xml:lang='{lang}'><prosody rate='{rate}'>{clean_fallback}</prosody></speak>"
+             communicate = edge_tts.Communicate(final_fallback_ssml, voice)
+             
+             with open(audio_path, "wb") as f:
+                 async for chunk in communicate.stream():
+                     if chunk["type"] == "audio":
+                         f.write(chunk["data"])
+             return
+        raise e

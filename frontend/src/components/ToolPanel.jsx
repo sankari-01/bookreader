@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, MessageSquare, Info, Languages, Book, BookOpen, Play, Pause, RefreshCcw, Music } from 'lucide-react';
+import { X, MessageSquare, Info, Languages, Book, BookOpen, Play, Pause, RefreshCcw, Music, Edit3, Trash2, Sparkles } from 'lucide-react';
 
 const ToolPanel = ({
-  active, onClose, filename, text, lang, detectedLang, detectedLangName, externalTab, onLanguageChange, initialWord, initialSummary, isFetchingSummary,
+    active, onClose, filename, text, lang, detectedLang, detectedLangName, externalTab, onLanguageChange, initialWord, initialSummary, initialExplanation, isExplaining, isFetchingSummary,
   isNarrating, isPlaying, narratingPage, togglePlayback, onStopNarration, onStartNarration, onRestartNarration,
   currentViewPage,
   narrationSpeed, onSpeedChange,
   narrationGender, onGenderChange,
-  isSongMode, onSongModeChange
+  narrationVoice, onVoiceChange, availableVoices
 }) => {
   const [activeTab, setActiveTab] = useState('summary');
   const [loading, setLoading] = useState(false);
@@ -43,6 +43,13 @@ const ToolPanel = ({
     }
   }, [active, activeTab, initialSummary, result]);
 
+
+  // Auto-set explanation result if available
+  useEffect(() => {
+    if (active && activeTab === 'explain' && initialExplanation && (!result || result.startsWith('Error:'))) {
+        setResult(initialExplanation);
+    }
+  }, [active, activeTab, initialExplanation, result]);
 
   // List of all supported languages
   const allLanguages = [
@@ -107,6 +114,8 @@ const ToolPanel = ({
         if (externalTab === 'summary' && !result && !isFetchingSummary) {
           if (initialSummary) setResult(initialSummary);
           else handleAction('summarize_file', { filename, lang, text });
+        } else if (externalTab === 'explain' && initialExplanation && !result) {
+          setResult(initialExplanation);
         } else if (externalTab === 'meaning' && initialWord && !result && !loading) {
           handleAction('meaning', { word: initialWord, filename, context: text, lang });
         } else if (externalTab === 'speak' && !isNarrating) {
@@ -133,6 +142,7 @@ const ToolPanel = ({
       if (endpoint === 'summarize_file') setResult(data.summary);
       if (endpoint === 'ask') setResult(data.answer);
       if (endpoint === 'meaning') setResult(data.meaning);
+      if (endpoint === 'explain') setResult(data.explanation);
     } catch (err) {
       console.error("AI Action Error:", err);
       alert(`AI Action failed: ${err.message}`);
@@ -143,6 +153,7 @@ const ToolPanel = ({
 
   const tabs = [
     { id: 'summary', icon: <Info size={18} />, label: 'Summarize' },
+    { id: 'explain', icon: <Sparkles size={18} />, label: 'Explain' },
     { id: 'ask', icon: <MessageSquare size={18} />, label: 'Ask AI' },
     { id: 'speak', icon: <BookOpen size={18} />, label: 'Read' },
     { id: 'translate', icon: <Languages size={18} />, label: 'Translate' },
@@ -219,6 +230,92 @@ const ToolPanel = ({
                   <div style={{ marginTop: '15px', borderTop: '1px solid #eee', paddingTop: '10px', display: 'flex', justifyContent: 'flex-end' }}>
                     <div className="status-badge success" style={{ fontSize: '0.7rem' }}>AI Generated</div>
                   </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {activeTab === 'explain' && (
+            <div className="drawer-tool-section active" style={{ display: 'flex', flexDirection: 'column', height: '100%', minHeight: '400px' }}>
+              <h4>Smart Explanation</h4>
+              <p style={{ fontSize: '0.85rem', marginBottom: '12px', color: '#6d4c41' }}>Simplified insights, real-life examples, and key points.</p>
+
+              {(loading || isExplaining) && activeTab === 'explain' ? (
+                <div className="fetching-loader" style={{ margin: '40px 0' }}>
+                  <div className="spinner"></div>
+                  <span>Analyzing selected paragraph...</span>
+                </div>
+              ) : result && activeTab === 'explain' ? (
+                <div className="explain-result-wrapper" style={{ overflowY: 'auto', maxHeight: '550px', paddingRight: '5px' }}>
+                   {(() => {
+                      // Professional parsing of the AI structured response
+                      const sections = {
+                        explanation: '',
+                        example: '',
+                        keyPoints: []
+                      };
+                      
+                      const lines = result.split('\n');
+                      let currentSection = '';
+                      
+                      lines.forEach(line => {
+                        const trimmed = line.trim();
+                        const lower = trimmed.toLowerCase();
+                        if (lower.startsWith('explanation:')) {
+                            currentSection = 'explanation';
+                            sections.explanation = trimmed.split(/explanation:/i)[1]?.trim() || '';
+                        } else if (lower.startsWith('example:')) {
+                            currentSection = 'example';
+                            sections.example = trimmed.split(/example:/i)[1]?.trim() || '';
+                        } else if (lower.startsWith('key points:')) {
+                            currentSection = 'keyPoints';
+                        } else if (currentSection === 'keyPoints' && (trimmed.startsWith('-') || trimmed.startsWith('*') || /^\d+\./.test(trimmed))) {
+                            sections.keyPoints.push(trimmed.replace(/^[-*\d.]+\s*/, ''));
+                        } else if (trimmed && currentSection) {
+                            if (currentSection === 'explanation') sections.explanation += ' ' + trimmed;
+                            if (currentSection === 'example') sections.example += ' ' + trimmed;
+                        }
+                      });
+
+                      return (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                          <div style={{ background: '#fff9f2', padding: '18px', borderRadius: '15px', borderLeft: '5px solid #e07a5f', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
+                            <h5 style={{ margin: '0 0 10px 0', color: '#e07a5f', textTransform: 'uppercase', fontSize: '0.75rem', fontWeight: '800', letterSpacing: '0.1em' }}>What it means</h5>
+                            <p style={{ margin: 0, fontSize: '1rem', lineHeight: '1.6', color: '#4a342e', fontFamily: "'Alice', serif" }}>{sections.explanation || result}</p>
+                          </div>
+                          
+                          {sections.example && (
+                            <div style={{ background: '#f4f1de', padding: '18px', borderRadius: '15px', border: '1px dashed #8b7355', position: 'relative' }}>
+                              <div style={{ position: 'absolute', top: '-10px', right: '15px', background: '#8b7355', color: 'white', padding: '2px 10px', borderRadius: '10px', fontSize: '0.65rem', fontWeight: 'bold' }}>REAL WORLD</div>
+                              <h5 style={{ margin: '0 0 10px 0', color: '#8b7355', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.9rem', fontWeight: '700' }}>
+                                For Example...
+                              </h5>
+                              <p style={{ margin: 0, fontSize: '0.95rem', fontStyle: 'italic', color: '#5d4037', lineHeight: '1.5' }}>"{sections.example}"</p>
+                            </div>
+                          )}
+
+                          {sections.keyPoints.length > 0 && (
+                            <div style={{ padding: '5px 10px' }}>
+                              <h5 style={{ margin: '0 0 15px 0', color: '#b5651d', fontSize: '0.9rem', borderBottom: '1px solid #d4a373', paddingBottom: '5px', display: 'inline-block' }}>Key Takeaways</h5>
+                              <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                {sections.keyPoints.map((point, i) => (
+                                  <li key={i} style={{ display: 'flex', gap: '12px', fontSize: '0.95rem', color: '#4a342e', alignItems: 'flex-start' }}>
+                                    <div style={{ minWidth: '8px', height: '8px', borderRadius: '50%', background: '#e07a5f', marginTop: '7px' }}></div>
+                                    <span style={{ fontWeight: i === 0 ? '500' : 'normal' }}>{point}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+                        </div>
+                      );
+                   })()}
+                </div>
+              ) : (
+                <div style={{ textAlign: 'center', padding: '60px 20px', opacity: 0.6 }}>
+                  <Sparkles size={56} color="#d4a373" style={{ marginBottom: '20px', animation: 'pulse 2s infinite' }} />
+                  <p style={{ fontSize: '1rem', color: '#4a342e', fontWeight: '500' }}>Ready to simplify?</p>
+                  <p style={{ fontSize: '0.85rem', color: '#6d4c41', marginTop: '5px' }}>Select some text in the book and tap the ✨ Explain icon to see it breakdown in simple terms.</p>
                 </div>
               )}
             </div>
@@ -364,13 +461,6 @@ const ToolPanel = ({
                           ))}
                         </div>
                       </div>
-                      <div style={{ marginTop: '15px' }}>
-                        <p style={{ margin: '0 0 5px 0', fontSize: '0.75rem', fontWeight: '600', color: '#8b7355', textAlign: 'left' }}>Style</p>
-                        <button onClick={() => onSongModeChange(!isSongMode)}
-                          style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #e07a5f', background: isSongMode ? '#e07a5f' : 'transparent', color: isSongMode ? 'white' : '#e07a5f', fontSize: '0.8rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', transition: 'all 0.2s' }}>
-                          <Music size={14} /> {isSongMode ? "Kids Rhyme Mode (On)" : "Kids Rhyme Mode (Off)"}
-                        </button>
-                      </div>
                     </div>
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -408,13 +498,6 @@ const ToolPanel = ({
                           ))}
                         </div>
                       </div>
-                      <div style={{ marginTop: '15px' }}>
-                        <p style={{ margin: '0 0 5px 0', fontSize: '0.75rem', fontWeight: '600', color: '#8b7355', textAlign: 'left' }}>Style</p>
-                        <button onClick={() => onSongModeChange(!isSongMode)}
-                          style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #e07a5f', background: isSongMode ? '#e07a5f' : 'transparent', color: isSongMode ? 'white' : '#e07a5f', fontSize: '0.8rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', transition: 'all 0.2s' }}>
-                          <Music size={14} /> {isSongMode ? "Kids Rhyme Mode (On)" : "Kids Rhyme Mode (Off)"}
-                        </button>
-                      </div>
                     </div>
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -432,7 +515,7 @@ const ToolPanel = ({
             </div>
           )}
 
-          {result && activeTab !== 'summary' && activeTab !== 'meaning' && (
+          {result && activeTab !== 'summary' && activeTab !== 'meaning' && activeTab !== 'explain' && (
             <div className="ai-result-box" style={{ marginTop: '25px', padding: '18px', background: 'white', borderRadius: '15px', border: '1px solid #d4a373', boxShadow: '0 4px 15px rgba(0,0,0,0.05)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
                 <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#e07a5f' }}></div>

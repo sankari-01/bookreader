@@ -32,23 +32,31 @@ import random
 from langdetect import detect
 import hashlib
 import json
+import threading
 
 app = Flask(__name__)
 CORS(app) # Enable CORS for all routes
 
 def get_db_connection():
-    return mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="",
-        database="ai_books_db"
-    )
+    try:
+        return mysql.connector.connect(
+            host="localhost",
+            user="root",
+            password="",
+            database="ai_books_db",
+            connect_timeout=3 # Don't hang the app if DB is down
+        )
+    except Exception as e:
+        # We log it but return None so callers can decide fallback
+        log_error(f"Database Connection Failed: {e}")
+        return None
 
 UPLOAD_FOLDER = "uploads"
 TEXT_CACHE_DIR = "text_cache"
 TRANSLATION_CACHE_DIR = "translation_cache"
+SUMMARY_CACHE_DIR = "summary_cache"
 
-for folder in [UPLOAD_FOLDER, TEXT_CACHE_DIR, TRANSLATION_CACHE_DIR, os.path.join("static", "extracted_images")]:
+for folder in [UPLOAD_FOLDER, TEXT_CACHE_DIR, TRANSLATION_CACHE_DIR, SUMMARY_CACHE_DIR, os.path.join("static", "extracted_images")]:
     if not os.path.exists(folder):
         os.makedirs(folder)
 
@@ -166,17 +174,9 @@ def generate_html_preview(path, filename, lang='en'):
         return robust_translate(content, translator)
 
     def translate_html_preserving_tags(html_content):
-        if lang == 'en' or not html_content.strip():
-            return html_content
-        # Regex to find everything EXCEPT tags
-        parts = re.split(r'(<[^>]+>)', html_content)
-        translated_parts = []
-        for part in parts:
-            if part.startswith('<') and part.endswith('>'):
-                translated_parts.append(part) # Keep tags as is
-            else:
-                translated_parts.append(translate_if_needed(part)) # Translate text content
-        return "".join(translated_parts)
+        # We NO LONGER translate the background HTML to ensure "Original View" stays original
+        # and to avoid double-translation issues with the overlay.
+        return html_content
 
     try:
         if lower_name.endswith((".docx", ".doc")):
@@ -306,18 +306,18 @@ def extract_text_from_file(path, filename):
                     text += "\n"
 
         elif lower_name.endswith((".docx", ".doc")):
-            # Convert to PDF for best formatting preservation
-            from utils.office_to_pdf import convert_to_pdf
-            pdf_path = convert_to_pdf(path)
-            if pdf_path and os.path.exists(pdf_path):
-                text = ocr.extract_text(pdf_path)
+            # Fast native extraction instead of slow COM PDF conversion
+            if lower_name.endswith(".docx"):
+                with open(path, "rb") as docx_file:
+                    raw_text = mammoth.extract_raw_text(docx_file).value
+                # Chunk long Word docs into "pages" (approx 2500 chars per page) for consistent pagination and TTS
+                chunk_size = 2500
+                chunks = [raw_text[i:i+chunk_size] for i in range(0, max(1, len(raw_text)), chunk_size)]
+                text = ""
+                for i, chunk in enumerate(chunks, 1):
+                    text += f"\n--- Page {i} ---\n" + chunk.strip() + "\n"
             else:
-                # Fallback to direct extraction if conversion fails
-                if lower_name.endswith(".docx"):
-                    doc = Document(path)
-                    text = "\n".join([paragraph.text for paragraph in doc.paragraphs])
-                else:
-                    text = "Failed to convert Word document to readable format."
+                text = "Failed to extract text from generic .doc. Please convert to .docx for optimal performance."
 
         elif lower_name.endswith((".epub", ".mobi")):
             if lower_name.endswith(".epub"):
@@ -377,10 +377,23 @@ def extract_text_from_file(path, filename):
                 log_error(f"Unsupported file type: {filename}")
 
         if text:
-        # Preserve paragraph structure for natural TTS reading pauses
-            text = re.sub(r'\n\s*\n', '\n\n', text)      # Normalize multiple newlines into double newlines
-            text = re.sub(r'(?<!\n)\n(?!\n)', ' ', text) # Replace single line breaks (PDF word wraps) with spaces
-            text = re.sub(r'[ \t]+', ' ', text).strip()  # Compress multiple spaces into one
+            # 1. Protect structural markers by ensuring they are isolated with double newlines
+            # This prevents the subsequent word-wrap fix from collapsing them into the text.
+            text = re.sub(r'\s*(--- (?:Page|Slide) \d+ ---)\s*', r'\n\n\1\n\n', text)
+            
+            # 2. Normalize multiple newlines into double newlines (standard paragraph separation)
+            text = re.sub(r'\n\s*\n', '\n\n', text)
+            
+            # 3. PDF Word-Wrap Fix: Replace single newlines with spaces ONLY if they are NOT
+            # part of a marker or a double newline.
+            text = re.sub(r'(?<!\n)\n(?!\n)', ' ', text)
+            
+            # 4. Final Cleanup: Compress multiple spaces and ensure markers are the only thing on their lines
+            text = re.sub(r'[ \t]+', ' ', text).strip()
+            # Ensure markers are indeed on their own lines even after space compression
+            text = re.sub(r' ?(--- (?:Page|Slide) \d+ ---) ?', r'\n\n\1\n\n', text)
+            # Final collapse of redundant newlines
+            text = re.sub(r'\n{3,}', '\n\n', text).strip()
 
         # Save to cache if successful
         if text and cache_path:
@@ -404,14 +417,16 @@ def get_page_count(path, filename):
         elif lower_name.endswith(".pptx"):
             prs = Presentation(path)
             return str(len(prs.slides))
-        elif lower_name.endswith((".docx", ".doc")):
-            # PREVENT HANGING: Do not run live COM conversion just for a page count.
-            # Only check if the converted PDF already exists alongside it.
-            base, _ = os.path.splitext(path)
-            pdf_path = base + '.pdf'
-            if os.path.exists(pdf_path):
-                reader = PyPDF2.PdfReader(pdf_path)
-                return str(len(reader.pages))
+        elif lower_name.endswith(".docx"):
+            # Instant page count calculation based on chunk length
+            try:
+                with open(path, "rb") as docx_file:
+                    raw_text = mammoth.extract_raw_text(docx_file).value
+                    chunk_size = 2500
+                    return str(max(1, (len(raw_text) + chunk_size - 1) // chunk_size))
+            except Exception:
+                return "1"
+        elif lower_name.endswith(".doc"):
             return "N/A"
         elif lower_name.endswith((".png", ".jpg", ".jpeg", ".gif", ".webp")):
             return "1"
@@ -442,19 +457,26 @@ def upload():
     upload_time = datetime.now()
     pages_count = get_page_count(path, filename)
 
+    db_error = False
     try:
         conn = get_db_connection()
-        cursor = conn.cursor()
-        cursor.execute("SELECT id FROM uploaded_books WHERE filename = %s", (filename,))
-        if cursor.fetchone():
-            cursor.execute("UPDATE uploaded_books SET upload_time = %s, pages = %s WHERE filename = %s", (upload_time, pages_count, filename))
+        if conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT id FROM uploaded_books WHERE filename = %s", (filename,))
+            if cursor.fetchone():
+                cursor.execute("UPDATE uploaded_books SET upload_time = %s, pages = %s WHERE filename = %s", (upload_time, pages_count, filename))
+            else:
+                cursor.execute("INSERT INTO uploaded_books (filename, upload_time, pages) VALUES (%s, %s, %s)", (filename, upload_time, pages_count))
+            conn.commit()
+            conn.close()
         else:
-            cursor.execute("INSERT INTO uploaded_books (filename, upload_time, pages) VALUES (%s, %s, %s)", (filename, upload_time, pages_count))
-        conn.commit()
-        conn.close()
+            db_error = True
     except Exception as e:
         log_error(f"DB Error on upload: {e}")
-        return jsonify({"error": "Database error"}), 500
+        db_error = True
+
+    # Even if DB fails, we return success because the file was saved to filesystem at line 437
+    return jsonify({"success": True, "filename": filename, "db_error": db_error})
 
     return jsonify({"success": True, "filename": filename})
 
@@ -548,6 +570,9 @@ def update_book_timestamp():
         
     try:
         conn = get_db_connection()
+        if not conn:
+            return jsonify({"success": False, "error": "Database unavailable"}), 503
+            
         cursor = conn.cursor()
         now = datetime.now()
         
@@ -568,25 +593,124 @@ def delete_book(filename):
     # Try deleting from database first regardless of file existence
     try:
         conn = get_db_connection()
-        cursor = conn.cursor()
-        cursor.execute("DELETE FROM uploaded_books WHERE filename = %s", (filename,))
-        conn.commit()
-        conn.close()
+        if conn:
+            cursor = conn.cursor()
+            cursor.execute("DELETE FROM uploaded_books WHERE filename = %s", (filename,))
+            conn.commit()
+            conn.close()
     except Exception as e:
         log_error(f"DB Error on delete: {e}")
         # We don't return 500 here since the file might just be on the filesystem
         # but we log the error.
         
-    # Then delete the actual file
-    if os.path.exists(path):
+    # Special handling for Docx deletion: attempt to kill any stuck Word processes
+    # that might still have a lock (especially after a failed conversion)
+    if filename.lower().endswith(".docx"):
         try:
-            os.remove(path)
-        except Exception as e:
-            log_error(f"File deletion error: {e}")
-            return jsonify({"error": "Failed to delete file"}), 500
+            import subprocess
+            subprocess.run(["taskkill", "/F", "/IM", "WINWORD.EXE", "/T"], capture_output=True)
+            time.sleep(0.5) # Allow OS to release handles
+        except:
+            pass
+            
+    # Then delete the actual file and its associated caches
+    try:
+        # 1. Delete associated caches
+        base, _ = os.path.splitext(path)
+        pdf_path = base + ".pdf"
+        if os.path.exists(pdf_path):
+            try: os.remove(pdf_path)
+            except: pass
+            
+        text_cache = get_text_cache_path(path)
+        if text_cache and os.path.exists(text_cache):
+            try: os.remove(text_cache)
+            except: pass
+            
+        # Delete all translation caches for this file
+        h = get_file_hash(path)
+        if h:
+            for f in os.listdir(TRANSLATION_CACHE_DIR):
+                if f.startswith(h):
+                    try: os.remove(os.path.join(TRANSLATION_CACHE_DIR, f))
+                    except: pass
+
+        # 2. Delete the main file with a retry loop (handle transient locks)
+        if os.path.exists(path):
+            success = False
+            for attempt in range(3):
+                try:
+                    os.remove(path)
+                    success = True
+                    break
+                except Exception as e:
+                    log_error(f"Delete attempt {attempt+1} failed for {filename}: {e}")
+                    time.sleep(0.5) # Wait for other processes to release the file
+            
+            if not success:
+                 return jsonify({"error": "Failed to delete file. It may be in use by another process."}), 500
+    except Exception as e:
+        log_error(f"General deletion error for {filename}: {e}")
+        return jsonify({"error": "Failed to delete file"}), 500
             
     return jsonify({"success": True})
 
+
+# --- BACKGROUND PRE-TRANSLATION ENGINE ---
+# A curated list of supported languages for pre-calculation
+PRE_TRANSLATE_LANGS = ['ta', 'hi', 'fr', 'es', 'de', 'zh-cn', 'ja', 'ru', 'ko', 'te', 'kn', 'ml', 'mr', 'gu', 'pa', 'bn']
+
+def background_pre_translate(text, filename, source_lang):
+    """
+    Translates the book and its summary into all supported languages in a background thread
+    to ensure instantaneous language switching for the user.
+    """
+    if not text: return
+    
+    path = os.path.join(UPLOAD_FOLDER, filename)
+    log_error(f"[Pre-Translate] Starting background engine for '{filename}' from source: {source_lang}")
+    
+    # 1. Generate base summary if not exists
+    base_summary = ""
+    try:
+        # We use a smaller portion for base summary to be fast
+        summary_text = text
+        if len(text) > 15000:
+            summary_text = text[:10000] + "\n...\n" + text[-5000:]
+        base_summary = summarize_text(f"Summarize the following text in exactly 50 words: {summary_text}")
+    except Exception as se:
+        log_error(f"[Pre-Translate] Base summary generation failed: {se}")
+
+    for lang in PRE_TRANSLATE_LANGS:
+        if lang == source_lang.lower(): continue
+        
+        try:
+            # A. Process Book Translation
+            trans_cache_path = get_translation_cache_path(path, lang)
+            if not trans_cache_path or not os.path.exists(trans_cache_path):
+                log_error(f"[Pre-Translate] Translating book '{filename}' to {lang}...")
+                translated_text = translate_with_markers(text, lang, source_lang=source_lang)
+                if trans_cache_path:
+                    with open(trans_cache_path, "w", encoding="utf-8") as f:
+                        json.dump({"translated_text": translated_text}, f)
+            
+            # B. Process Summary Translation
+            sum_cache_filename = f"{hashlib.md5(filename.encode()).hexdigest()}_{lang}.json"
+            sum_cache_path = os.path.join(SUMMARY_CACHE_DIR, sum_cache_filename)
+            
+            if base_summary and not os.path.exists(sum_cache_path):
+                log_error(f"[Pre-Translate] Translating summary for '{filename}' to {lang}...")
+                translated_summary = GoogleTranslator(source='auto', target=lang).translate(base_summary)
+                with open(sum_cache_path, "w", encoding="utf-8") as f:
+                    json.dump({"summary": translated_summary}, f)
+            
+            log_error(f"[Pre-Translate] Successfully cached book & summary for '{filename}' in {lang}")
+            
+            # Small delay to prevent API rate limiting
+            time.sleep(2.5) 
+            
+        except Exception as e:
+            log_error(f"[Pre-Translate] Failed for '{filename}' to {lang}: {e}")
 
 @app.route("/api/read/<path:filename>")
 def read_book(filename):
@@ -655,18 +779,61 @@ def read_book(filename):
     office_html = ""
     if is_office:
         from utils.office_to_pdf import convert_to_pdf
-        pdf_path = convert_to_pdf(path)
-        if pdf_path and os.path.exists(pdf_path):
-            preview_filename = os.path.basename(pdf_path)
+        # Fast Path: Check if PDF already exists in cache
+        base, _ = os.path.splitext(path)
+        cached_pdf = base + ".pdf"
+        
+        if os.path.exists(cached_pdf):
+            preview_filename = os.path.basename(cached_pdf)
             is_pdf = True
             is_office = False
         else:
+            # First open: Use Mammoth/PPTX HTML for an instant experience
             office_html = generate_html_preview(path, filename, lang=lang)
+            
+            # Kick off the high-fidelity conversion in the background
+            # We don't join/wait for it here, so the API returns immediately.
+            def background_conversion(p, f):
+                try:
+                    convert_to_pdf(p) 
+                    log_error(f"Background conversion finished for {f}")
+                except Exception as bge:
+                    log_error(f"Background conversion failed for {f}: {bge}")
+            
+            threading.Thread(target=background_conversion, args=(path, filename), daemon=True).start()
+    
     elif is_txt:
         office_html = generate_html_preview(path, filename, lang=lang)
 
-    # Detect images (PDF only for now for speed)
-    has_images = ocr.count_images(path) if is_pdf else False
+    # --- BACKGROUND PRE-TRANSLATE TRIGGER ---
+    # Kick off the translation engine for ALL file types after the reader returns (asynchronously)
+    threading.Thread(target=background_pre_translate, args=(original_text, filename, detect_lang), daemon=True).start()
+
+    # Detect images (PDF or Docx) - Check original extension
+    has_images = False
+    orig_ext = filename.lower()
+    if orig_ext.endswith(".docx"):
+        try:
+            from docx import Document
+            doc = Document(path)
+            for rel in doc.part.rels.values():
+                if "image" in rel.target_ref:
+                    has_images = True
+                    break
+        except Exception as e:
+            log_error(f"Docx image detection error for {filename}: {e}")
+    elif orig_ext.endswith(".pdf") or (is_pdf and not orig_ext.endswith(".docx")):
+        # If it was originally a PDF OR it was converted but we have the PDF path?
+        # Actually, ocr.count_images(path) only works on PDF files.
+        # If it was converted, we should check the converted PDF!
+        check_path = path
+        if is_pdf and orig_ext.endswith(".docx"):
+            base, _ = os.path.splitext(path)
+            conv_pdf = base + ".pdf"
+            if os.path.exists(conv_pdf):
+                check_path = conv_pdf
+        
+        has_images = ocr.count_images(check_path)
 
     # Get total page count
     num_pages = get_page_count(path, filename)
@@ -707,6 +874,30 @@ def extract_images():
         output_dir = os.path.join("static", "extracted_images")
         results = ocr.extract_images_from_pdf(path, output_dir)
         return jsonify({"images": results})
+    
+    # Fallback for .docx if PDF conversion failed
+    if filename.lower().endswith(".docx"):
+        try:
+            from docx import Document
+            doc = Document(path)
+            output_dir = os.path.join("static", "extracted_images")
+            os.makedirs(output_dir, exist_ok=True)
+            results = []
+            img_count = 0
+            for rel in doc.part.rels.values():
+                if "image" in rel.target_ref:
+                    img_count += 1
+                    img_name = f"{filename}_{img_count}.png"
+                    img_path = os.path.join(output_dir, img_name)
+                    with open(img_path, "wb") as f:
+                        f.write(rel.target_part.blob)
+                    results.append({
+                        "url": f"/static/extracted_images/{img_name}",
+                        "explanation": f"Image {img_count} from Word document."
+                    })
+            return jsonify({"images": results})
+        except Exception as e:
+            log_error(f"Docx image extraction error: {e}")
     
     return jsonify({"images": [], "message": "Image extraction only supported for PDF and Office documents."})
 
@@ -768,15 +959,32 @@ def summarize_file(filename=None):
         text = custom_text
     elif path and os.path.exists(path):
         text, is_image, is_video = extract_text_from_file(path, filename)
+        # Truncate for summarization to avoid exceeding token limits
+        if text and len(text) > 15000:
+            text = text[:10000] + "\n...\n" + text[-5000:]
     else:
         return jsonify({"error": "File not found"}), 404
 
     lang = request.form.get("lang", "en")
+    
+    # Check Summary Cache First
+    sum_cache_filename = f"{hashlib.md5(filename.encode()).hexdigest()}_{lang}.json"
+    sum_cache_path = os.path.join(SUMMARY_CACHE_DIR, sum_cache_filename)
+    
+    if os.path.exists(sum_cache_path):
+        try:
+            with open(sum_cache_path, "r", encoding="utf-8") as f:
+                cached_data = json.load(f)
+                return jsonify({"summary": cached_data.get("summary")})
+        except: pass
 
     try:
         summary = summarize_text(f"Summarize the following text in exactly 50 words: {text}")
         if lang != 'en' and summary:
             summary = GoogleTranslator(source='auto', target=lang).translate(summary)
+            # Cache the result for future
+            with open(sum_cache_path, "w", encoding="utf-8") as f:
+                json.dump({"summary": summary}, f)
     except Exception as e:
         log_error(f"Summarization route error: {e}")
         summary = f"Error during summarization: {str(e)}"
@@ -812,6 +1020,11 @@ def ask():
     lang = request.form.get("lang", "en")
 
     log_error(f"Ask AI triggered: {question} for {filename} (lang: {lang})")
+    
+    # Truncate context to avoid token limits (keep start and end for overall context)
+    if context and len(context) > 20000:
+        context = context[:10000] + "\n[... Content Truncated ...]\n" + context[-10000:]
+
     if not context:
         answer = "No readable text available for this file."
     elif not question:
@@ -855,7 +1068,6 @@ def speak():
 
     rate = request.form.get("rate", "+0%").strip()
     gender = request.form.get("gender", "f").strip()
-    is_song = request.form.get("is_song", "false") == "true"
 
     if not text:
         return jsonify({"error": "No text available to convert into audio."})
@@ -864,7 +1076,8 @@ def speak():
         expressive_req = request.form.get("expressive", "true").lower() == "true"
         is_expressive = expressive_req and len(text.split()) > 3
         
-        audio_file, vtt_file = text_to_speech(text, lang, rate=rate, gender=gender, expressive=is_expressive, is_song=is_song)
+        voice = request.form.get("voice")
+        audio_file, vtt_file = text_to_speech(text, lang, rate=rate, gender=gender, expressive=is_expressive, voice=voice)
         
         if not audio_file:
              return jsonify({"error": vtt_file or "Speech generation failed"})
@@ -875,6 +1088,80 @@ def speak():
             "message": "Audio generated successfully"
         })
 
+
+
+@app.route("/api/explain", methods=["POST"])
+def explain():
+    text = request.form.get("text", "").strip()
+    lang = request.form.get("lang", "en").strip()
+    filename = request.form.get("filename", "unknown")
+
+    if not text:
+        return jsonify({"error": "No text selected to explain."}), 400
+
+    prompt = f"""
+    Analyze the following paragraph and generate a clear, simple explanation.
+    Target Language: {lang}
+    
+    Follow these rules strictly:
+    1. Give a SIMPLE explanation:
+       - Explain in very easy words
+       - Make it understandable for a beginner
+       - Avoid complex terms
+    
+    2. Give a REAL-LIFE example:
+       - Relate the concept to everyday life
+       - Keep it short and clear
+    
+    3. Extract KEY POINTS:
+       - Provide 3 to 5 bullet points
+       - Only include important ideas
+    
+    4. Keep the output clean and structured like this:
+    
+    Explanation:
+    <simple explanation>
+    
+    Example:
+    <real-life example>
+    
+    Key Points:
+    - Point 1
+    - Point 2
+    - Point 3
+    
+    5. Do not add extra information
+    6. Do not repeat the paragraph
+    7. Keep the response concise and readable. Display professionally.
+    
+    Paragraph: 
+    {text}
+    """
+
+    try:
+        from utils.gemini_assistant import GeminiAssistant
+        GeminiAssistant.configure()
+        answer = GeminiAssistant.ask(prompt)
+        
+        # If Gemini is missing or failed, provide a much smarter dynamic heuristic fallback
+        if not answer or "AI Error" in answer or "Gemini returned an empty response" in str(answer):
+            from utils.qa import generate_explanation
+            # Use local BART summarizer to find meaning if API key is missing
+            try:
+                summary = generate_explanation(text[:500], text)
+                if summary and len(summary) > 20: 
+                    answer = f"Explanation:\n{summary}\n\nExample:\nIt works just like a simplified version of {text.split()[0]} that you might use in daily life.\n\nKey Points:\n- Concepts are explained clearly.\n- Practical application is shown.\n- Core ideas are summarized."
+                else:
+                    # Better baseline if BART also fails
+                    first_word = text.split()[0] if text else "context"
+                    answer = f"Explanation:\nThis text discusses the core concept of '{first_word}'. It explores various implications of this subject.\n\nExample:\nImagine this being used in a real-world scenario where you need a simple tool.\n\nKey Points:\n- Fundamental ideas\n- Practical context\n- General understanding"
+            except:
+                answer = "Explanation:\nUnable to generate local explanation. Please check your Gemini API key in the .env file."
+            
+        return jsonify({"explanation": answer})
+    except Exception as e:
+        log_error(f"Explain API error: {e}")
+        return jsonify({"error": str(e)}), 500
 
 
 @app.route("/api/meaning", methods=["POST"])
@@ -1071,9 +1358,20 @@ def generate_quiz():
         if not free_questions:
             return jsonify({"error": "Book content is too short to generate even a basic quiz. Please try a different book."})
             
+        # Translate to target language if not English
+        if lang != 'en':
+            try:
+                translator = GoogleTranslator(source='auto', target=lang)
+                for q in free_questions:
+                    q['question'] = translator.translate(q['question'])
+                    q['options'] = [translator.translate(opt) for opt in q['options']]
+                    q['explanation'] = translator.translate(q['explanation'])
+            except Exception as te:
+                log_error(f"Fallback translation error: {te}")
+
         return jsonify({
             "questions": free_questions,
-            "message": "AI Service currently unavailable. Using basic free generation instead."
+            "message": f"AI Service currently unavailable. Using basic free generation in {lang} instead."
         })
     except Exception as e:
         log_error(f"Quiz generation error: {e}")
@@ -1087,6 +1385,9 @@ def save_quiz_score():
     
     try:
         conn = get_db_connection()
+        if not conn:
+            return jsonify({"success": False, "error": "Database unavailable"}), 503
+            
         cursor = conn.cursor()
         cursor.execute(
             "INSERT INTO quiz_history (filename, score, total) VALUES (%s, %s, %s)",
@@ -1292,20 +1593,52 @@ def predict_questions():
             "is_important": i == 0
         })
         
+    # Translate to target language if not English
+    if lang != 'en':
+        try:
+            translator = GoogleTranslator(source='auto', target=lang)
+            for q in short_qs:
+                q['question'] = translator.translate(q['question'])
+                q['answer'] = translator.translate(q['answer'])
+                q['difficulty'] = translator.translate(q['difficulty'])
+            for q in long_qs:
+                q['question'] = translator.translate(q['question'])
+                q['answer'] = translator.translate(q['answer'])
+                q['difficulty'] = translator.translate(q['difficulty'])
+        except Exception as te:
+            log_error(f"Prediction fallback translation error: {te}")
+
     return jsonify({
         "short_questions": short_qs,
         "long_questions": long_qs,
-        "message": "AI Service currently unavailable. Using basic prediction instead."
+        "message": f"AI Service currently unavailable. Using basic prediction in {lang} instead."
     })
+
+@app.route("/api/voices", methods=["GET"])
+def get_voices():
+    import asyncio
+    import edge_tts
+    try:
+        # We use a helper to run the async call
+        async def fetch_voices():
+            return await edge_tts.list_voices()
+        
+        voices = asyncio.run(fetch_voices())
+        return jsonify(voices)
+    except Exception as e:
+        log_error(f"Error fetching voices: {e}")
+        return jsonify([])
 
 if __name__ == "__main__":
     # Ensure tables exist (Simplified check)
     try:
         conn = get_db_connection()
-        cursor = conn.cursor()
-        cursor.execute("CREATE TABLE IF NOT EXISTS quiz_history (id INT AUTO_INCREMENT PRIMARY KEY, filename VARCHAR(255), score INT, total INT, timestamp DATETIME DEFAULT CURRENT_TIMESTAMP)")
-        conn.commit()
-        conn.close()
+        if conn:
+            cursor = conn.cursor()
+            cursor.execute("CREATE TABLE IF NOT EXISTS uploaded_books (id INT AUTO_INCREMENT PRIMARY KEY, filename VARCHAR(255), upload_time DATETIME, pages VARCHAR(50), last_opened DATETIME, last_closed DATETIME)")
+            cursor.execute("CREATE TABLE IF NOT EXISTS quiz_history (id INT AUTO_INCREMENT PRIMARY KEY, filename VARCHAR(255), score INT, total INT, timestamp DATETIME DEFAULT CURRENT_TIMESTAMP)")
+            conn.commit()
+            conn.close()
     except: pass
     
     app.run(debug=True, port=int(os.environ.get("PORT", 5000)))

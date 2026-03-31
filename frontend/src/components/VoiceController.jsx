@@ -1,5 +1,20 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
-import { Mic, MicOff, Keyboard, Type, Send } from 'lucide-react';
+import { Mic, MicOff, Keyboard, Type, Send, BookOpen, Info, Languages, MessageSquare, Book, Highlighter, HelpCircle, Brain, FileImage, FileText, Edit3 } from 'lucide-react';
+
+const COMMANDS = [
+  { id: 'read', name: 'Read Aloud', icon: <BookOpen size={14} />, shortcut: 'R' },
+  { id: 'summary', name: 'Summary', icon: <Info size={14} />, shortcut: 'S' },
+  { id: 'translate', name: 'Translation', icon: <Languages size={14} />, shortcut: 'T' },
+  { id: 'ask', name: 'Ask AI', icon: <MessageSquare size={14} />, shortcut: 'A' },
+  { id: 'meaning', name: 'Meaning', icon: <Book size={14} />, shortcut: 'M' },
+  { id: 'focus', name: 'Focus Mode', icon: <Highlighter size={14} />, shortcut: 'F' },
+  { id: 'highlights', name: 'My Marks', icon: <Highlighter size={14} />, shortcut: 'K' },
+  { id: 'quiz', name: 'Quiz', icon: <HelpCircle size={14} />, shortcut: 'Q' },
+  { id: 'questions', name: 'Questions', icon: <Brain size={14} />, shortcut: 'P' },
+  { id: 'images', name: 'Images', icon: <FileImage size={14} />, shortcut: 'I' },
+  { id: 'text', name: 'Extract Text', icon: <FileText size={14} />, shortcut: 'X' },
+  { id: 'notes', name: 'Notes', icon: <Edit3 size={14} />, shortcut: 'N' },
+];
 
 const VoiceController = ({
   onCommand,
@@ -10,30 +25,39 @@ const VoiceController = ({
   const [isListening, setIsListening] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [typedCommand, setTypedCommand] = useState('');
+  const [suggestions, setSuggestions] = useState([]);
+  const [suggestionIndex, setSuggestionIndex] = useState(-1);
   const [transcript, setTranscript] = useState('');
   const [feedback, setFeedback] = useState('');
 
-  // Use a ref to track the latest isActive status because recognition 
-  // event handlers are closures that might capture old state
   const isActiveRef = useRef(isActive);
   useEffect(() => {
     isActiveRef.current = isActive;
   }, [isActive]);
-
   const processCommand = useCallback((text) => {
+    if (!text) return false;
     const lowerText = text.toLowerCase().trim();
-    console.log("Processing command:", lowerText);
+    let matched = true;
 
-    // Navigation Commands - More flexible matching
-    if (lowerText.includes('next') || lowerText.includes('forward') || lowerText.includes('ahead')) {
+    const readMatch = lowerText.match(/(?:read|play|narrate|speak|listen)(?:\s+(?:page|p\.?))?\s+(\d+)/i);
+    const jumpMatch = lowerText.match(/(?:go to|jump to|page)\s+(\d+)/i);
+    const pureNumberMatch = lowerText.match(/^(\d+)$/);
+
+    if (readMatch) {
+      const pageNum = parseInt(readMatch[1], 10);
+      onCommand('read', pageNum);
+      setFeedback(`Jumping to page ${pageNum} and starting narration...`);
+    } else if (jumpMatch || pureNumberMatch) {
+      const pageNum = parseInt((jumpMatch ? jumpMatch[1] : pureNumberMatch[1]), 10);
+      onCommand('jump', pageNum);
+      setFeedback(`Jumping to page ${pageNum}...`);
+    } else if (lowerText.includes('next') || lowerText.includes('forward') || lowerText.includes('ahead') || lowerText.includes('right')) {
       onCommand('next');
       setFeedback('Going to next page...');
-    } else if (lowerText.includes('previous') || lowerText.includes('back') || lowerText.includes('return')) {
+    } else if (lowerText.includes('previous') || lowerText.includes('back') || lowerText.includes('return') || lowerText.includes('left')) {
       onCommand('prev');
       setFeedback('Going to previous page...');
     }
-
-    // Tool Commands
     else if (lowerText.includes('meaning') || lowerText.includes('dictionary') || lowerText.includes('define') || lowerText.includes('word')) {
       onCommand('meaning');
       setFeedback('Opening Meaning tool...');
@@ -44,24 +68,17 @@ const VoiceController = ({
       onCommand('ask');
       setFeedback('Opening Ask AI...');
     }
-
-    // Reading Commands
-    else if (lowerText.includes('read') || lowerText.includes('play') || lowerText.includes('narrate') || lowerText.includes('speak')) {
+    else if (lowerText.includes('read') || lowerText.includes('play') || lowerText.includes('narrate') || lowerText.includes('speak') || lowerText.includes('listen')) {
       onCommand('read');
       setFeedback('Starting narration...');
     } else if (lowerText.includes('pause') || lowerText.includes('stop') || lowerText.includes('wait') || lowerText.includes('hush')) {
       onCommand('pause');
       setFeedback('Paused.');
     }
-
-
-    // Highlighting Commands
     else if (lowerText.includes('highlight') || lowerText.includes('mark') || lowerText.includes('stain')) {
       onCommand('highlight');
       setFeedback('Highlighting selection...');
     }
-
-    // UI Toggles
     else if (lowerText.includes('text') || lowerText.includes('extract') || lowerText.includes('words')) {
       onCommand('text');
       setFeedback('Toggling extracted text display...');
@@ -73,8 +90,16 @@ const VoiceController = ({
       setFeedback('Toggling focus mode...');
     }
 
-    // Translation Commands
-    else if (lowerText.includes('translate to')) {
+    const checkLanguageMatch = (input) => {
+      return languages.find(l => 
+        input.toLowerCase() === l.name.toLowerCase() || 
+        input.toLowerCase() === l.code.toLowerCase()
+      );
+    };
+
+    const matchedLangDirect = checkLanguageMatch(lowerText);
+
+    if (lowerText.includes('translate to')) {
       const parts = lowerText.split('translate to');
       if (parts.length > 1) {
         const langPart = parts[1].trim();
@@ -87,35 +112,40 @@ const VoiceController = ({
           setFeedback(`Translating to ${matchedLang.name}...`);
         } else {
           setFeedback(`Language "${langPart}" not recognized.`);
+          matched = false;
         }
       } else {
-        onCommand('translate'); // Just open menu
+        onCommand('translate');
         setFeedback('Opening translation menu...');
       }
     }
-
-    // Fallback for translation if only "translate" is said
+    else if (matchedLangDirect) {
+      onCommand('translate', matchedLangDirect.code);
+      setFeedback(`Translating to ${matchedLangDirect.name}...`);
+    }
     else if (lowerText === 'translate') {
       onCommand('translate');
       setFeedback('Opening translation menu...');
     }
-
-    // Disable voice control command
-    else if (lowerText.includes('disable voice') || lowerText.includes('turn off') || lowerText.includes('exit voice')) {
+    else if (lowerText.includes('disable voice') || lowerText.includes('turn off') || lowerText.includes('exit voice') || lowerText.includes('close voice')) {
       setFeedback('Disabling voice control...');
       setTimeout(() => setIsActive(false), 1000);
     }
-
-    // Default feedback for recognized text that doesn't match a command
-    else if (text.length > 0) {
-      setFeedback(`Command "${text}" not recognized.`);
+    else {
+      matched = false;
+      if (text.length > 0) {
+        setFeedback(`Say a command... (Heard: "${text}")`);
+      }
     }
 
-    // Clear feedback and transcript preview after 3 seconds
-    setTimeout(() => {
-      setFeedback('');
-      setTranscript('');
-    }, 3000);
+    if (matched || text.length > 0) {
+      setTimeout(() => {
+        setFeedback('');
+        setTranscript('');
+      }, 3000);
+    }
+    
+    return matched;
   }, [onCommand, languages, setIsActive]);
 
   const handleTypeSubmit = (e) => {
@@ -123,6 +153,8 @@ const VoiceController = ({
     if (typedCommand.trim()) {
       processCommand(typedCommand);
       setTypedCommand('');
+      setSuggestions([]);
+      setSuggestionIndex(-1);
     }
   };
 
@@ -140,7 +172,7 @@ const VoiceController = ({
     }
 
     const recognition = new SpeechRecognition();
-    recognition.continuous = true;
+    recognition.continuous = false;
     recognition.interimResults = true;
     recognition.lang = 'en-US';
 
@@ -151,17 +183,32 @@ const VoiceController = ({
     };
 
     recognition.onresult = (event) => {
-      let finalTranscript = '';
+      let currentTranscript = '';
       for (let i = event.resultIndex; i < event.results.length; ++i) {
-        if (event.results[i].isFinal) {
-          finalTranscript += event.results[i][0].transcript;
-        } else {
-          setTranscript(event.results[i][0].transcript);
-        }
+        currentTranscript += event.results[i][0].transcript;
       }
 
-      if (finalTranscript) {
-        processCommand(finalTranscript);
+      setTranscript(currentTranscript);
+
+      if (currentTranscript.trim()) {
+        const normalizedVal = currentTranscript.trim().toLowerCase();
+        const matchedCmds = COMMANDS.filter(c => 
+          c.name.toLowerCase().includes(normalizedVal)
+        ).map(c => ({ ...c, type: 'command' }));
+
+        const matchedLangs = languages.filter(l => 
+          l.name.toLowerCase().includes(normalizedVal) || 
+          l.code.toLowerCase().includes(normalizedVal)
+        ).map(l => ({ ...l, type: 'language' }));
+
+        setSuggestions([...matchedCmds, ...matchedLangs].slice(0, 5));
+      } else {
+        setSuggestions([]);
+      }
+
+      if (processCommand(currentTranscript)) {
+        setSuggestions([]);
+        recognition.stop();
       }
     };
 
@@ -194,13 +241,12 @@ const VoiceController = ({
       recognition.start();
     } catch (e) {
       console.error("Initial start failed:", e);
-      // Don't disable immediately, maybe user can still type
     }
 
     return () => {
       recognition.stop();
     };
-  }, [isActive, isTyping, processCommand, setIsActive]);
+  }, [isActive, isTyping, processCommand, setIsActive, languages]);
 
   if (!isActive) return null;
 
@@ -213,21 +259,109 @@ const VoiceController = ({
 
       <div className="voice-text-container">
         {isTyping ? (
-          <form onSubmit={handleTypeSubmit} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <form onSubmit={handleTypeSubmit} style={{ display: 'flex', alignItems: 'center', gap: '8px', position: 'relative' }}>
             <input
               type="text"
               className="voice-command-input"
-              placeholder="Type icon name (e.g. 'Read', 'Listen', 'Focus', 'Search', 'Text')..."
+              placeholder="Type icon name (e.g. 'Read', 'Focus', 'Tamil')..."
               value={typedCommand}
-              onChange={(e) => setTypedCommand(e.target.value)}
+              onKeyDown={(e) => {
+                if (suggestions.length > 0) {
+                  if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    setSuggestionIndex(prev => (prev + 1) % suggestions.length);
+                  } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    setSuggestionIndex(prev => (prev - 1 + suggestions.length) % suggestions.length);
+                  } else if (e.key === 'Enter') {
+                    if (suggestionIndex >= 0) {
+                      e.preventDefault();
+                      const selected = suggestions[suggestionIndex];
+                      if (selected.type === 'command') processCommand(selected.id);
+                      else processCommand(selected.name); 
+                      setTypedCommand('');
+                      setSuggestions([]);
+                      setSuggestionIndex(-1);
+                    }
+                  } else if (e.key === 'Escape') {
+                    setSuggestions([]);
+                  }
+                }
+              }}
+              onChange={(e) => {
+                const val = e.target.value;
+                setTypedCommand(val);
+                
+                if (!val.trim()) {
+                  setSuggestions([]);
+                  return;
+                }
+
+                const normalizedVal = val.trim().toLowerCase();
+                const matchedCmds = COMMANDS.filter(c => 
+                  c.name.toLowerCase().includes(normalizedVal)
+                ).map(c => ({ ...c, type: 'command' }));
+
+                const matchedLangs = languages.filter(l => 
+                  l.name.toLowerCase().includes(normalizedVal) || 
+                  l.code.toLowerCase().includes(normalizedVal)
+                ).map(l => ({ ...l, type: 'language' }));
+
+                const combined = [...matchedCmds, ...matchedLangs].slice(0, 5);
+                setSuggestions(combined);
+                setSuggestionIndex(combined.length > 0 ? 0 : -1);
+              }}
+              onBlur={() => setTimeout(() => setSuggestions([]), 200)}
               autoFocus
             />
             <button type="submit" style={{ display: 'none' }}></button>
+
+            {suggestions.length > 0 && !feedback && (
+              <div className="voice-suggestions">
+                {suggestions.map((item, idx) => (
+                  <div 
+                    key={item.id || item.code}
+                    className={`suggestion-item ${idx === suggestionIndex ? 'active' : ''} ${item.type}`}
+                    onClick={() => {
+                      if (item.type === 'command') processCommand(item.id);
+                      else processCommand(item.name);
+                      setTypedCommand('');
+                      setSuggestions([]);
+                    }}
+                  >
+                    <span className="suggestion-icon">
+                      {item.type === 'command' ? item.icon : <Languages size={14} />}
+                    </span>
+                    <span className="suggestion-name">{item.name}</span>
+                    <span className="suggestion-hint">
+                      {item.type === 'command' ? 'Command' : 'Language'}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
           </form>
         ) : (
-          <span className="voice-label">
-            {feedback || (transcript ? `"${transcript}"` : "Say a command...")}
-          </span>
+          <div style={{ position: 'relative' }}>
+            <span className="voice-label">
+              {feedback || (transcript ? `"${transcript}"` : "Say a command...")}
+            </span>
+            {suggestions.length > 0 && !feedback && (
+              <div className="voice-suggestions">
+                {suggestions.map((item) => (
+                  <div key={item.id || item.code} className="suggestion-item active">
+                    <span className="suggestion-icon">
+                      {item.type === 'command' ? item.icon : <Languages size={14} />}
+                    </span>
+                    <span className="suggestion-name">{item.name}</span>
+                    <span className="suggestion-hint">
+                      {item.type === 'command' ? 'Command' : 'Language'}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         )}
       </div>
 
