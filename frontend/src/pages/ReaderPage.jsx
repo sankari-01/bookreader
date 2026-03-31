@@ -320,71 +320,14 @@ const ReaderPage = () => {
     setCurrentLang(newLang);
     langRef.current = newLang;
     setSummaryData('');
-    // Stop and clear narration if language changes
     stopNarration();
     preFetchedAudioRef.current = null;
     preFetchPromiseRef.current = null;
   };
 
-  const toggleBookmark = (page) => {
-    let newBookmarks;
-    if (bookmarks.includes(page)) {
-      newBookmarks = [];
-    } else {
-      newBookmarks = [page];
-    }
-    setBookmarks(newBookmarks);
-    localStorage.setItem(`bookmarks_${filename}`, JSON.stringify(newBookmarks));
-  };
 
-  const handleExtractImages = async () => {
-    setShowImagesModal(true);
-    if (extractedImages.length > 0) return;
-    
-    setImagesLoading(true);
-    try {
-      const resp = await fetch('/api/extract_images', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({ filename })
-      });
-      const result = await resp.json();
-      if (result.images) {
-        setExtractedImages(result.images);
-      }
-    } catch (e) {
-      console.error("Image extraction failed:", e);
-    } finally {
-      setImagesLoading(false);
-    }
-  };
 
-  const handleStartPrediction = async () => {
-    setShowPredictionModal(true);
-    if (predictionData) return;
-    
-    setPredictionLoading(true);
-    try {
-      const resp = await fetch('/api/predict_questions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({ filename, lang: currentLang })
-      });
-      const result = await resp.json();
-      if (result.short_questions || result.long_questions) {
-        setPredictionData(result);
-      } else if (result.error) {
-        alert(result.error);
-        setShowPredictionModal(false);
-      }
-    } catch (e) {
-      console.error("Prediction failed:", e);
-      alert("Could not reach the AI Service.");
-      setShowPredictionModal(false);
-    } finally {
-      setPredictionLoading(false);
-    }
-  };
+
 
   useEffect(() => {
     // Global error listener for debugging
@@ -790,6 +733,10 @@ const ReaderPage = () => {
     return cues;
   };
 
+  const log_error = (msg) => {
+    console.error(`[ReaderPage Error] ${msg}`);
+  };
+
   const startNarration = async (startPage = null, startWordIndex = 0) => {
     const isMidPageResume = startWordIndex > 0;
     
@@ -1173,6 +1120,283 @@ const ReaderPage = () => {
     setActiveHighlight(null);
   };
 
+  const handleToolClick = (toolId) => {
+    setActiveTab(toolId);
+    setShowPanel(true);
+    
+    if (toolId === 'summary' && !summaryData) {
+      setIsFetchingSummary(true);
+      fetch('/api/summarize', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ filename, lang: currentLang })
+      })
+      .then(r => r.json())
+      .then(data => {
+        setSummaryData(data.summary || "Could not generate summary.");
+        setIsFetchingSummary(false);
+      })
+      .catch(e => {
+        console.error("Summary failed:", e);
+        setIsFetchingSummary(false);
+      });
+    }
+  };
+
+  const toggleBookmark = (page) => {
+    const isBookmarked = bookmarks.includes(page);
+    let newBookmarks;
+    if (isBookmarked) {
+      newBookmarks = bookmarks.filter(b => b !== page);
+    } else {
+      newBookmarks = [...bookmarks, page];
+    }
+    setBookmarks(newBookmarks);
+    localStorage.setItem(`bookmarks_${filename}`, JSON.stringify(newBookmarks));
+  };
+
+  const handleExtractImages = async () => {
+    setShowImagesModal(true);
+    if (extractedImages.length > 0) return;
+    setImagesLoading(true);
+    try {
+      const resp = await fetch('/api/extract_images', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ filename })
+      });
+      const result = await resp.json();
+      if (result.images) setExtractedImages(result.images);
+    } catch (e) { console.error("Image extraction failed:", e); }
+    finally { setImagesLoading(false); }
+  };
+
+  const handleStartPrediction = async () => {
+    setShowPredictionModal(true);
+    if (predictionData) return;
+    setPredictionLoading(true);
+    try {
+      const resp = await fetch('/api/predict_questions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ filename, lang: currentLang })
+      });
+      const result = await resp.json();
+      if (result.short_questions || result.long_questions) setPredictionData(result);
+      else if (result.error) { alert(result.error); setShowPredictionModal(false); }
+    } catch (e) {
+      console.error("Prediction failed:", e);
+      alert("Could not reach the AI Service.");
+      setShowPredictionModal(false);
+    } finally { setPredictionLoading(false); }
+  };
+
+  const handleStartQuiz = async () => {
+    if (!showQuiz) resetQuiz();
+    setShowQuiz(true);
+    if (quizQuestions.length > 0) return;
+    setQuizLoading(true);
+    try {
+      const resp = await fetch('/api/generate_quiz', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ filename, lang: currentLang })
+      });
+      const result = await resp.json();
+      if (result.questions) {
+        setQuizQuestions(result.questions);
+        if (result.message) setQuizMessage(result.message);
+        setQuizTimer(600);
+      }
+    } catch (e) { console.error("Quiz failed:", e); }
+    finally { setQuizLoading(false); }
+  };
+
+  const handleQuizAnswer = (qIdx, oIdx) => {
+    if (quizFinished) return;
+    setQuizAnswers(prev => ({ ...prev, [qIdx]: oIdx }));
+  };
+
+  const handleFinishQuiz = async () => {
+    setQuizFinished(true);
+    const score = quizQuestions.reduce((acc, q, idx) => acc + (quizAnswers[idx] === q.answer ? 1 : 0), 0);
+    try {
+      await fetch('/api/save_quiz_score', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ filename, score, total: quizQuestions.length })
+      });
+    } catch (e) { console.warn("Could not save score:", e); }
+  };
+
+  const resetQuiz = () => {
+    setCurrentQuizIndex(0);
+    setQuizAnswers({});
+    setQuizFinished(false);
+    setQuizTimer(600);
+    setQuizQuestions([]);
+    setQuizMessage('');
+  };
+
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const applyHighlightsToElement = (container, activeWordIdx = -1) => {
+    if (!container) return;
+    const marks = container.querySelectorAll('mark.search-highlight, mark.user-highlight, mark.active-narrate-word');
+    marks.forEach(m => {
+      const parent = m.parentNode;
+      if (parent) {
+        while (m.firstChild) parent.insertBefore(m.firstChild, m);
+        parent.removeChild(m);
+      }
+    });
+
+    const terms = [searchTerm, ...userHighlights].filter(t => t && t.trim().length > 1);
+    const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT, null, false);
+    let nodes = [];
+    let fullText = "";
+    let node;
+    while (node = walker.nextNode()) {
+      nodes.push({ node, start: fullText.length, end: fullText.length + node.nodeValue.length });
+      fullText += node.nodeValue;
+    }
+
+    if (activeWordIdx !== -1 && activeCues.length > activeWordIdx) {
+      const wordsInText = fullText.split(/(\s+)/);
+      let wordCounter = 0;
+      let currentOffset = 0;
+      for (const part of wordsInText) {
+        if (/\S/.test(part)) {
+          if (wordCounter === activeWordIdx) {
+            const matchStart = currentOffset;
+            const matchEnd = currentOffset + part.length;
+            const range = document.createRange();
+            let startSet = false, endSet = false;
+            nodes.forEach(n => {
+              if (!startSet && matchStart >= n.start && matchStart < n.end) {
+                range.setStart(n.node, matchStart - n.start);
+                startSet = true;
+              }
+              if (!endSet && matchEnd > n.start && matchEnd <= n.end) {
+                range.setEnd(n.node, matchEnd - n.start);
+                endSet = true;
+              }
+            });
+            if (startSet && endSet) {
+              const mark = document.createElement('mark');
+              mark.className = 'active-narrate-word';
+              try { range.surroundContents(mark); } catch (e) {}
+            }
+            break;
+          }
+          wordCounter++;
+        }
+        currentOffset += part.length;
+      }
+    }
+
+    terms.forEach(term => {
+      const escaped = term.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const regex = new RegExp(escaped, 'gi');
+      let match;
+      while ((match = regex.exec(fullText)) !== null) {
+        const matchStart = match.index;
+        const matchEnd = match.index + term.length;
+        const range = document.createRange();
+        let startSet = false, endSet = false;
+        nodes.forEach(n => {
+          if (!startSet && matchStart >= n.start && matchStart < n.end) { range.setStart(n.node, matchStart - n.start); startSet = true; }
+          if (!endSet && matchEnd > n.start && matchEnd <= n.end) { range.setEnd(n.node, matchEnd - n.start); endSet = true; }
+        });
+        if (startSet && endSet && !range.startContainer.parentElement.closest('mark')) {
+          try {
+            const fragment = range.extractContents();
+            const wrapNode = (node) => {
+              if (node.nodeType === Node.TEXT_NODE) {
+                const m = document.createElement('mark');
+                m.className = term === searchTerm ? 'search-highlight' : 'user-highlight';
+                m.appendChild(node.cloneNode());
+                return m;
+              } else if (node.nodeType === Node.ELEMENT_NODE) {
+                const newNode = node.cloneNode(false);
+                Array.from(node.childNodes).forEach(child => newNode.appendChild(wrapNode(child)));
+                return newNode;
+              }
+              return node.cloneNode(true);
+            };
+            const wrappedFragment = document.createDocumentFragment();
+            Array.from(fragment.childNodes).forEach(child => wrappedFragment.appendChild(wrapNode(child)));
+            range.insertNode(wrappedFragment);
+          } catch (e) {}
+        }
+      }
+    });
+  };
+
+  const highlightText = (text, highlight, activeWordIndex = -1) => {
+    if (!text) return text;
+    if (activeWordIndex !== -1) {
+      const parts = text.split(/(\s+)/);
+      let wordCounter = 0;
+      return (
+        <>
+          {parts.map((part, i) => {
+            if (/\S/.test(part)) {
+              const currentIdx = wordCounter++;
+              const isUserHighlighted = userHighlights.some(uh => uh.toLowerCase().includes(part.toLowerCase()));
+              if (currentIdx === activeWordIndex) {
+                return <mark key={i} className={isUserHighlighted ? 'user-highlight active-narrate-word' : 'active-narrate-word'}>{part}</mark>;
+              }
+              if (isUserHighlighted) return <mark key={i} className="user-highlight">{part}</mark>;
+              if (highlight && part.toLowerCase().includes(highlight.toLowerCase())) return <mark key={i} className="search-highlight">{part}</mark>;
+              return part;
+            }
+            return part;
+          })}
+        </>
+      );
+    }
+    let result = [{ content: text, isHighlight: false, type: null }];
+    const splitParts = (searchTerm, type) => {
+      if (!searchTerm || !searchTerm.trim()) return;
+      const term = searchTerm.trim();
+      const regex = new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+      let newResult = [];
+      result.forEach(part => {
+        if (part.isHighlight) newResult.push(part);
+        else {
+          part.content.split(regex).forEach(snip => {
+            if (snip && snip.toLowerCase() === term.toLowerCase()) newResult.push({ content: snip, isHighlight: true, type });
+            else if (snip) newResult.push({ content: snip, isHighlight: false, type: null });
+          });
+        }
+      });
+      result = newResult;
+    };
+    splitParts(highlight, 'search');
+    userHighlights.forEach(uh => splitParts(uh, 'user'));
+    return <>{result.map((part, i) => part.isHighlight ? <mark key={i} className={part.type === 'search' ? 'search-highlight' : 'user-highlight'}>{part.content}</mark> : part.content)}</>;
+  };
+
+  const highlightHtml = (html, search) => {
+    if (!html) return html;
+    let result = html;
+    const apply = (term, className) => {
+      if (!term || !term.trim()) return;
+      const escaped = term.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const fuzzy = escaped.replace(/\s+/g, '(<[^>]*>)*\\s+(<[^>]*>)*');
+      const regex = new RegExp(`(${fuzzy})(?![^<]*>)`, 'gi');
+      result = result.replace(regex, (match) => `<mark class="${className}">${match}</mark>`);
+    };
+    apply(search, 'search-highlight');
+    userHighlights.forEach(uh => apply(uh, 'user-highlight'));
+    return result;
+  };
+
   const fetchData = async () => {
     setLoading(true);
     try {
@@ -1187,28 +1411,16 @@ const ReaderPage = () => {
         const parsed = parsePages(result.text);
         setPages(parsed);
         const countFromPages = parsed.length > 0 ? parsed.length : 1;
-        
-        let finalNumPages = countFromPages;
-        if (result.pages && typeof result.pages === 'number') {
-          finalNumPages = result.pages;
-        } else if (result.pages && typeof result.pages === 'string' && !isNaN(parseInt(result.pages))) {
-          finalNumPages = parseInt(result.pages, 10);
-        } else if (result.count && typeof result.count === 'number') {
-          finalNumPages = result.count;
-        }
-        
-        setNumPages(finalNumPages);
+        setNumPages(result.pages || result.count || countFromPages);
       }
     } catch (err) { console.error(err); }
     finally { setLoading(false); }
   };
 
   const [summaryLang, setSummaryLang] = useState('');
-
   const fetchSummary = async (force = false) => {
     if (!data || !data.text || isFetchingSummary) return;
     if (summaryData && summaryLang === currentLang && !force) return;
-    
     setIsFetchingSummary(true);
     try {
       const resp = await fetch('/api/summarize_file', {
@@ -1244,86 +1456,51 @@ const ReaderPage = () => {
             const range = iframeWindow.getSelection().getRangeAt(0);
             const rect = range.getBoundingClientRect();
             const iframeRect = iframe.getBoundingClientRect();
-            setSelection({
-              text: selected,
-              x: iframeRect.left + rect.left + rect.width / 2,
-              y: iframeRect.top + rect.top - 60,
-              range: null
-            });
+            setSelection({ text: selected, x: iframeRect.left + rect.left + rect.width / 2, y: iframeRect.top + rect.top - 60, range: null });
             setWord(selected);
           }
-        } catch (e) { console.log("Iframe selection denied."); }
+        } catch (e) {}
       }
     };
     const iframe = document.querySelector('iframe');
     if (iframe) {
-      iframe.onload = () => {
-        try { iframe.contentDocument.addEventListener('mouseup', handleIframeMouseUp); }
-        catch (e) { console.log("Could not attach listener to iframe."); }
+      iframe.onload = () => { 
+        try { iframe.contentDocument.addEventListener('mouseup', handleIframeMouseUp); } catch (e) {} 
       };
     }
     return () => {
-      if (iframe && iframe.contentDocument) {
-        try { iframe.contentDocument.removeEventListener('mouseup', handleIframeMouseUp); }
-        catch (e) { }
-      }
+       if (iframe && iframe.contentDocument) { try { iframe.contentDocument.removeEventListener('mouseup', handleIframeMouseUp); } catch (e) {} }
     };
   }, [filename, currentLang]);
 
-
-  // Handle Highlighting in Original View (PDF and Office)
   useEffect(() => {
-    // 1. PDF Text Layers
     if (data?.is_pdf) {
-      const textLayers = document.querySelectorAll('.react-pdf__Page__textContent');
-      textLayers.forEach(layer => {
+      document.querySelectorAll('.react-pdf__Page__textContent').forEach(layer => {
         const container = layer.closest('[data-page-number]');
         const pageNum = container ? parseInt(container.getAttribute('data-page-number'), 10) : -1;
-        const isNarratingPage = narratingPage === pageNum;
-        applyHighlightsToElement(layer, isNarratingPage ? activeCueIndex : -1);
+        applyHighlightsToElement(layer, narratingPage === pageNum ? activeCueIndex : -1);
       });
     }
-
-    // 2. Office/DOCX View
-    if (data?.is_office && officeViewerRef.current) {
-      applyHighlightsToElement(officeViewerRef.current, isNarrating ? activeCueIndex : -1);
-    }
+    if (data?.is_office && officeViewerRef.current) applyHighlightsToElement(officeViewerRef.current, isNarrating ? activeCueIndex : -1);
   }, [searchTerm, userHighlights, data?.is_pdf, data?.is_office, activeCueIndex, narratingPage, isNarrating]);
 
-  // Handle Auto-scroll for Extracted Text Modal
   useEffect(() => {
     if (showText && isNarrating) {
       const activeWordEl = document.querySelector('.text-modal-body .active-narrate-word');
-      if (activeWordEl) {
-        activeWordEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      } else {
+      if (activeWordEl) activeWordEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      else {
         const activePageEl = document.querySelector(`.text-modal-body #page-${narratingPage}`);
         if (activePageEl) activePageEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
     }
   }, [showText, isNarrating, activeCueIndex, narratingPage]);
 
-  const handleFinishQuiz = async () => {
-    setQuizFinished(true);
-    const score = quizQuestions.reduce((acc, q, idx) => acc + (quizAnswers[idx] === q.answer ? 1 : 0), 0);
-    try {
-      await fetch('/api/save_quiz_score', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({ filename, score, total: quizQuestions.length })
-      });
-    } catch (e) { console.warn("Could not save score:", e); }
-  };
-
   useEffect(() => {
     let interval;
     if (showQuiz && !quizFinished && !quizLoading && quizTimer > 0) {
       interval = setInterval(() => {
         setQuizTimer(prev => {
-          if (prev <= 1) {
-            handleFinishQuiz();
-            return 0;
-          }
+          if (prev <= 1) { handleFinishQuiz(); return 0; }
           return prev - 1;
         });
       }, 1000);
@@ -1338,300 +1515,7 @@ const ReaderPage = () => {
     </div>
   );
 
-  if (!data) return <div style={{ color: '#4a342e', padding: '100px', textAlign: 'center', fontSize: '1.2rem', fontWeight: 'bold', background: 'white' }}>Error loading book: {filename}<br/>(Checking data: {String(data)})</div>;
-
-  const handleStartQuiz = async () => {
-    if (!showQuiz) resetQuiz();
-    setShowQuiz(true);
-    if (quizQuestions.length === 0) {
-      setQuizLoading(true);
-      setQuizMessage('');
-      try {
-        const resp = await fetch('/api/generate_quiz', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: new URLSearchParams({ filename, lang: currentLang })
-        });
-        const result = await resp.json();
-        if (result.questions) {
-          setQuizQuestions(result.questions);
-          if (result.message) setQuizMessage(result.message);
-          setQuizTimer(600);
-        } else if (result.error) {
-          alert(result.error);
-          setShowQuiz(false);
-        } else {
-          alert("Failed to generate quiz. Unknown error.");
-          setShowQuiz(false);
-        }
-      } catch (e) { 
-        console.error("Quiz fetch failed:", e);
-        alert("Could not reach the AI Service. Please check if your backend is running."); 
-        setShowQuiz(false);
-      } finally {
-        setQuizLoading(false);
-      }
-    }
-  };
-
-  const handleQuizAnswer = (questionIdx, optionIdx) => {
-    if (quizFinished) return;
-    setQuizAnswers(prev => ({ ...prev, [questionIdx]: optionIdx }));
-  };
-
-
-
-  const formatTime = (seconds) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
-  };
-
-  const resetQuiz = () => {
-    setCurrentQuizIndex(0);
-    setQuizAnswers({});
-    setQuizFinished(false);
-    setQuizTimer(600);
-    setQuizQuestions([]);
-    setQuizMessage('');
-  };
-
-  // Robust helper for PDF text layer highlighting (Handles fragmented spans)
-  const applyHighlightsToElement = (container, activeWordIdx = -1) => {
-    if (!container) return;
-    
-    // Clear marks first to allow re-application on cue change
-    const marks = container.querySelectorAll('mark.search-highlight, mark.user-highlight, mark.active-narrate-word');
-    marks.forEach(m => {
-      const parent = m.parentNode;
-      if (parent) {
-        // If it's an active-narrate-word, we just replace it with its text to avoid re-marking issues
-        // For search/user highlights we might want to keep them but applyHighlightsToElement re-renders everything anyway
-        while (m.firstChild) parent.insertBefore(m.firstChild, m);
-        parent.removeChild(m);
-      }
-    });
-
-    const terms = [searchTerm, ...userHighlights].filter(t => t && t.trim().length > 1);
-    
-    // 1. Collect all text nodes and their cumulative offsets
-    const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT, null, false);
-    let nodes = [];
-    let fullText = "";
-    let node;
-    while (node = walker.nextNode()) {
-      nodes.push({ node, start: fullText.length, end: fullText.length + node.nodeValue.length });
-      fullText += node.nodeValue;
-    }
-
-    // 2. Highlight Narration Word (Priority 1)
-    if (activeWordIdx !== -1 && activeCues.length > activeWordIdx) {
-      const cue = activeCues[activeWordIdx];
-      // Use fuzzy matching in case VTT word differs slightly from document text
-      const cleanWord = cue.word.replace(/[^\w]/g, '').toLowerCase();
-      
-      // We need to find the word in fullText. Since VTT doesn't give us offsets in fullText,
-      // we roughly estimate based on word order or use a more robust search.
-      // Heuristic: The n-th word in fullText should match the n-th cue.
-      const wordsInText = fullText.split(/(\s+)/);
-      let wordCounter = 0;
-      let currentOffset = 0;
-      
-      for (const part of wordsInText) {
-        const isWord = /\S/.test(part);
-        if (isWord) {
-          if (wordCounter === activeWordIdx) {
-            const matchStart = currentOffset;
-            const matchEnd = currentOffset + part.length;
-            
-            const range = document.createRange();
-            let startSet = false, endSet = false;
-            nodes.forEach(n => {
-              if (!startSet && matchStart >= n.start && matchStart < n.end) {
-                range.setStart(n.node, matchStart - n.start);
-                startSet = true;
-              }
-              if (!endSet && matchEnd > n.start && matchEnd <= n.end) {
-                range.setEnd(n.node, matchEnd - n.start);
-                endSet = true;
-              }
-            });
-            
-            if (startSet && endSet) {
-              const mark = document.createElement('mark');
-              mark.className = 'active-narrate-word';
-              try { range.surroundContents(mark); } catch (e) { console.warn("PDF Narrate Wrap Error:", e); }
-            }
-            break;
-          }
-          wordCounter++;
-        }
-        currentOffset += part.length;
-      }
-    }
-
-    // 3. Highlight Search and User Terms (Priority 2)
-    terms.forEach(term => {
-      const escaped = term.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      const regex = new RegExp(escaped, 'gi');
-      let match;
-      while ((match = regex.exec(fullText)) !== null) {
-        const matchStart = match.index;
-        const matchEnd = match.index + term.length;
-
-        const range = document.createRange();
-        let startSet = false, endSet = false;
-
-        nodes.forEach(n => {
-          if (!startSet && matchStart >= n.start && matchStart < n.end) {
-            range.setStart(n.node, matchStart - n.start);
-            startSet = true;
-          }
-          if (!endSet && matchEnd > n.start && matchEnd <= n.end) {
-            range.setEnd(n.node, matchEnd - n.start);
-            endSet = true;
-          }
-        });
-
-        if (startSet && endSet) {
-          const mark = document.createElement('mark');
-          mark.className = term === searchTerm ? 'search-highlight' : 'user-highlight';
-          
-          if (!range.startContainer.parentElement.closest('mark')) {
-            try {
-              const fragment = range.extractContents();
-              const wrapNode = (node) => {
-                if (node.nodeType === Node.TEXT_NODE) {
-                  const m = document.createElement('mark');
-                  m.className = mark.className;
-                  m.appendChild(node.cloneNode());
-                  return m;
-                } else if (node.nodeType === Node.ELEMENT_NODE) {
-                  const newNode = node.cloneNode(false);
-                  Array.from(node.childNodes).forEach(child => newNode.appendChild(wrapNode(child)));
-                  return newNode;
-                }
-                return node.cloneNode(true);
-              };
-              const wrappedFragment = document.createDocumentFragment();
-              Array.from(fragment.childNodes).forEach(child => wrappedFragment.appendChild(wrapNode(child)));
-              range.insertNode(wrappedFragment);
-            } catch (e) { console.warn("Highlight range error:", e); }
-          }
-        }
-      }
-    });
-  };
-  const handleToolClick = (tabId) => { setActiveTab(tabId); setShowPanel(true); };
-
-  const highlightText = (text, highlight, activeWordIndex = -1) => {
-    if (!text) return text;
-    
-    // Layer 1: Word-level splitting for narration
-    // We only split by words if activeWordIndex is active to keep performance up.
-    if (activeWordIndex !== -1) {
-      // Split into space-separated words, but keep the space
-      const parts = text.split(/(\s+)/);
-      let wordCounter = 0;
-      return (
-        <>
-          {parts.map((part, i) => {
-            const isWord = /\S/.test(part);
-            if (isWord) {
-              const currentIdx = wordCounter++;
-              // Check if THIS word is part of any user highlight
-              const isUserHighlighted = userHighlights.some(uh => 
-                part.toLowerCase().includes(uh.toLowerCase()) || 
-                uh.toLowerCase().includes(part.toLowerCase())
-              );
-
-          if (currentIdx === activeWordIndex) {
-            return (
-              <mark key={i} className={isUserHighlighted ? 'user-highlight active-narrate-word' : 'active-narrate-word'} style={isUserHighlighted ? { backgroundColor: 'rgba(212, 163, 115, 0.4)' } : {}}>
-                {part}
-              </mark>
-            );
-          }
-              
-              if (isUserHighlighted) {
-                return <mark key={i} className="user-highlight">{part}</mark>;
-              }
-
-              // Still apply simple search highlighting for other words
-              if (highlight && part.toLowerCase().includes(highlight.toLowerCase())) {
-                return <mark key={i} className="search-highlight">{part}</mark>;
-              }
-              return part;
-            }
-            return part;
-          })}
-        </>
-      );
-    }
-
-    let result = [{ content: text, isHighlight: false, type: null }];
-    
-    const splitParts = (searchTerm, type) => {
-      if (!searchTerm || !searchTerm.trim()) return;
-      const term = searchTerm.trim();
-      const escaped = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      const regex = new RegExp(`(${escaped})`, 'gi');
-      
-      let newResult = [];
-      result.forEach(part => {
-        if (part.isHighlight) {
-          newResult.push(part);
-        } else {
-          const snippets = part.content.split(regex);
-          snippets.forEach(snip => {
-            if (snip && snip.toLowerCase() === term.toLowerCase()) {
-              newResult.push({ content: snip, isHighlight: true, type });
-            } else if (snip) {
-              newResult.push({ content: snip, isHighlight: false, type: null });
-            }
-          });
-        }
-      });
-      result = newResult;
-    };
-
-    // Apply search term
-    splitParts(highlight, 'search');
-    // Apply user highlights
-    userHighlights.forEach(uh => splitParts(uh, 'user'));
-
-    return (
-      <>
-        {result.map((part, i) => 
-          part.isHighlight ? (
-            <mark key={i} className={part.type === 'search' ? 'search-highlight' : 'user-highlight'}>
-              {part.content}
-            </mark>
-          ) : (
-            part.content
-          )
-        )}
-      </>
-    );
-  };
-
-  const highlightHtml = (html, search) => {
-    if (!html) return html;
-    let result = html;
-    
-    const apply = (term, className) => {
-      if (!term || !term.trim()) return;
-      // Escape and turn spaces into "optional tags + whitespace" matcher
-      const escaped = term.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      const fuzzy = escaped.replace(/\s+/g, '(<[^>]*>)*\\s+(<[^>]*>)*');
-      const regex = new RegExp(`(${fuzzy})(?![^<]*>)`, 'gi');
-      result = result.replace(regex, (match) => `<mark class="${className}">${match}</mark>`);
-    };
-
-    apply(search, 'search-highlight');
-    userHighlights.forEach(uh => apply(uh, 'user-highlight'));
-    return result;
-  };
+  if (!data) return <div style={{ color: '#4a342e', padding: '100px', textAlign: 'center', background: 'white' }}>Error loading book: {filename}</div>;
 
   const headerViewControls = (
     <div className="view-controls-header">

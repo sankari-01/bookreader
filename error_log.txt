@@ -1706,3 +1706,195 @@ Please select on of the supported languages:
 2026-03-31 15:42:31.348650: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in pa
 2026-03-31 15:42:33.748209: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in bn
 2026-03-31 15:42:33.849978: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in bn
+2026-03-31 15:52:03.991014: Starting extraction for: Fairytale-Mulan.pdf
+2026-03-31 15:52:03.991952: Using cached text for: Fairytale-Mulan.pdf
+2026-03-31 15:52:04.033041: Detected language for Fairytale-Mulan.pdf: en (English)
+2026-03-31 15:52:04.036117: [Pre-Translate] Starting background engine for 'Fairytale-Mulan.pdf' from source: en
+2026-03-31 15:52:04.275770: Starting extraction for: Fairytale-Mulan.pdf
+2026-03-31 15:52:04.276456: Using cached text for: Fairytale-Mulan.pdf
+2026-03-31 15:52:04.313598: Detected language for Fairytale-Mulan.pdf: en (English)
+2026-03-31 15:52:04.324839: Starting extraction for: Fairytale-Mulan.pdf
+2026-03-31 15:52:04.325519: Using cached text for: Fairytale-Mulan.pdf
+2026-03-31 15:52:04.545642: [Pre-Translate] Starting background engine for 'Fairytale-Mulan.pdf' from source: en
+2026-03-31 15:52:15.179031: Starting extraction for: Fairytale-Mulan.pdf
+2026-03-31 15:52:15.180797: Using cached text for: Fairytale-Mulan.pdf
+2026-03-31 15:52:15.315202: Detected language for Fairytale-Mulan.pdf: en (English)
+2026-03-31 15:52:15.471620: [Pre-Translate] Starting background engine for 'Fairytale-Mulan.pdf' from source: en
+2026-03-31 15:52:18.514606: Starting extraction for: Fairytale-Mulan.pdf
+2026-03-31 15:52:18.568582: Using cached text for: Fairytale-Mulan.pdf
+2026-03-31 15:52:18.654481: Starting extraction for: Fairytale-Mulan.pdf
+2026-03-31 15:52:18.656046: Detected language for Fairytale-Mulan.pdf: en (English)
+2026-03-31 15:52:18.657143: Using cached text for: Fairytale-Mulan.pdf
+2026-03-31 15:52:18.762924: [Pre-Translate] Starting background engine for 'Fairytale-Mulan.pdf' from source: en
+2026-03-31 15:53:04.273711: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in ta
+2026-03-31 15:53:06.777810: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in hi
+2026-03-31 15:53:09.284183: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in fr
+2026-03-31 15:53:10.717063: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in ta
+2026-03-31 15:53:11.788855: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in es
+2026-03-31 15:53:13.222728: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in hi
+2026-03-31 15:53:14.266188: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in ta
+2026-03-31 15:53:14.293574: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in de
+2026-03-31 15:53:14.807657: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in ta
+2026-03-31 15:53:15.726317: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in fr
+2026-03-31 15:53:16.769892: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in hi
+2026-03-31 15:53:16.794717: [Pre-Translate] Translating summary for 'Fairytale-Mulan.pdf' to zh-cn...
+2026-03-31 15:53:16.795350: [Pre-Translate] Failed for 'Fairytale-Mulan.pdf' to zh-cn: zh-cn --> No support for the provided language.
+Please select on of the supported languages:
+{'afrikaans': 'af', 'albanian': 'sq', 'amharic': 'am', 'arabic': 'ar', 'armenian': 'hy', 'assamese': 'as', 'aymara': 'ay', 'azerbaijani': 'az', 'bambara': 'bm', 'basque': 'eu', 'belarusian': 'be', 'bengali': 'bn', 'bhojpuri': 'bho', 'bosnian': 'bs', 'bulgarian': 'bg', 'catalan': 'ca', 'cebuano': 'ceb', 'chichewa': 'ny', 'chinese (simplified)': 'zh-CN', 'chinese (traditional)': 'zh-TW', 'corsican': 'co', 'croatian': 'hr', 'czech': 'cs', 'danish': 'da', 'dhivehi': 'dv', 'dogri': 'doi', 'dutch': 'nl', 'english': 'en', 'esperanto': 'eo', 'estonian': 'et', 'ewe': 'ee', 'filipino': 'tl', 'finnish': 'fi', 'french': 'fr', 'frisian': 'fy', 'galician': 'gl', 'georgian': 'ka', 'german': 'de', 'greek': 'el', 'guarani': 'gn', 'gujarati': 'gu', 'haitian creole': 'ht', 'hausa': 'ha', 'hawaiian': 'haw', 'hebrew': 'iw', 'hindi': 'hi', 'hmong': 'hmn', 'hungarian': 'hu', 'icelandic': 'is', 'igbo': 'ig', 'ilocano': 'ilo', 'indonesian': 'id', 'irish': 'ga', 'italian': 'it', 'japanese': 'ja', 'javanese': 'jw', 'kannada': 'kn', 'kazakh': 'kk', 'khmer': 'km', 'kinyarwanda': 'rw', 'konkani': 'gom', 'korean': 'ko', 'krio': 'kri', 'kurdish (kurmanji)': 'ku', 'kurdish (sorani)': 'ckb', 'kyrgyz': 'ky', 'lao': 'lo', 'latin': 'la', 'latvian': 'lv', 'lingala': 'ln', 'lithuanian': 'lt', 'luganda': 'lg', 'luxembourgish': 'lb', 'macedonian': 'mk', 'maithili': 'mai', 'malagasy': 'mg', 'malay': 'ms', 'malayalam': 'ml', 'maltese': 'mt', 'maori': 'mi', 'marathi': 'mr', 'meiteilon (manipuri)': 'mni-Mtei', 'mizo': 'lus', 'mongolian': 'mn', 'myanmar': 'my', 'nepali': 'ne', 'norwegian': 'no', 'odia (oriya)': 'or', 'oromo': 'om', 'pashto': 'ps', 'persian': 'fa', 'polish': 'pl', 'portuguese': 'pt', 'punjabi': 'pa', 'quechua': 'qu', 'romanian': 'ro', 'russian': 'ru', 'samoan': 'sm', 'sanskrit': 'sa', 'scots gaelic': 'gd', 'sepedi': 'nso', 'serbian': 'sr', 'sesotho': 'st', 'shona': 'sn', 'sindhi': 'sd', 'sinhala': 'si', 'slovak': 'sk', 'slovenian': 'sl', 'somali': 'so', 'spanish': 'es', 'sundanese': 'su', 'swahili': 'sw', 'swedish': 'sv', 'tajik': 'tg', 'tamil': 'ta', 'tatar': 'tt', 'telugu': 'te', 'thai': 'th', 'tigrinya': 'ti', 'tsonga': 'ts', 'turkish': 'tr', 'turkmen': 'tk', 'twi': 'ak', 'ukrainian': 'uk', 'urdu': 'ur', 'uyghur': 'ug', 'uzbek': 'uz', 'vietnamese': 'vi', 'welsh': 'cy', 'xhosa': 'xh', 'yiddish': 'yi', 'yoruba': 'yo', 'zulu': 'zu'}
+2026-03-31 15:53:16.796226: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in ja
+2026-03-31 15:53:17.308986: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in hi
+2026-03-31 15:53:18.227776: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in es
+2026-03-31 15:53:19.270621: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in fr
+2026-03-31 15:53:19.297036: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in ru
+2026-03-31 15:53:19.810097: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in fr
+2026-03-31 15:53:20.729800: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in de
+2026-03-31 15:53:21.772551: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in es
+2026-03-31 15:53:21.798596: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in ko
+2026-03-31 15:53:22.312090: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in es
+2026-03-31 15:53:23.231188: [Pre-Translate] Translating summary for 'Fairytale-Mulan.pdf' to zh-cn...
+2026-03-31 15:53:23.232008: [Pre-Translate] Failed for 'Fairytale-Mulan.pdf' to zh-cn: zh-cn --> No support for the provided language.
+Please select on of the supported languages:
+{'afrikaans': 'af', 'albanian': 'sq', 'amharic': 'am', 'arabic': 'ar', 'armenian': 'hy', 'assamese': 'as', 'aymara': 'ay', 'azerbaijani': 'az', 'bambara': 'bm', 'basque': 'eu', 'belarusian': 'be', 'bengali': 'bn', 'bhojpuri': 'bho', 'bosnian': 'bs', 'bulgarian': 'bg', 'catalan': 'ca', 'cebuano': 'ceb', 'chichewa': 'ny', 'chinese (simplified)': 'zh-CN', 'chinese (traditional)': 'zh-TW', 'corsican': 'co', 'croatian': 'hr', 'czech': 'cs', 'danish': 'da', 'dhivehi': 'dv', 'dogri': 'doi', 'dutch': 'nl', 'english': 'en', 'esperanto': 'eo', 'estonian': 'et', 'ewe': 'ee', 'filipino': 'tl', 'finnish': 'fi', 'french': 'fr', 'frisian': 'fy', 'galician': 'gl', 'georgian': 'ka', 'german': 'de', 'greek': 'el', 'guarani': 'gn', 'gujarati': 'gu', 'haitian creole': 'ht', 'hausa': 'ha', 'hawaiian': 'haw', 'hebrew': 'iw', 'hindi': 'hi', 'hmong': 'hmn', 'hungarian': 'hu', 'icelandic': 'is', 'igbo': 'ig', 'ilocano': 'ilo', 'indonesian': 'id', 'irish': 'ga', 'italian': 'it', 'japanese': 'ja', 'javanese': 'jw', 'kannada': 'kn', 'kazakh': 'kk', 'khmer': 'km', 'kinyarwanda': 'rw', 'konkani': 'gom', 'korean': 'ko', 'krio': 'kri', 'kurdish (kurmanji)': 'ku', 'kurdish (sorani)': 'ckb', 'kyrgyz': 'ky', 'lao': 'lo', 'latin': 'la', 'latvian': 'lv', 'lingala': 'ln', 'lithuanian': 'lt', 'luganda': 'lg', 'luxembourgish': 'lb', 'macedonian': 'mk', 'maithili': 'mai', 'malagasy': 'mg', 'malay': 'ms', 'malayalam': 'ml', 'maltese': 'mt', 'maori': 'mi', 'marathi': 'mr', 'meiteilon (manipuri)': 'mni-Mtei', 'mizo': 'lus', 'mongolian': 'mn', 'myanmar': 'my', 'nepali': 'ne', 'norwegian': 'no', 'odia (oriya)': 'or', 'oromo': 'om', 'pashto': 'ps', 'persian': 'fa', 'polish': 'pl', 'portuguese': 'pt', 'punjabi': 'pa', 'quechua': 'qu', 'romanian': 'ro', 'russian': 'ru', 'samoan': 'sm', 'sanskrit': 'sa', 'scots gaelic': 'gd', 'sepedi': 'nso', 'serbian': 'sr', 'sesotho': 'st', 'shona': 'sn', 'sindhi': 'sd', 'sinhala': 'si', 'slovak': 'sk', 'slovenian': 'sl', 'somali': 'so', 'spanish': 'es', 'sundanese': 'su', 'swahili': 'sw', 'swedish': 'sv', 'tajik': 'tg', 'tamil': 'ta', 'tatar': 'tt', 'telugu': 'te', 'thai': 'th', 'tigrinya': 'ti', 'tsonga': 'ts', 'turkish': 'tr', 'turkmen': 'tk', 'twi': 'ak', 'ukrainian': 'uk', 'urdu': 'ur', 'uyghur': 'ug', 'uzbek': 'uz', 'vietnamese': 'vi', 'welsh': 'cy', 'xhosa': 'xh', 'yiddish': 'yi', 'yoruba': 'yo', 'zulu': 'zu'}
+2026-03-31 15:53:23.232708: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in ja
+2026-03-31 15:53:24.275040: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in de
+2026-03-31 15:53:24.305314: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in te
+2026-03-31 15:53:24.813034: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in de
+2026-03-31 15:53:25.733713: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in ru
+2026-03-31 15:53:26.805689: [Pre-Translate] Translating summary for 'Fairytale-Mulan.pdf' to zh-cn...
+2026-03-31 15:53:26.806724: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in kn
+2026-03-31 15:53:26.806965: [Pre-Translate] Failed for 'Fairytale-Mulan.pdf' to zh-cn: zh-cn --> No support for the provided language.
+Please select on of the supported languages:
+{'afrikaans': 'af', 'albanian': 'sq', 'amharic': 'am', 'arabic': 'ar', 'armenian': 'hy', 'assamese': 'as', 'aymara': 'ay', 'azerbaijani': 'az', 'bambara': 'bm', 'basque': 'eu', 'belarusian': 'be', 'bengali': 'bn', 'bhojpuri': 'bho', 'bosnian': 'bs', 'bulgarian': 'bg', 'catalan': 'ca', 'cebuano': 'ceb', 'chichewa': 'ny', 'chinese (simplified)': 'zh-CN', 'chinese (traditional)': 'zh-TW', 'corsican': 'co', 'croatian': 'hr', 'czech': 'cs', 'danish': 'da', 'dhivehi': 'dv', 'dogri': 'doi', 'dutch': 'nl', 'english': 'en', 'esperanto': 'eo', 'estonian': 'et', 'ewe': 'ee', 'filipino': 'tl', 'finnish': 'fi', 'french': 'fr', 'frisian': 'fy', 'galician': 'gl', 'georgian': 'ka', 'german': 'de', 'greek': 'el', 'guarani': 'gn', 'gujarati': 'gu', 'haitian creole': 'ht', 'hausa': 'ha', 'hawaiian': 'haw', 'hebrew': 'iw', 'hindi': 'hi', 'hmong': 'hmn', 'hungarian': 'hu', 'icelandic': 'is', 'igbo': 'ig', 'ilocano': 'ilo', 'indonesian': 'id', 'irish': 'ga', 'italian': 'it', 'japanese': 'ja', 'javanese': 'jw', 'kannada': 'kn', 'kazakh': 'kk', 'khmer': 'km', 'kinyarwanda': 'rw', 'konkani': 'gom', 'korean': 'ko', 'krio': 'kri', 'kurdish (kurmanji)': 'ku', 'kurdish (sorani)': 'ckb', 'kyrgyz': 'ky', 'lao': 'lo', 'latin': 'la', 'latvian': 'lv', 'lingala': 'ln', 'lithuanian': 'lt', 'luganda': 'lg', 'luxembourgish': 'lb', 'macedonian': 'mk', 'maithili': 'mai', 'malagasy': 'mg', 'malay': 'ms', 'malayalam': 'ml', 'maltese': 'mt', 'maori': 'mi', 'marathi': 'mr', 'meiteilon (manipuri)': 'mni-Mtei', 'mizo': 'lus', 'mongolian': 'mn', 'myanmar': 'my', 'nepali': 'ne', 'norwegian': 'no', 'odia (oriya)': 'or', 'oromo': 'om', 'pashto': 'ps', 'persian': 'fa', 'polish': 'pl', 'portuguese': 'pt', 'punjabi': 'pa', 'quechua': 'qu', 'romanian': 'ro', 'russian': 'ru', 'samoan': 'sm', 'sanskrit': 'sa', 'scots gaelic': 'gd', 'sepedi': 'nso', 'serbian': 'sr', 'sesotho': 'st', 'shona': 'sn', 'sindhi': 'sd', 'sinhala': 'si', 'slovak': 'sk', 'slovenian': 'sl', 'somali': 'so', 'spanish': 'es', 'sundanese': 'su', 'swahili': 'sw', 'swedish': 'sv', 'tajik': 'tg', 'tamil': 'ta', 'tatar': 'tt', 'telugu': 'te', 'thai': 'th', 'tigrinya': 'ti', 'tsonga': 'ts', 'turkish': 'tr', 'turkmen': 'tk', 'twi': 'ak', 'ukrainian': 'uk', 'urdu': 'ur', 'uyghur': 'ug', 'uzbek': 'uz', 'vietnamese': 'vi', 'welsh': 'cy', 'xhosa': 'xh', 'yiddish': 'yi', 'yoruba': 'yo', 'zulu': 'zu'}
+2026-03-31 15:53:26.807134: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in ja
+2026-03-31 15:53:27.313824: [Pre-Translate] Translating summary for 'Fairytale-Mulan.pdf' to zh-cn...
+2026-03-31 15:53:27.314542: [Pre-Translate] Failed for 'Fairytale-Mulan.pdf' to zh-cn: zh-cn --> No support for the provided language.
+Please select on of the supported languages:
+{'afrikaans': 'af', 'albanian': 'sq', 'amharic': 'am', 'arabic': 'ar', 'armenian': 'hy', 'assamese': 'as', 'aymara': 'ay', 'azerbaijani': 'az', 'bambara': 'bm', 'basque': 'eu', 'belarusian': 'be', 'bengali': 'bn', 'bhojpuri': 'bho', 'bosnian': 'bs', 'bulgarian': 'bg', 'catalan': 'ca', 'cebuano': 'ceb', 'chichewa': 'ny', 'chinese (simplified)': 'zh-CN', 'chinese (traditional)': 'zh-TW', 'corsican': 'co', 'croatian': 'hr', 'czech': 'cs', 'danish': 'da', 'dhivehi': 'dv', 'dogri': 'doi', 'dutch': 'nl', 'english': 'en', 'esperanto': 'eo', 'estonian': 'et', 'ewe': 'ee', 'filipino': 'tl', 'finnish': 'fi', 'french': 'fr', 'frisian': 'fy', 'galician': 'gl', 'georgian': 'ka', 'german': 'de', 'greek': 'el', 'guarani': 'gn', 'gujarati': 'gu', 'haitian creole': 'ht', 'hausa': 'ha', 'hawaiian': 'haw', 'hebrew': 'iw', 'hindi': 'hi', 'hmong': 'hmn', 'hungarian': 'hu', 'icelandic': 'is', 'igbo': 'ig', 'ilocano': 'ilo', 'indonesian': 'id', 'irish': 'ga', 'italian': 'it', 'japanese': 'ja', 'javanese': 'jw', 'kannada': 'kn', 'kazakh': 'kk', 'khmer': 'km', 'kinyarwanda': 'rw', 'konkani': 'gom', 'korean': 'ko', 'krio': 'kri', 'kurdish (kurmanji)': 'ku', 'kurdish (sorani)': 'ckb', 'kyrgyz': 'ky', 'lao': 'lo', 'latin': 'la', 'latvian': 'lv', 'lingala': 'ln', 'lithuanian': 'lt', 'luganda': 'lg', 'luxembourgish': 'lb', 'macedonian': 'mk', 'maithili': 'mai', 'malagasy': 'mg', 'malay': 'ms', 'malayalam': 'ml', 'maltese': 'mt', 'maori': 'mi', 'marathi': 'mr', 'meiteilon (manipuri)': 'mni-Mtei', 'mizo': 'lus', 'mongolian': 'mn', 'myanmar': 'my', 'nepali': 'ne', 'norwegian': 'no', 'odia (oriya)': 'or', 'oromo': 'om', 'pashto': 'ps', 'persian': 'fa', 'polish': 'pl', 'portuguese': 'pt', 'punjabi': 'pa', 'quechua': 'qu', 'romanian': 'ro', 'russian': 'ru', 'samoan': 'sm', 'sanskrit': 'sa', 'scots gaelic': 'gd', 'sepedi': 'nso', 'serbian': 'sr', 'sesotho': 'st', 'shona': 'sn', 'sindhi': 'sd', 'sinhala': 'si', 'slovak': 'sk', 'slovenian': 'sl', 'somali': 'so', 'spanish': 'es', 'sundanese': 'su', 'swahili': 'sw', 'swedish': 'sv', 'tajik': 'tg', 'tamil': 'ta', 'tatar': 'tt', 'telugu': 'te', 'thai': 'th', 'tigrinya': 'ti', 'tsonga': 'ts', 'turkish': 'tr', 'turkmen': 'tk', 'twi': 'ak', 'ukrainian': 'uk', 'urdu': 'ur', 'uyghur': 'ug', 'uzbek': 'uz', 'vietnamese': 'vi', 'welsh': 'cy', 'xhosa': 'xh', 'yiddish': 'yi', 'yoruba': 'yo', 'zulu': 'zu'}
+2026-03-31 15:53:27.315156: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in ja
+2026-03-31 15:53:28.234672: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in ko
+2026-03-31 15:53:29.307925: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in ru
+2026-03-31 15:53:29.309449: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in ml
+2026-03-31 15:53:29.816195: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in ru
+2026-03-31 15:53:30.735863: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in te
+2026-03-31 15:53:31.810078: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in ko
+2026-03-31 15:53:31.810690: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in mr
+2026-03-31 15:53:32.317543: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in ko
+2026-03-31 15:53:33.237089: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in kn
+2026-03-31 15:53:34.311260: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in te
+2026-03-31 15:53:34.311716: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in gu
+2026-03-31 15:53:34.818937: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in te
+2026-03-31 15:53:35.738358: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in ml
+2026-03-31 15:53:36.812559: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in kn
+2026-03-31 15:53:36.812599: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in pa
+2026-03-31 15:53:37.320285: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in kn
+2026-03-31 15:53:38.239388: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in mr
+2026-03-31 15:53:39.313297: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in bn
+2026-03-31 15:53:39.313455: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in ml
+2026-03-31 15:53:39.821212: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in ml
+2026-03-31 15:53:40.740247: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in gu
+2026-03-31 15:53:41.814192: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in mr
+2026-03-31 15:53:42.321788: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in mr
+2026-03-31 15:53:43.241092: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in pa
+2026-03-31 15:53:44.316287: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in gu
+2026-03-31 15:53:44.823400: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in gu
+2026-03-31 15:53:45.741944: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in bn
+2026-03-31 15:53:46.817458: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in pa
+2026-03-31 15:53:47.324617: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in pa
+2026-03-31 15:53:49.319119: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in bn
+2026-03-31 15:53:49.825926: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in bn
+2026-03-31 15:55:40.937086: Starting extraction for: Fairytale-Mulan.pdf
+2026-03-31 15:55:40.937710: Using cached text for: Fairytale-Mulan.pdf
+2026-03-31 15:55:40.945371: Detected language for Fairytale-Mulan.pdf: en (English)
+2026-03-31 15:55:40.946908: [Pre-Translate] Starting background engine for 'Fairytale-Mulan.pdf' from source: en
+2026-03-31 15:55:40.983518: Starting extraction for: Fairytale-Mulan.pdf
+2026-03-31 15:55:40.984182: Using cached text for: Fairytale-Mulan.pdf
+2026-03-31 15:55:40.991223: Detected language for Fairytale-Mulan.pdf: en (English)
+2026-03-31 15:55:40.995179: [Pre-Translate] Starting background engine for 'Fairytale-Mulan.pdf' from source: en
+2026-03-31 15:55:47.490810: Starting extraction for: Fairytale-Mulan.pdf
+2026-03-31 15:55:47.491977: Using cached text for: Fairytale-Mulan.pdf
+2026-03-31 15:56:01.254394: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in ta
+2026-03-31 15:56:03.758908: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in hi
+2026-03-31 15:56:05.727281: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in ta
+2026-03-31 15:56:06.260548: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in fr
+2026-03-31 15:56:08.229146: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in hi
+2026-03-31 15:56:08.762414: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in es
+2026-03-31 15:56:10.730658: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in fr
+2026-03-31 15:56:11.263818: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in de
+2026-03-31 15:56:13.237979: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in es
+2026-03-31 15:56:13.769147: [Pre-Translate] Translating summary for 'Fairytale-Mulan.pdf' to zh-cn...
+2026-03-31 15:56:13.770734: [Pre-Translate] Failed for 'Fairytale-Mulan.pdf' to zh-cn: zh-cn --> No support for the provided language.
+Please select on of the supported languages:
+{'afrikaans': 'af', 'albanian': 'sq', 'amharic': 'am', 'arabic': 'ar', 'armenian': 'hy', 'assamese': 'as', 'aymara': 'ay', 'azerbaijani': 'az', 'bambara': 'bm', 'basque': 'eu', 'belarusian': 'be', 'bengali': 'bn', 'bhojpuri': 'bho', 'bosnian': 'bs', 'bulgarian': 'bg', 'catalan': 'ca', 'cebuano': 'ceb', 'chichewa': 'ny', 'chinese (simplified)': 'zh-CN', 'chinese (traditional)': 'zh-TW', 'corsican': 'co', 'croatian': 'hr', 'czech': 'cs', 'danish': 'da', 'dhivehi': 'dv', 'dogri': 'doi', 'dutch': 'nl', 'english': 'en', 'esperanto': 'eo', 'estonian': 'et', 'ewe': 'ee', 'filipino': 'tl', 'finnish': 'fi', 'french': 'fr', 'frisian': 'fy', 'galician': 'gl', 'georgian': 'ka', 'german': 'de', 'greek': 'el', 'guarani': 'gn', 'gujarati': 'gu', 'haitian creole': 'ht', 'hausa': 'ha', 'hawaiian': 'haw', 'hebrew': 'iw', 'hindi': 'hi', 'hmong': 'hmn', 'hungarian': 'hu', 'icelandic': 'is', 'igbo': 'ig', 'ilocano': 'ilo', 'indonesian': 'id', 'irish': 'ga', 'italian': 'it', 'japanese': 'ja', 'javanese': 'jw', 'kannada': 'kn', 'kazakh': 'kk', 'khmer': 'km', 'kinyarwanda': 'rw', 'konkani': 'gom', 'korean': 'ko', 'krio': 'kri', 'kurdish (kurmanji)': 'ku', 'kurdish (sorani)': 'ckb', 'kyrgyz': 'ky', 'lao': 'lo', 'latin': 'la', 'latvian': 'lv', 'lingala': 'ln', 'lithuanian': 'lt', 'luganda': 'lg', 'luxembourgish': 'lb', 'macedonian': 'mk', 'maithili': 'mai', 'malagasy': 'mg', 'malay': 'ms', 'malayalam': 'ml', 'maltese': 'mt', 'maori': 'mi', 'marathi': 'mr', 'meiteilon (manipuri)': 'mni-Mtei', 'mizo': 'lus', 'mongolian': 'mn', 'myanmar': 'my', 'nepali': 'ne', 'norwegian': 'no', 'odia (oriya)': 'or', 'oromo': 'om', 'pashto': 'ps', 'persian': 'fa', 'polish': 'pl', 'portuguese': 'pt', 'punjabi': 'pa', 'quechua': 'qu', 'romanian': 'ro', 'russian': 'ru', 'samoan': 'sm', 'sanskrit': 'sa', 'scots gaelic': 'gd', 'sepedi': 'nso', 'serbian': 'sr', 'sesotho': 'st', 'shona': 'sn', 'sindhi': 'sd', 'sinhala': 'si', 'slovak': 'sk', 'slovenian': 'sl', 'somali': 'so', 'spanish': 'es', 'sundanese': 'su', 'swahili': 'sw', 'swedish': 'sv', 'tajik': 'tg', 'tamil': 'ta', 'tatar': 'tt', 'telugu': 'te', 'thai': 'th', 'tigrinya': 'ti', 'tsonga': 'ts', 'turkish': 'tr', 'turkmen': 'tk', 'twi': 'ak', 'ukrainian': 'uk', 'urdu': 'ur', 'uyghur': 'ug', 'uzbek': 'uz', 'vietnamese': 'vi', 'welsh': 'cy', 'xhosa': 'xh', 'yiddish': 'yi', 'yoruba': 'yo', 'zulu': 'zu'}
+2026-03-31 15:56:13.771640: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in ja
+2026-03-31 15:56:15.739193: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in de
+2026-03-31 15:56:16.280648: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in ru
+2026-03-31 15:56:18.240773: [Pre-Translate] Translating summary for 'Fairytale-Mulan.pdf' to zh-cn...
+2026-03-31 15:56:18.242069: [Pre-Translate] Failed for 'Fairytale-Mulan.pdf' to zh-cn: zh-cn --> No support for the provided language.
+Please select on of the supported languages:
+{'afrikaans': 'af', 'albanian': 'sq', 'amharic': 'am', 'arabic': 'ar', 'armenian': 'hy', 'assamese': 'as', 'aymara': 'ay', 'azerbaijani': 'az', 'bambara': 'bm', 'basque': 'eu', 'belarusian': 'be', 'bengali': 'bn', 'bhojpuri': 'bho', 'bosnian': 'bs', 'bulgarian': 'bg', 'catalan': 'ca', 'cebuano': 'ceb', 'chichewa': 'ny', 'chinese (simplified)': 'zh-CN', 'chinese (traditional)': 'zh-TW', 'corsican': 'co', 'croatian': 'hr', 'czech': 'cs', 'danish': 'da', 'dhivehi': 'dv', 'dogri': 'doi', 'dutch': 'nl', 'english': 'en', 'esperanto': 'eo', 'estonian': 'et', 'ewe': 'ee', 'filipino': 'tl', 'finnish': 'fi', 'french': 'fr', 'frisian': 'fy', 'galician': 'gl', 'georgian': 'ka', 'german': 'de', 'greek': 'el', 'guarani': 'gn', 'gujarati': 'gu', 'haitian creole': 'ht', 'hausa': 'ha', 'hawaiian': 'haw', 'hebrew': 'iw', 'hindi': 'hi', 'hmong': 'hmn', 'hungarian': 'hu', 'icelandic': 'is', 'igbo': 'ig', 'ilocano': 'ilo', 'indonesian': 'id', 'irish': 'ga', 'italian': 'it', 'japanese': 'ja', 'javanese': 'jw', 'kannada': 'kn', 'kazakh': 'kk', 'khmer': 'km', 'kinyarwanda': 'rw', 'konkani': 'gom', 'korean': 'ko', 'krio': 'kri', 'kurdish (kurmanji)': 'ku', 'kurdish (sorani)': 'ckb', 'kyrgyz': 'ky', 'lao': 'lo', 'latin': 'la', 'latvian': 'lv', 'lingala': 'ln', 'lithuanian': 'lt', 'luganda': 'lg', 'luxembourgish': 'lb', 'macedonian': 'mk', 'maithili': 'mai', 'malagasy': 'mg', 'malay': 'ms', 'malayalam': 'ml', 'maltese': 'mt', 'maori': 'mi', 'marathi': 'mr', 'meiteilon (manipuri)': 'mni-Mtei', 'mizo': 'lus', 'mongolian': 'mn', 'myanmar': 'my', 'nepali': 'ne', 'norwegian': 'no', 'odia (oriya)': 'or', 'oromo': 'om', 'pashto': 'ps', 'persian': 'fa', 'polish': 'pl', 'portuguese': 'pt', 'punjabi': 'pa', 'quechua': 'qu', 'romanian': 'ro', 'russian': 'ru', 'samoan': 'sm', 'sanskrit': 'sa', 'scots gaelic': 'gd', 'sepedi': 'nso', 'serbian': 'sr', 'sesotho': 'st', 'shona': 'sn', 'sindhi': 'sd', 'sinhala': 'si', 'slovak': 'sk', 'slovenian': 'sl', 'somali': 'so', 'spanish': 'es', 'sundanese': 'su', 'swahili': 'sw', 'swedish': 'sv', 'tajik': 'tg', 'tamil': 'ta', 'tatar': 'tt', 'telugu': 'te', 'thai': 'th', 'tigrinya': 'ti', 'tsonga': 'ts', 'turkish': 'tr', 'turkmen': 'tk', 'twi': 'ak', 'ukrainian': 'uk', 'urdu': 'ur', 'uyghur': 'ug', 'uzbek': 'uz', 'vietnamese': 'vi', 'welsh': 'cy', 'xhosa': 'xh', 'yiddish': 'yi', 'yoruba': 'yo', 'zulu': 'zu'}
+2026-03-31 15:56:18.242308: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in ja
+2026-03-31 15:56:18.781976: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in ko
+2026-03-31 15:56:20.743154: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in ru
+2026-03-31 15:56:21.283292: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in te
+2026-03-31 15:56:23.243758: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in ko
+2026-03-31 15:56:23.783903: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in kn
+2026-03-31 15:56:25.744613: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in te
+2026-03-31 15:56:26.284814: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in ml
+2026-03-31 15:56:28.245649: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in kn
+2026-03-31 15:56:28.785404: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in mr
+2026-03-31 15:56:30.746461: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in ml
+2026-03-31 15:56:31.286646: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in gu
+2026-03-31 15:56:33.246991: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in mr
+2026-03-31 15:56:33.787856: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in pa
+2026-03-31 15:56:35.747778: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in gu
+2026-03-31 15:56:36.288512: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in bn
+2026-03-31 15:56:38.248775: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in pa
+2026-03-31 15:56:40.750439: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in bn
+2026-03-31 16:04:23.535718: Starting extraction for: Fairytale-Mulan.pdf
+2026-03-31 16:04:23.536226: Using cached text for: Fairytale-Mulan.pdf
+2026-03-31 16:04:23.571204: Detected language for Fairytale-Mulan.pdf: en (English)
+2026-03-31 16:04:23.587719: [Pre-Translate] Starting background engine for 'Fairytale-Mulan.pdf' from source: en
+2026-03-31 16:04:23.629884: Starting extraction for: Fairytale-Mulan.pdf
+2026-03-31 16:04:23.631032: Using cached text for: Fairytale-Mulan.pdf
+2026-03-31 16:04:23.642263: Detected language for Fairytale-Mulan.pdf: en (English)
+2026-03-31 16:04:23.644652: [Pre-Translate] Starting background engine for 'Fairytale-Mulan.pdf' from source: en
+2026-03-31 16:04:23.679579: Starting extraction for: Fairytale-Mulan.pdf
+2026-03-31 16:04:23.685351: Using cached text for: Fairytale-Mulan.pdf
+2026-03-31 16:04:48.617076: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in ta
+2026-03-31 16:04:48.904093: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in ta
+2026-03-31 16:04:51.118740: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in hi
+2026-03-31 16:04:51.405124: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in hi
+2026-03-31 16:04:53.619491: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in fr
+2026-03-31 16:04:53.905955: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in fr
+2026-03-31 16:04:56.120618: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in es
+2026-03-31 16:04:56.406857: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in es
+2026-03-31 16:04:58.621946: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in de
+2026-03-31 16:04:58.907757: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in de
+2026-03-31 16:05:01.123378: [Pre-Translate] Translating summary for 'Fairytale-Mulan.pdf' to zh-cn...
+2026-03-31 16:05:01.126800: [Pre-Translate] Failed for 'Fairytale-Mulan.pdf' to zh-cn: zh-cn --> No support for the provided language.
+Please select on of the supported languages:
+{'afrikaans': 'af', 'albanian': 'sq', 'amharic': 'am', 'arabic': 'ar', 'armenian': 'hy', 'assamese': 'as', 'aymara': 'ay', 'azerbaijani': 'az', 'bambara': 'bm', 'basque': 'eu', 'belarusian': 'be', 'bengali': 'bn', 'bhojpuri': 'bho', 'bosnian': 'bs', 'bulgarian': 'bg', 'catalan': 'ca', 'cebuano': 'ceb', 'chichewa': 'ny', 'chinese (simplified)': 'zh-CN', 'chinese (traditional)': 'zh-TW', 'corsican': 'co', 'croatian': 'hr', 'czech': 'cs', 'danish': 'da', 'dhivehi': 'dv', 'dogri': 'doi', 'dutch': 'nl', 'english': 'en', 'esperanto': 'eo', 'estonian': 'et', 'ewe': 'ee', 'filipino': 'tl', 'finnish': 'fi', 'french': 'fr', 'frisian': 'fy', 'galician': 'gl', 'georgian': 'ka', 'german': 'de', 'greek': 'el', 'guarani': 'gn', 'gujarati': 'gu', 'haitian creole': 'ht', 'hausa': 'ha', 'hawaiian': 'haw', 'hebrew': 'iw', 'hindi': 'hi', 'hmong': 'hmn', 'hungarian': 'hu', 'icelandic': 'is', 'igbo': 'ig', 'ilocano': 'ilo', 'indonesian': 'id', 'irish': 'ga', 'italian': 'it', 'japanese': 'ja', 'javanese': 'jw', 'kannada': 'kn', 'kazakh': 'kk', 'khmer': 'km', 'kinyarwanda': 'rw', 'konkani': 'gom', 'korean': 'ko', 'krio': 'kri', 'kurdish (kurmanji)': 'ku', 'kurdish (sorani)': 'ckb', 'kyrgyz': 'ky', 'lao': 'lo', 'latin': 'la', 'latvian': 'lv', 'lingala': 'ln', 'lithuanian': 'lt', 'luganda': 'lg', 'luxembourgish': 'lb', 'macedonian': 'mk', 'maithili': 'mai', 'malagasy': 'mg', 'malay': 'ms', 'malayalam': 'ml', 'maltese': 'mt', 'maori': 'mi', 'marathi': 'mr', 'meiteilon (manipuri)': 'mni-Mtei', 'mizo': 'lus', 'mongolian': 'mn', 'myanmar': 'my', 'nepali': 'ne', 'norwegian': 'no', 'odia (oriya)': 'or', 'oromo': 'om', 'pashto': 'ps', 'persian': 'fa', 'polish': 'pl', 'portuguese': 'pt', 'punjabi': 'pa', 'quechua': 'qu', 'romanian': 'ro', 'russian': 'ru', 'samoan': 'sm', 'sanskrit': 'sa', 'scots gaelic': 'gd', 'sepedi': 'nso', 'serbian': 'sr', 'sesotho': 'st', 'shona': 'sn', 'sindhi': 'sd', 'sinhala': 'si', 'slovak': 'sk', 'slovenian': 'sl', 'somali': 'so', 'spanish': 'es', 'sundanese': 'su', 'swahili': 'sw', 'swedish': 'sv', 'tajik': 'tg', 'tamil': 'ta', 'tatar': 'tt', 'telugu': 'te', 'thai': 'th', 'tigrinya': 'ti', 'tsonga': 'ts', 'turkish': 'tr', 'turkmen': 'tk', 'twi': 'ak', 'ukrainian': 'uk', 'urdu': 'ur', 'uyghur': 'ug', 'uzbek': 'uz', 'vietnamese': 'vi', 'welsh': 'cy', 'xhosa': 'xh', 'yiddish': 'yi', 'yoruba': 'yo', 'zulu': 'zu'}
+2026-03-31 16:05:01.127385: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in ja
+2026-03-31 16:05:01.408820: [Pre-Translate] Translating summary for 'Fairytale-Mulan.pdf' to zh-cn...
+2026-03-31 16:05:01.409401: [Pre-Translate] Failed for 'Fairytale-Mulan.pdf' to zh-cn: zh-cn --> No support for the provided language.
+Please select on of the supported languages:
+{'afrikaans': 'af', 'albanian': 'sq', 'amharic': 'am', 'arabic': 'ar', 'armenian': 'hy', 'assamese': 'as', 'aymara': 'ay', 'azerbaijani': 'az', 'bambara': 'bm', 'basque': 'eu', 'belarusian': 'be', 'bengali': 'bn', 'bhojpuri': 'bho', 'bosnian': 'bs', 'bulgarian': 'bg', 'catalan': 'ca', 'cebuano': 'ceb', 'chichewa': 'ny', 'chinese (simplified)': 'zh-CN', 'chinese (traditional)': 'zh-TW', 'corsican': 'co', 'croatian': 'hr', 'czech': 'cs', 'danish': 'da', 'dhivehi': 'dv', 'dogri': 'doi', 'dutch': 'nl', 'english': 'en', 'esperanto': 'eo', 'estonian': 'et', 'ewe': 'ee', 'filipino': 'tl', 'finnish': 'fi', 'french': 'fr', 'frisian': 'fy', 'galician': 'gl', 'georgian': 'ka', 'german': 'de', 'greek': 'el', 'guarani': 'gn', 'gujarati': 'gu', 'haitian creole': 'ht', 'hausa': 'ha', 'hawaiian': 'haw', 'hebrew': 'iw', 'hindi': 'hi', 'hmong': 'hmn', 'hungarian': 'hu', 'icelandic': 'is', 'igbo': 'ig', 'ilocano': 'ilo', 'indonesian': 'id', 'irish': 'ga', 'italian': 'it', 'japanese': 'ja', 'javanese': 'jw', 'kannada': 'kn', 'kazakh': 'kk', 'khmer': 'km', 'kinyarwanda': 'rw', 'konkani': 'gom', 'korean': 'ko', 'krio': 'kri', 'kurdish (kurmanji)': 'ku', 'kurdish (sorani)': 'ckb', 'kyrgyz': 'ky', 'lao': 'lo', 'latin': 'la', 'latvian': 'lv', 'lingala': 'ln', 'lithuanian': 'lt', 'luganda': 'lg', 'luxembourgish': 'lb', 'macedonian': 'mk', 'maithili': 'mai', 'malagasy': 'mg', 'malay': 'ms', 'malayalam': 'ml', 'maltese': 'mt', 'maori': 'mi', 'marathi': 'mr', 'meiteilon (manipuri)': 'mni-Mtei', 'mizo': 'lus', 'mongolian': 'mn', 'myanmar': 'my', 'nepali': 'ne', 'norwegian': 'no', 'odia (oriya)': 'or', 'oromo': 'om', 'pashto': 'ps', 'persian': 'fa', 'polish': 'pl', 'portuguese': 'pt', 'punjabi': 'pa', 'quechua': 'qu', 'romanian': 'ro', 'russian': 'ru', 'samoan': 'sm', 'sanskrit': 'sa', 'scots gaelic': 'gd', 'sepedi': 'nso', 'serbian': 'sr', 'sesotho': 'st', 'shona': 'sn', 'sindhi': 'sd', 'sinhala': 'si', 'slovak': 'sk', 'slovenian': 'sl', 'somali': 'so', 'spanish': 'es', 'sundanese': 'su', 'swahili': 'sw', 'swedish': 'sv', 'tajik': 'tg', 'tamil': 'ta', 'tatar': 'tt', 'telugu': 'te', 'thai': 'th', 'tigrinya': 'ti', 'tsonga': 'ts', 'turkish': 'tr', 'turkmen': 'tk', 'twi': 'ak', 'ukrainian': 'uk', 'urdu': 'ur', 'uyghur': 'ug', 'uzbek': 'uz', 'vietnamese': 'vi', 'welsh': 'cy', 'xhosa': 'xh', 'yiddish': 'yi', 'yoruba': 'yo', 'zulu': 'zu'}
+2026-03-31 16:05:01.409947: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in ja
+2026-03-31 16:05:03.628681: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in ru
+2026-03-31 16:05:03.910663: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in ru
+2026-03-31 16:05:06.129842: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in ko
+2026-03-31 16:05:06.411248: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in ko
+2026-03-31 16:05:08.631668: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in te
+2026-03-31 16:05:08.912529: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in te
+2026-03-31 16:05:11.133173: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in kn
+2026-03-31 16:05:11.413788: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in kn
+2026-03-31 16:05:13.634587: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in ml
+2026-03-31 16:05:13.914847: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in ml
+2026-03-31 16:05:16.135425: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in mr
+2026-03-31 16:05:16.415720: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in mr
+2026-03-31 16:05:18.636156: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in gu
+2026-03-31 16:05:18.916644: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in gu
+2026-03-31 16:05:21.137038: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in pa
+2026-03-31 16:05:21.417670: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in pa
+2026-03-31 16:05:23.637899: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in bn
+2026-03-31 16:05:23.918715: [Pre-Translate] Successfully cached book & summary for 'Fairytale-Mulan.pdf' in bn
